@@ -1,0 +1,30 @@
+---
+title: "Making search *feel* fast"
+summary: "The query was already quick — the experience wasn't. A perception problem disguised as a performance one."
+date: "2025-11-08"
+role: "Product Designer · 2025"
+tags: ["search", "perceived performance", "interaction"]
+---
+
+## The ask
+
+"Search feels slow — can we speed up the backend?" Engineering had already
+shaved latency; the numbers were good. The complaint persisted.
+
+## What I found
+
+The wait wasn't long, it was *blank*. A spinner on an empty screen makes any
+delay feel like a stall. The problem was perception, not milliseconds.
+
+## The decision
+
+I designed for perceived speed instead of raw speed:
+
+1. Instant feedback on keystroke (the input never feels dead).
+2. Skeleton results that match the real layout, so the page feels populated.
+3. Recent and suggested queries fill the empty state.
+
+## Outcome
+
+Measured latency was unchanged; *perceived* speed rose sharply, and the
+complaints stopped. **Sometimes the fix isn't faster — it's less blank.**

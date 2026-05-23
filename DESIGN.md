@@ -1,0 +1,114 @@
+# Design Decisions
+
+Project-wide design decisions for the portfolio. This documents *what* we decided and *why*, so choices stay consistent across sessions. Update it whenever a decision is made or changed.
+
+---
+
+## Stack & Architecture
+- **Next.js 16 (App Router) + React 19 + TypeScript.** Deploy target is Vercel.
+- **Static-first.** Every route is prerendered (static or SSG via `generateStaticParams`). No runtime data fetching for now. `dynamicParams = false` so unknown slugs 404 at build time.
+- **Tailwind CSS v4.** Config lives in CSS (`@theme` in `globals.css`), not a `tailwind.config.js`. Plugins are loaded via `@plugin` in CSS.
+- **Build note:** `next build` uses Turbopack by default in v16, regardless of the dev `--no-turbopack` flag.
+
+## Content Pipeline (Writing)
+- **MDX via `next-mdx-remote/rsc`** (chosen over `@next/mdx` page files) so we get a *content collection*: list pages by reading the filesystem, with frontmatter.
+- Content lives in `src/content/{work,writing}/*.mdx`. One file = one entry.
+- **Frontmatter** parsed with `gray-matter` (`src/lib/content.ts`): `title`, `summary`, `date` (ISO), optional `tags`, `role` (work), `draft`, `featured`.
+- `draft: true` hides from listings; `featured: true` is reserved for a homepage rail. Lists sort newest-first by `date`.
+- MDX plugins: `remark-gfm` (tables, etc.) + `rehype-slug` (heading anchors). Add `rehype-pretty-code` later if code samples need highlighting.
+- Custom MDX element overrides in `src/components/mdx-components.tsx` (e.g. internal links routed through `next/link`).
+- **Watch for ("where MDX breaks"):** a malformed expression or bad import inside any `.mdx` fails the whole build; frontmatter typos surface as missing fields, not errors.
+
+## Responsiveness
+- **Mobile-first.** Style the base (smallest) case unprefixed, then add `sm:`/`lg:` to scale *up*. Targets every device from phone to large desktop.
+- **Fluid sizing (preferred while iterating):** size type *and* spacing with `clamp(min, vw, max)` so one value scales smoothly across all screens — no `sm:`/`lg:` variants to maintain or accidentally wipe when tweaking an element. e.g. heading `text-[clamp(1.25rem,4vw,1.5rem)]`, section `py-[clamp(3rem,8vw,5rem)]`. Keep `text-balance` on headings, `text-pretty` on leads. Values are rem-based so user zoom is respected. Adjusting size = nudge the `max` (one number).
+- **Breakpoints** (Tailwind defaults — `sm 640 · md 768 · lg 1024 · xl 1280`) are reserved for true *layout* changes (column count, show/hide, grid → stack), **not** type/spacing scaling. See [[responsive-iteration-style]].
+- **Overflow guards (convention):** flex children holding text get `min-w-0`; long unbroken strings get `break-words`.
+- **Full-height (when needed):** use `min-h-dvh`, not `vh`/`min-h-screen`, to account for mobile browser chrome.
+- **Deferred until content exists:** `next/image` with `sizes` + aspect ratios; ≥44px touch targets for interactive elements; `prefers-reduced-motion` guards for any animation.
+
+## Layout & Structure
+- **Single page** (`/`), **two-column on desktop — full-bleed-right panel model (decided 2026-05-23; replaced the fixed-`18rem`/divider model):** a **full-width** CSS grid with gutter tracks — `lg:grid-cols-[1fr_minmax(0,49rem)_minmax(24rem,1fr)]` (mobile: `grid-cols-1`, `px-6`, `gap-y-12`; desktop: `lg:px-0`, `gap-x-8` = 32px column gaps, `lg:min-h-dvh`).
+  - **Track 1 (`1fr`)** = left margin (recreates the centered look on the left). **Track 2 (`minmax(0,49rem)`)** = the **card grid** (capped at the width it had in the old `72rem` layout; shrinks on smaller screens). **Track 3 (`minmax(24rem,1fr)`)** = the **identity / nav panel** — as the *last* track of an edge-to-edge grid, its `bg-nav-fill` (white) **bleeds to the right viewport edge on its own**.
+  - **Placement is explicit:** cards `lg:col-start-2 lg:row-start-1`, panel (`<aside>`) `lg:col-start-3 lg:row-start-1`. The aside is **first in DOM** so it stacks on top on mobile.
+    - **Auto-placement gotcha (learned 2026-05-23):** with explicit `col-start`, the DOM-first aside (col 3) advanced the grid cursor past col 2, pushing the cards to **row 2**. Fix = pin both to `lg:row-start-1`. (DOM order can't change — the aside must be first to stack on top on mobile.)
+  - **Why this replaced the fixed-`18rem` + pseudo-bleed model:** the panel used to be a fixed `18rem` track inside a centered `max-w-[72rem]` container, with the white "bleed" *faked* by an oversized `::after` pseudo (`w-screen`, `left-full`) clipped via `body { overflow-x: clip }`. That clip cut off any content nudged toward the edge (it broke optical-centering the nav). Making the panel a **real grid track** removes the pseudo, the clip, *and* the magic numbers — the white reaches the edge naturally and nothing gets clipped.
+  - **Panel full-height:** `lg:min-h-dvh` on the grid + `lg:-mt-8 lg:-mb-24` on the aside (cancel the grid's `pt-8`/`pb-24`) so the white reaches the top & bottom screen edges. **`html { background: var(--nav-fill) }`** so the reserved scrollbar-gutter strip matches the panel (no warm sliver beside the scrollbar).
+  - **Nav content wrapper:** the panel's content lives in an inner **`lg:sticky lg:top-8`** wrapper, **capped `lg:max-w-[28rem]`, `lg:mx-auto`** (centered in the panel), with **`lg:px-8`** (32px) gutters. The cap engages only once the panel exceeds cap+gutters; below that the content stays 32px off both edges. (Earlier the content was uncapped 32px-off-edges and got too wide on big screens.) Order top→bottom: logo row → hero text → accent rule → menu → accent rule → matrix readout.
+  - **Hero text:** heading + subhead **merged into one left-aligned `<h1>`**, `text-sm` (14px), `lowercase` (CSS — source keeps real caps), `text-pretty`. Copy: "hello, i'm chukwuka, a systems-oriented **designer** … (sometimes)." ("designer" in `text-accent`.)
+  - **Accent rules:** two **4px** lines (`h-1 bg-accent`) bracket the menu (one above, one below). They span the **full panel width** via `lg:-mx-8` (cancel the content `px-8`) while items stay inset 32px. (Replaced the old vertical divider + the two `border-accent` bracketing rules.)
+  - **Matrix readout (decided 2026-05-23):** below the lower rule, a mono (`font-mono text-xs uppercase`) "system console" line — the **coordinate gag**: `matrix node [row,col]` reflecting the project card currently hovered/focused (idle `[–,–]`; coord in accent). The site is "chukwuka's matrix" and the card grid is literally a matrix. Wired via `node`/`setNode` added to `ViewContext`; cards report their 1-indexed position on hover/focus (`COLS = 2`, mirrors `sm:grid-cols-2`). *(An earlier mono "system readout" — status/location/live Lagos time — was built then removed. Showing the **visitor's** location/local time was discussed — timezone-client vs Vercel-edge vs IP-API — and **deferred** (privacy + static-build tradeoffs).)*
+  - **Below `lg`** the grid collapses to one column: identity panel on top (full-width, no bleed), cards below.
+  - **Why right-side nav:** chosen look; unconventional (nav usually top/left) and the split necessarily stacks on mobile.
+- **Card-column routing (decided 2026-05-22):** the cards column is a swappable content area driven by **one shared piece of state** — `active: ViewId` in a **`ViewProvider` context** (`useView`). `ViewId = "projects" | "product-ideas" | "contact"`. Two controls set it (they live in different parts of the tree, hence the context):
+  - **`NavMenu`** (client, the "things i do:" list in the identity column) = **top-level routes**. Each item is a `view` (in-app route → `setActive`) or an `href` (external, new tab). *design* → `projects` (in-app); *contact* → `contact` (in-app); *essays* → `https://thechukwukaosakwe.wordpress.com/`; *newsletter* → `https://chukwukaosakwe.substack.com/`. (NavMenu still supports an inert third state for any item with neither.)
+    - **Active state — `view` vs `activeFor` (decided 2026-05-22):** an item's *click target* (`view`) is separate from the *set of views it's highlighted for* (`activeFor`, defaults to `[view]`). *design* is a top-level route covering the whole design area, so `activeFor: ["projects", "product-ideas"]` — it stays active (accent + `aria-current`) whether you're on projects **or** product-ideas, and only drops on contact. Clicking it still lands on `projects` (the default sub-view); the switcher handles projects↔product-ideas within design.
+    - **Styling (reworked 2026-05-23):** a **separated stack of flat outlined buttons** — each a full-width (equal), `rounded-lg`, `border-border` button, **no shadow** (white-on-white drop shadows read as noise), **left-aligned** `text-base`/`font-semibold`, `px-4 py-3`, `gap-2` (8px) between them. The menu **label** is "**some things i do**" in **Nico Moji** (matches the "chukwuka's matrix" logo), 18px, normal weight. (Explored on the way: full-width frosted bars → content-sized chips → a grouped `divide-y` list — settled on separated buttons; chips read as scattered, the `divide-y` list read as a table.)
+    - **States:** **hover** fills the row (`hover:bg-foreground/5`) and warms text to accent; **active route** = `bg-accent-fill` (text `foreground`); **keyboard focus** = `focus-visible:border-accent`. (bg lives in the `INACTIVE`/`ACTIVE` state constants, not the base class, to avoid a Tailwind `bg-*` conflict between inactive white and active accent-fill.)
+  - **`ViewSwitcher`** (client) = a **sub-toggle within the design area only** (projects ↔ product-ideas). Fixed, frosted segmented control docked bottom-center of the cards column (`fixed inset-x-0 bottom-6`, aligned by mirroring the page grid; `pointer-events-none` wrapper, only the pill interactive). `rounded-lg` track, two equal `grid-cols-2` segments, an absolutely-positioned **sliding thumb** (`bg-accent-fill`, `rounded-md`, `translateX(activeIndex*100%)`, `motion-safe`). **Renders `null` when `active` isn't one of its two segments** (e.g. on contact) — so the toggle only appears inside design; you leave/return via the menu.
+  - **`CardsColumn`** (client) reads the context and renders the route: server `<ProjectsSection/>` (passed as a prop) for `projects`, `<ProductIdeas/>` for `product-ideas`, `<Contact/>` for `contact`. Default `"projects"` ⇒ the static build still ships the projects grid + crawlable modal bodies; other routes mount client-side on toggle.
+  - **`ProductIdeas`** (client) carousel: one **cover-fit** image at a time (`aspect-[4/3]`, framed with `.project-card`), one-line caption below, **looping** prev/next chevron handles flanking it, and a position counter pill **overlaid** bottom-right. Pushed down with `mt-[12vh]` to leave headroom for intro text. **TEMP:** reuses the 6 `public/` images + placeholder captions (`TEMP_IDEAS`) until a real product-ideas set exists.
+  - **`Contact`** (`contact` route): placeholder — centered accent "better call chuka!" (`mt-[12vh]`, matching the carousel's offset). To be fleshed out.
+  - **Adding a route:** add a `ViewId`, build its view component, branch in `CardsColumn`, and point a `NavMenu` item's `view` at it.
+  - **Essays sourcing — deferred (discussed 2026-05-22).** Currently *essays* is just an external `href` to the WordPress site. We discussed bringing essays *into* the viewspace as an `essays` route, and what native publishing would cost. Findings:
+    - **Headless WordPress is viable with zero WP-side changes:** the WordPress.com **public** REST API returns published posts — `https://public-api.wordpress.com/wp/v2/sites/thechukwukaosakwe.wordpress.com/posts` (verified 200; returns `title`, `content` HTML, `excerpt`, `date`, `link`, `jetpack_featured_media_url`). No auth/secrets for public reads. (Per-domain `/wp-json/` 404s on the free plan; plugins/WPGraphQL need a paid plan — not required for reads.) Would need: git+Vercel, a fetch module, a refresh model (ISR or build + deploy hook), an `EssaysView` fed server-side into `CardsColumn` (like `ProjectsSection`), rendering WP HTML via `prose` + sanitize, and the WP image host in `images.remotePatterns`.
+    - **Decision: hold — out of scope for now.** Likely eventual direction is **MDX authored in VS Code** (Tier A — reuses the existing `src/content` + `lib/content` pipeline; publish = commit/push → rebuild), with essays rendered in the viewspace as an `essays` route. Headless WP remains the fallback if in-place/native publishing is ever wanted.
+- **Projects — card grid + modal (decided 2026-05-21):** projects render as a responsive grid of **preview cards** (`grid gap-8 sm:grid-cols-2` — card gap `gap-8` = 32px, matching the page's `gap-x-8` column gap, on the 8px grid); each card has an image area, title, role, and a plain-text **excerpt** (first ~2 sentences of the body, computed server-side in `ProjectsSection`). Clicking a card opens the **full case study in a modal**.
+  - **Why this replaced the earlier list–detail split + rail + drawer:** that approach leaned on a stack of `position: sticky` elements all pinned to a hand-computed `--nav-h + 32px` line — fragile and didn't scale (every new pinned thing needed the magic offset; `--nav-h` was an approximation). The card+modal model needs **no sticky offsets** — `--nav-h` was deleted.
+  - **Modals:** **one native `<dialog>` per project** (all rendered, closed by default) so **every case study body is in the static HTML — crawlable / find-in-page-able** — while still reading in a modal. `showModal()` gives the browser focus trap, Esc, inert background, focus restoration; `::backdrop` styled in `globals.css`. **Sized/positioned (via JS) to fill the cards column, inset 24px top/bottom** — *not* a centered `max-w-2xl` box (see Motion). Dialog is `overflow-hidden` (clips the morph + rounded corners); an inner `h-full overflow-y-auto p-8` wrapper scrolls the case study.
+  - **Deep-linking:** the open project is mirrored to the URL hash (`/#slug`); load/back-forward open/close the matching dialog. (Per the earlier call: hash deep-links, not per-project routes.)
+  - **Images are placeholders** (`aspect-video bg-accent/10`). Real images would come from an `image:` frontmatter field rendered via `next/image`.
+  - Content authored as MDX (`src/content`, `lib/content.ts`). `ProjectsSection` (server) loads + renders; `ProjectsExplorer` (client) holds modal state + the open/close animation.
+
+## Motion & Transitions
+- **Modal = "container transform" (decided 2026-05-22).** Opening a project **grows the clicked card's frame** into the full panel and closing **shrinks it back into that card** — driven by the **Web Animations API** in `ProjectsExplorer`, not CSS.
+  - **Box morph:** animate the dialog's real `left/top/width/height` (measured from the clicked card's rect → the cards-column box). *Not* a `transform: scale` — scaling squished the content; animating the box size grows the frame and reveals the static content cleanly.
+  - **Grid erase/return:** as the panel grows, the whole card grid (`<ul>`) **fades to 0** ("erasing" the other cards); on close it fades back to 1. *(The modal's own content stays static — an earlier card↔content cross-fade was tried and rejected.)*
+  - **Backdrop (decided 2026-05-22):** `dialog::backdrop` both **dims** (`--foreground` @ 30%) and **blurs** the page behind it (`backdrop-filter: blur(4px)`, + `-webkit-`). A WAAPI `::backdrop` opacity animation fades the whole thing (dim *and* blur) in/out with the open/close — no separate blur animation needed.
+  - **Easing:** ease-in-out both directions — `cubic-bezier(0.65, 0, 0.35, 1)` — at **360ms open / 300ms close**. (User preference: neither direction should noticeably pick up speed; the earlier ease-out-open / ease-in-close pair felt like it accelerated.)
+  - **`prefers-reduced-motion`:** all of the above is skipped — the dialog just opens/closes at the column size instantly.
+  - Esc / backdrop-click / ✕ all route through `requestClose()`, which flips React state so the **exit animation plays first**, then calls native `close()` on finish (Esc's default close is `preventDefault`'d via `onCancel`).
+- **`html { scrollbar-gutter: stable; }`** (`globals.css`): reserves the scrollbar gutter so locking page scroll on modal-open doesn't shift the layout — otherwise the source card jumps mid-transition.
+- **Card edge — clean elevation (decided 2026-05-22, ref: marijanapav.com/work):** cards have **no border** and **no big shadow**. Edge + lift come from a **two-layer `box-shadow` on `.project-card`** (in `globals.css`, not Tailwind — its arbitrary-shadow parser mangles multi-layer + alpha): a **4px ring** in `var(--card-ring)` (`#FBEEF8`, a hair off the `#FDF6FB` background — reads as a subtle frame / surface step) **+** a micro `0 1px 2px` dark shadow (`--foreground` @ 8%) for a whisper of lift. *(This replaced an earlier experiment — a transparent `border-4` + a single faint even shadow `shadow-[1px_1px_12px]/10` as a fake outline. The ring approach is cleaner and is what the reference uses.)* **NB:** the 4px ring sits on top of the 2px lift shadow, so the lift is mostly hidden — the look is a clean framed tile, near-flat.
+  - **Hover/focus spotlight (decided 2026-05-22):** activating a card (hover *or* keyboard focus) blurs (`filter: blur(2px)`) **and** dims (`opacity: .6`) the *other* cards; the active one stays sharp. Two rules: the hover one is `@media (hover:hover)`-gated (`:has(.project-card:hover) … :not(:hover)`); the focus one is **not** pointer-gated (`:has(.project-card:focus-visible) … :not(:focus-visible)`) since keyboard users vary. Hover additionally lifts with `motion-safe:hover:scale-[1.02]`. Cards carry Tailwind `transition` (incl. `filter`) so it eases.
+  - **Focus-visible:** keyboard focus drives the spotlight above **and** marks the focused card with an accent `outline-2 outline-offset-2 outline-accent` (a distinct, unambiguous focus ring for a11y). `:focus-visible`, so mouse clicks — which open the modal — don't trigger it.
+
+## Typography
+- **Nata Sans** (body/sans, `next/font/google`) + **Geist Mono** (code). *(Note: Next has no fallback-metrics for Nata Sans yet — harmless dev warning, minor CLS risk.)*
+- **Nico Moji** for the homepage greeting — self-hosted via `next/font/local` (`src/app/fonts/NicoMoji-Regular.ttf`, OFL-licensed; not on Google Fonts). Exposed as `--font-nico-moji`.
+- Long-form bodies use `prose prose-stone dark:prose-invert` (`@tailwindcss/typography`).
+- Headings use `tracking-tight`; hero/title text uses `text-balance`, lead paragraphs `text-pretty`.
+
+## Color & Theme
+- **Token-driven.** All palette colors live as CSS variables in `:root` (`globals.css`) and are mapped into Tailwind via `@theme inline`, so each hex has one source of truth and is usable as a utility (`bg-background`, `text-foreground`, `text-accent`, `text-logo`, etc.). Don't hard-code hexes in components — reference the token.
+- **Core palette (decided):**
+
+  | Role | Token | Hex | Notes |
+  |------|-------|-----|-------|
+  | White / background | `--background` | `#FDF6FB` | Pale pink-tinted off-white; the page background. |
+  | Black / text | `--foreground` | `#120E11` | Near-black with a slight warm cast; all body/heading text. |
+  | Highlight | `--accent` | `#FB370A` | Hot red-orange; emphasis color (highlighted heading word, accent rules, active fills). *(Cycled through `#9F106B` magenta → `#140C34` → `#FF6440` → landed on `#FB370A`.)* |
+  | Accent fill | `--accent-fill` | → `color-mix(--accent 16%)` | Faint translucent accent for marker/fill looks (`.accent-fill` class, active menu row, switcher thumb). Mapped as `--color-accent-fill`. |
+  | Nav fill | `--nav-fill` | `#FFFFFF` | Pure white; fill of the identity/nav panel (track 3) + the scrollbar-gutter (`html` bg) + inactive menu buttons. Mapped as `--color-nav-fill`. |
+  | Card ring | `--card-ring` | `#FBEEF8` | A hair off `--background`; the 4px frame ring on project cards (see Motion → Card edge). Mapped as `--color-card-ring`. |
+  | Text muted | `--text-muted` | `#878286` | Muted text — drives **all** muted copy now (role/excerpt, "read more" resting state, etc.) via `text-text-muted`. Resting "read more" goes → accent on hover/focus. Mapped as `--color-text-muted`. *(Iterated: `#A99EB0` → `#E6DAE3` → `#E9D7E4` → `#E0C8D9` → `#878286`.)* |
+  | Danger | `--danger` | `#D31D0C` | Red for destructive/close affordances — the circular modal close button (ring + SVG X). Mapped as `--color-danger`. |
+  | Logo | `--logo` | → `var(--accent)` | Logo uses the accent color. Both the on-page logo (CSS-masked, `bg-accent`) and the favicon (`src/app/icon.png`) match the accent. |
+
+- `--border` is now `#E5DFE4` (a soft mauve-gray; up from the very faint `#E7E5E4`). Used on menu-button outlines, the `ViewSwitcher`, and `ProductIdeas` chevron handles — it's **shared**, so retuning it touches all three.
+- **`--muted` (`#78716c`) is now orphaned** — `--text-muted` replaced all its usages (`text-muted` → `text-text-muted`). Kept in `:root`/`@theme` for now; safe to delete. *(Naming caveat: `--muted` and `--text-muted` sit side by side with similar names but different values/roles — easy to confuse.)*
+- **Light mode only (for now).** No dark-mode tokens; `color-scheme: light` is set on `:root` and no `dark:` variants are used. Revisit if a dark theme is wanted later.
+
+## Spacing
+- **All spacing follows an 8px grid** — margins, padding, *and* gaps use 8 / 16 / 24 / 32 … (Tailwind `-2` / `-4` / `-6` / `-8`), **not** in-between values like 12px (`-3`), 20px (`-5`), 4px (`-1`), or 2px (`-0.5`) — unless there's a specific reason. Keeps rhythm consistent across the UI.
+- **Nav panel section rhythm = 48px (`mt-12`), decided 2026-05-23.** The standard gap **between navbar sections** (identity block → accent rule → menu → accent rule → readout, and top-of-column → logo) is **48px**. **Exception:** the logo + hero text are **one** "identity" section, so they're only **16px** (`mt-4`) apart internally. (48px is still a multiple of 8, so the 8px grid holds.)
+
+## Shape & Radius
+- **Standard border radius is 8px.** Use `rounded-lg` (Tailwind = `0.5rem` = 8px) for all UI elements — cards, inputs, containers, buttons.
+- **Exception:** the decorative `.accent-fill` marker highlight uses intentionally *uneven* em-based radii (a hand-drawn highlighter look), so it doesn't follow the 8px rule.
+
+## Accessibility
+- Semantic landmarks (`header`/`main`/`footer`/`article`), real `<time datetime>`, external links get `rel="noreferrer noopener"`.
+
+## Content & Tone
+- Placeholder copy ("Your Name", bio, sample entries) is intentionally swappable. Sample content models the intended voice: thinking-led case studies, not feature lists.

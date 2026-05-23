@@ -1,0 +1,94 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --background: #fdf6fb; /* white — page background */
+  --foreground: #120e11; /* black — all text */
+  --accent: #fb370a; /* highlight / emphasis (e.g. heading word) */
+  --accent-fill: color-mix(in srgb, var(--accent) 16%, transparent); /* faint accent (marker / fill) */
+  --card-ring: #fbeef8; /* card frame ring — a hair off the background */
+  --nav-fill: #ffffff; /* fill of the identity/nav column */
+  --text-muted: #878286; /* all muted text (role/excerpt, "read more" resting → accent on hover/focus, etc.) */
+  /* NB: --muted below is now orphaned — --text-muted replaced its usages. */
+  --danger: #d31d0c; /* destructive / close affordances (e.g. modal close button) */
+  --logo: var(--accent); /* logo now uses the accent color */
+  --muted: #78716c;
+  --border: #e5dfe4;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-accent-fill: var(--accent-fill);
+  --color-card-ring: var(--card-ring);
+  --color-text-muted: var(--text-muted);
+  --color-nav-fill: var(--nav-fill);
+  --color-danger: var(--danger);
+  --color-logo: var(--logo);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --font-sans: var(--font-nata-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+/* Reserve the scrollbar gutter so locking page scroll (when a modal opens)
+   doesn't shift the layout — which would make the source card jump as the
+   modal animates out of / back into it. */
+html {
+  scrollbar-gutter: stable;
+  /* Paints the reserved scrollbar gutter (and overscroll area) so it matches
+     the nav panel's right-bleed instead of showing the page background. */
+  background: var(--nav-fill);
+}
+
+dialog::backdrop {
+  background: color-mix(in srgb, var(--foreground) 30%, transparent);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+/* Card elevation (ref: marijanapav.com) — a hairline ring + a micro soft
+   shadow read as "resting on a surface", no opaque border / heavy blur. */
+.project-card {
+  box-shadow:
+    0 0 0 4px var(--card-ring),
+    0 1px 2px color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+
+/* Hover spotlight (pointer devices only): when one project card is hovered,
+   softly blur the others so focus lands on the hovered one. The cards carry
+   Tailwind `transition` (which includes `filter`), so this eases in/out. */
+@media (hover: hover) {
+  .project-grid:has(.project-card:hover) .project-card:not(:hover) {
+    filter: blur(2px);
+    opacity: 0.6;
+  }
+}
+
+/* Same spotlight on keyboard focus — not pointer-gated (keyboard users vary).
+   The focused card also keeps its accent `focus-visible:outline-*` marker. */
+.project-grid:has(.project-card:focus-visible) .project-card:not(:focus-visible) {
+  filter: blur(2px);
+  opacity: 0.6;
+}
+
+/* Faint, uneven marker-style highlight behind inline text.
+   Fill color defaults to the accent; override via --fill-color. */
+.accent-fill {
+  background-color: color-mix(in srgb, var(--fill-color, var(--accent)) 16%, transparent);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: 0.2em 0.5em;
+  border-radius: 0.7em 0.25em 0.6em 0.3em;
+}
