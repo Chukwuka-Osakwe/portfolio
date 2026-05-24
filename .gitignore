@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# raw Notion export — source material for case studies (heavy; curated copies
+# live in /public/work). Not part of the shipped site.
+/the-notion
+
+# image masters (full-res PNG originals). Shipped assets in /public/work are
+# downscaled WebP derivatives regenerated from these. Heavy; not committed.
+/sources

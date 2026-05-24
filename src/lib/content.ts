@@ -7,12 +7,17 @@ export type Section = "work" | "writing";
 /** Frontmatter authored at the top of each .mdx file. */
 export interface Frontmatter {
   title: string;
+  /** One-line summary — reserved for SEO / meta + OG description (not the card). */
   summary: string;
+  /** Card preview blurb. Falls back to a body excerpt when unset. */
+  blurb?: string;
   /** ISO date string, e.g. "2026-05-01". */
   date: string;
   tags?: string[];
   /** Work-only: the role you played on the project. */
   role?: string;
+  /** Card cover image — a path under /public, e.g. "/work/footy/cover.png". */
+  image?: string;
   /** Mark true to hide from listings while drafting. */
   draft?: boolean;
   /** Pin to the homepage "featured" rail. */

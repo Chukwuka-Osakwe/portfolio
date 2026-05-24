@@ -14,6 +14,11 @@
   --logo: var(--accent); /* logo now uses the accent color */
   --muted: #78716c;
   --border: #e5dfe4;
+  /* Nav panel width (desktop only). The single "shave the navbar" dial — only
+     this width changes; gutters, vertical spacing, text, logo and strokes are
+     untouched, so the content just reflows into the narrower column. Replaced
+     the track's old `1fr` (which let the panel grow on wide screens). */
+  --nav-w: 21rem;
 }
 
 @theme inline {
@@ -53,9 +58,9 @@ html {
 }
 
 dialog::backdrop {
-  background: color-mix(in srgb, var(--foreground) 30%, transparent);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  background: color-mix(in srgb, var(--foreground) 90%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 /* Card elevation (ref: marijanapav.com) — a hairline ring + a micro soft
@@ -81,6 +86,19 @@ dialog::backdrop {
 .project-grid:has(.project-card:focus-visible) .project-card:not(:focus-visible) {
   filter: blur(2px);
   opacity: 0.6;
+}
+
+/* Case-study body (inside the wide modal): text holds a centered reading
+   measure while media (images, <Compare>, the screens grid) breaks out to the
+   full panel width. The prose wrapper itself runs full width (max-w-none); we
+   only cap the text-flow elements here. */
+.case-body > :where(p, h2, h3, h4, ul, ol, blockquote) {
+  max-width: 42rem;
+  margin-inline: auto;
+}
+/* Markdown wraps a lone image in <p> — let those paragraphs break out full. */
+.case-body > p:has(img) {
+  max-width: none;
 }
 
 /* Faint, uneven marker-style highlight behind inline text.

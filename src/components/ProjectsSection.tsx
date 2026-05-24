@@ -37,7 +37,10 @@ export function ProjectsSection() {
     const { body } = getEntry("work", p.slug);
     return {
       slug: p.slug,
-      excerpt: makeExcerpt(body),
+      // Card blurb: the authored `blurb` frontmatter, falling back to the first
+      // sentences of the body when a file hasn't set one. (`summary` is reserved
+      // for SEO/meta, kept separate from the card text.)
+      excerpt: p.blurb?.trim() || makeExcerpt(body),
       node: <Mdx source={body} />,
     };
   });

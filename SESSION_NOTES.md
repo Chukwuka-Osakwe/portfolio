@@ -117,5 +117,59 @@ A running log of each work session: what got done, decisions made, and where we'
 
 ### Still deferred (unchanged)
 - OG/social images, sitemap/robots, `rehype-pretty-code` — explicitly held until real content + Vercel push.
-- Initialize git + push to Vercel when ready.
+- ~~Initialize git~~ ✅ done (Session 5). Push to Vercel when ready.
 - Delete the orphaned `--muted` token (or split a separate border token if the shared `--border` becomes a problem).
+
+---
+
+## Session 5 — 2026-05-23 (continued)
+
+### Summary — git init + Contact view styled
+- **Initialized the git repo** (item #1, the restore point). `git init` on `main`; `.gitignore` was already complete (Next default — `node_modules`/`.next`/`.DS_Store`/env all ignored). First commit `38fc24d` "Initial commit: portfolio site (Next.js 16 + Tailwind v4)" — 51 source files. **Now a git repo** (no remote yet).
+- **Styled the `Contact` view** (item #2; was a bare accent placeholder). User's calls: **keep the big accent line**; channels = **email + github + farcaster** (no LinkedIn/X); **no contact form** (no backend). Layout (centered column, `mt-[12vh]`): accent hero **"better call chuka!"** → muted warmth sentence ("got a product worth building, or just want to say hi? my inbox is open.") → **primary `email me` CTA** → **github · farcaster** text-links.
+  - **`email me` is the site's one solid-accent button** (`bg-accent` + `text-nav-fill` + arrow glyph + focus ring) — justified as the single primary action; accent is text/fill everywhere else. `mailto:chukwuka0009@gmail.com`.
+  - github/farcaster use the **"read more" link pattern** (`text-text-muted` → accent on hover *and* focus), dot separator (`text-border`), new tab. Links: `github.com/Chukwuka-Osakwe`, `farcaster.xyz/chukwukaosakwe`.
+  - Channels are **top-of-file constants** (`EMAIL`/`GITHUB`/`FARCASTER`) for easy edits.
+- **`npm run build` passes; `/` fully static** (4 pages; benign `Nata Sans` font-override warning only). Dev server running on **:3000**.
+
+### Session 5 (cont.) — nuked DigitalRain + real content (Footy launch set)
+- **Nuked the TEMP `DigitalRain`** (item #4) — removed `<DigitalRain/>` + import from `page.tsx`, dropped the `relative isolate` / `relative z-10` layering it required, **deleted `src/components/DigitalRain.tsx`**. Panel is now clean white; dark hero/menu text reads fine. (The "chukwuka's matrix" brand name + logo stay; only the rain canvas is gone.)
+- **Got the real Notion content in.** User dropped the Notion **Markdown & CSV export** at `/portfolio/the-notion` (3 case studies — Footy, Heyfood, Energy — + an index page). Tried `WebFetch` on the public share link first: useless (JS-rendered, returns only "Notion"). Export is the way. **`/the-notion` is now gitignored** (heavy, has videos; curated copies live in `/public/work`).
+- **Wired the `image:` frontmatter field** (item #3 infra): added `image?` to `Frontmatter` (`content.ts`); `ProjectsExplorer` card cover now reads `p.image` via `next/image` (placeholder block when unset); **removed `TEMP_CARD_IMAGES`**. Also mapped **`img`** in `mdx-components.tsx` → styled native `<img>` (rounded, bordered, lazy) for case-study body images.
+- **Footy is the launch set** (user's call: "begin with footy"). Wrote `src/content/work/footy.mdx` from the Notion md — demoted headers, dropped the title/gif, **no videos** (user: "no to all videos for now"), curated **17 of 27 images** (culled the gif, a redundant type shot, and 9 of 10 Figma colour screenshots), captions kept as `*italic*`. Fixed a couple of obvious typos ("problem problem"). Images copied + renamed into **`/public/work/footy/`** (`components.png` = cover + Act-3 shot; `before`, `before-score-square`, `state-before/after`, `colours`, `typography`, `screen-1..9`, `for-you`). **Cover = `components.png`** (landscape components sheet — portrait phone screens crop badly in the `aspect-video` card).
+- **Deleted the 8 placeholder case studies** — `src/content/work/` now holds only `footy.mdx`. ⚠️ **Grid currently shows ONE card** (sparse in the 2-col layout) until Heyfood/Energy land — by design (start-with-1 plan), flagged for awareness.
+- **Hero:** kept the live line; **appended the Notion "about" voice** ("an armchair philosopher at heart, cosplaying as a product designer. In love with gradients.") as a **DRAFT alternate**, coloured **indigo `#4f46e5`** to mark it provisional (NOT live). Has a clear JSX comment + "remove or promote later". User wants it parked for future consideration, not swapped in.
+- **`npm run build` passes; `/` fully static** (4 pages). Dev server :3000. Full Footy body is in the static HTML (crawlable). **Nothing committed yet** since the initial commit (user styling further first).
+
+### Session 5 (cont.) — image rework + masters/derivatives convention
+- **Optimised the whole Footy image set: 10 MB → ~0.7 MB (−93%)** via `sharp` (resize ≤1600px longest edge, WebP q80, deleted source PNGs). Rewrote all `.png`→`.webp` paths in `footy.mdx`. Modal/case-study now loads instantly.
+- **Phone screens (Act 3) → responsive 2-up grid.** Re-cut screens 1–9 from the 1284px originals at **740px wide** (~2× the ~352px half-column cell), wrapped in a JSX grid in the MDX: `grid-cols-1 gap-4 sm:grid-cols-2 [&_img]:my-0` (1-col on mobile, 2-up at `sm`+). Confirmed **Tailwind v4 scans `.mdx`** (the grid + arbitrary classes generate). Lesson: for portraits in a split layout, target **width** (≈2× display), not "longest edge."
+- **Modal:** now **full viewport height** (`INSET` 0) with **squared corners** (`rounded-none`). Body images lost their `rounded-lg` (square corners). Body/attribution links + role tag styled accent / `font-semibold` (earlier).
+- **`<Figure>` component (centered, width-capped images)** added to `mdx-components.tsx` — `<Figure src alt width="69%" />`, default 66%, always centered. Act 2 colours+typography are a centered pair at `width="69%"`. **Full detail + the masters/derivatives + WebP-by-image-type policy is logged in DESIGN.md** ("Image workflow — masters & derivatives").
+- **Masters/derivatives convention now in force:** masters → gitignored **`/sources/work/<slug>/`** (recovered 15 of 17 Footy masters from `/the-notion`); derivatives → `/public/work/<slug>/`. **`mv` drops into `/sources`, never `rm`.**
+
+### Session 5 (cont.) — modal redesign, layout dials, MDX components, blurb split
+- **`<Compare>` component** (`mdx-components.tsx`): side-by-side **before → after** with an accent `→`, **equal heights** via `items-stretch` + `object-cover` (similar aspects trim a few invisible px, no letterbox). Act 1 before/after now uses it.
+- **Modal, big rework** (`ProjectsExplorer`): geometry went full-height → centered max-width → **fills everything left of the nav** and is **shifted 32px right** (gap on the left, laps the nav slightly). Reads the nav's left edge via `[data-nav-panel]` on the `<aside>`; below `lg` falls back to a centered max-width box. **Squared corners.** **Close button pinned** to the panel's top-right (32px, solid bg). **Backdrop: blur 8px + 90% dim** (tuned live 30→90%).
+- **Breakout content layout** (`.case-body` in `globals.css`): inside the wide panel, text holds a **42rem reading measure** (centered) while **media breaks out** to the content width; whole content column capped at `max-w-[60rem]` so it doesn't sprawl. Header aligns to the text column.
+- **Image placement:** `<Figure width="69%">` used for Act-2 colours+typography (centered pair) and Act-1 isn't (those use `<Compare>`). Colours/typography masters re-dropped clean (`palette.png`→`colours.webp` near-lossless; new `typography.png`); added `component-set-1` + `components2` (cart-state strips) to Act 3 — `components2` padded to match the first image's height. **near-lossless** confirmed for flat-UI shots (q80 vs near-lossless: 24KB vs 63KB on `components`).
+- **Nav-width dial:** grid track 3 is now **`var(--nav-w)`** (currently **21rem**) — a single "shave the navbar" knob (only width changes; gutters/vertical-spacing/text/logo/strokes untouched, content reflows). Replaced the old `minmax(24rem,1fr)`.
+- **Cards now flex to fill** reclaimed space: grid track 1 (left margin) bounded at `minmax(2rem,8rem)`, track 2 (cards) = `minmax(0,1fr)`. So shaving the nav grows the cards, not the gutter. (Both the page grid + the mirrored ViewSwitcher grid updated in sync.)
+- **Card sizing:** cover is a **fixed 200px** height (was `aspect-video`, which ballooned as cards widened); excerpt **`line-clamp-2`** — tuned so ~4 cards show on screen.
+- **Blurb / summary split:** added **`blurb`** frontmatter (drives the card preview, clamped 2 lines, falls back to body excerpt); **`summary`** reserved for SEO/OG, no longer drives the card. Footy has both.
+
+### ⚠️ Open / to confirm / TODO
+- ⚠️ **8 placeholder cards RESTORED (throwaway)** — `git restore`d to eyeball multi-card sizing. Only `footy.mdx` is real; **re-delete the 8 before launch** (they're in HEAD; `git rm` or delete). Footy sorts last (2025 date) under the 2026-dated placeholders.
+- **3 masters to re-drop** — `typography`, `component-set-1`, `components2` (deleted before the convention; only 1600px WebPs survive). `colours` already re-dropped.
+- **`role` label provisional** — `footy.mdx` `role: "Product & Visual Designer · 2025"` + `# TODO(role)`. Revisit LAST, per user.
+- **Draft indigo hero line** — the "armchair philosopher…" alternate in `page.tsx` is parked for future consideration (not live).
+- **Orphaned `/public` images** — `batman.jpg` + 5 unsplash unused by cards but still used by `ProductIdeas` (`TEMP_IDEAS`). Keep for now.
+
+### Parked (explicit — address last)
+- **Wide-screen layout** — on large monitors the bounded margin + flexing cards + fixed nav need a deliberate pass (cards/margins can get large). User parked this for after everything else.
+
+### Resume here — next up
+- **Re-delete the 8 placeholder cards** when done eyeballing (launch = footy only for now).
+- **Add Heyfood** (then Energy) — Heyfood = cleanest narrative (5 imgs, no video). Energy walkthrough is a YouTube Short (external) → embed/link, not download.
+- **Product-ideas** still placeholder (`TEMP_IDEAS`); **`essays`** → wordpress link — decide destinations.
+- Revisit provisional `role` (last). Then: wide-screen pass; push to Vercel; OG/sitemap/robots.
