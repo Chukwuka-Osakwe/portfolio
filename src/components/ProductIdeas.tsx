@@ -46,7 +46,7 @@ export function ProductIdeas() {
     "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-background/70 text-foreground shadow-sm backdrop-blur transition hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
   return (
-    <div className="mx-auto mt-[12vh] flex w-full max-w-2xl flex-col items-center gap-4">
+    <div className="mx-auto mt-[12vh] flex w-full max-w-[var(--content-w)] flex-col items-center gap-4">
       <p className="text-center text-pretty text-accent">
         these ideas don&apos;t exist yet but maybe they should
       </p>

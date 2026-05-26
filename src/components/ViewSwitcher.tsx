@@ -17,12 +17,13 @@ const VIEWS: { id: ViewId; label: string }[] = [
  * `motion-safe` so reduced-motion users get an instant swap.
  */
 export function ViewSwitcher() {
-  const { active, setActive } = useView();
+  const { active, setActive, detail } = useView();
   const activeIndex = VIEWS.findIndex((v) => v.id === active);
 
   // The switcher is a sub-toggle within the "design" area (projects ↔ product
-  // ideas) — hide it entirely on other routes (e.g. contact).
-  if (activeIndex < 0) return null;
+  // ideas) — hide it entirely on other routes (e.g. contact), and while a
+  // project detail is open in-place (the cards grid isn't rendered then).
+  if (activeIndex < 0 || detail) return null;
 
   return (
     <div
@@ -33,7 +34,7 @@ export function ViewSwitcher() {
       {/* Sliding thumb */}
       <span
         aria-hidden
-        className="absolute inset-y-1 left-1 w-[calc(50%_-_4px)] rounded-md bg-accent-fill motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out"
+        className="absolute inset-y-1 left-1 w-[calc(50%_-_4px)] rounded-md bg-switcher-thumb motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out"
         style={{ transform: `translateX(${activeIndex * 100}%)` }}
       />
 
@@ -45,12 +46,7 @@ export function ViewSwitcher() {
             type="button"
             aria-pressed={isActive}
             onClick={() => setActive(v.id)}
-            className={
-              "relative z-10 rounded-md px-4 py-1.5 text-center text-base transition-colors " +
-              (isActive
-                ? "font-medium text-foreground"
-                : "text-text-muted hover:text-foreground")
-            }
+            className="relative z-10 rounded-md px-4 py-1.5 text-center text-base text-foreground transition-colors"
           >
             {v.label}
           </button>

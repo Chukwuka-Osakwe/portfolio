@@ -173,3 +173,36 @@ A running log of each work session: what got done, decisions made, and where we'
 - **Add Heyfood** (then Energy) — Heyfood = cleanest narrative (5 imgs, no video). Energy walkthrough is a YouTube Short (external) → embed/link, not download.
 - **Product-ideas** still placeholder (`TEMP_IDEAS`); **`essays`** → wordpress link — decide destinations.
 - Revisit provisional `role` (last). Then: wide-screen pass; push to Vercel; OG/sitemap/robots.
+
+---
+
+## Session 6 — 2026-05-26
+
+### Summary — in-place detail replaces the modal; palette overhaul; 2-column refactor
+A long live-iteration session. Net: the **modal is gone**, replaced by an **in-place case-study view**; the layout dropped to **two columns**; the palette was retuned to a **warm peach field with white surfaces**; scrollbars are hidden; new background-tracking tokens added.
+
+- **Explored, then adopted, the in-place pattern.** Prototyped one card opening its case study *in place* (swapping the cards column for the detail, nav panel staying put) vs. the modal. Reading measure **44rem** (narrower than the modal's wide panel — better). Decided to make it the pattern.
+- **`.view-enter` motion** added (`globals.css`): gentle fade + 8px rise as the detail replaces the grid; reduced-motion-safe. (No shared-element/container-transform — deliberate; the modal's grow-into-panel animation was retired with it.)
+- **Full-screen image handling (`globals.css`):** lone breakout images in `.case-body` are now bounded by **height** (`--shot-max-h`, default `min(36rem,75vh)`) as well as width, so a tall portrait phone screen scales down + centers instead of stretching huge. Wide landscapes still fill the column. Scoped to `> p:has(img) > img` (Footy 2-up grid / `<Figure>` / `<Compare>` untouched). Also tightened the **image→italic-caption gap to 8px** (zeroed the img + wrapper bottom margins; caption owns the 8px top margin).
+- **ViewSwitcher fix:** the in-place `detail` slug was lifted into **`ViewContext`** (`detail`/`setDetail`) so the switcher can **hide while a detail is open** (cards aren't rendered then).
+- **Hover blur removed:** the card hover spotlight now only **dims** others (`opacity:.6`), no blur. Blur + dim is **kept for keyboard `:focus-visible`**.
+- **PALETTE OVERHAUL (long A/B pass; final values in `globals.css`):**
+  - **`--background: #FAE8DB`** — warm cream-peach field (the one dial; walked ffffff↔e9edf0↔f0e9ef↔ffb581↔ffc39a↔f8d7c0↔fbe8da↔fae8db). Bold peaches washed out the accent; this is the settled warm-but-calm point.
+  - **`--nav-fill: #FFFFFF`** — now white = **raised surfaces** (nav panel, **cards**, left rail when present). Cards got an explicit `bg-nav-fill` (they were transparent, so on a non-white field they'd vanish).
+  - **`--card-ring`** → **tracks background**: `color-mix(--background 75%, --nav-fill)` (walked 55→45→25→75; 75 = soft, ring≈field; lower = whiter halo/cards pop more). No longer the old pink `#FBEEF8`.
+  - **`--image-placeholder`** (NEW) → **tracks background**: `color-mix(--background 92%, --foreground)`. Stand-in card covers now read as an empty image well in the field, **not** the old `bg-accent/10` peach. Both card-cover spots use `bg-image-placeholder`.
+  - **`--switcher-thumb`** (NEW) → **tracks accent**: `color-mix(--accent 40%, transparent)`. Decoupled the switcher thumb from `--accent-fill` (which stays 16% for the marker + active menu row) so the thumb can read stronger on the frosted track. The % is the legibility dial.
+  - Convention going forward: **`--card-ring` + `--image-placeholder` auto-derive from `--background`**; tweak the field and they follow. Only the white surfaces + orange accent are fixed.
+- **`.accent-fill` marker brought back:** the uneven highlighter-style marker now sits behind **"designer"** in the hero (replaced its `text-accent`). (Demoed on "some things i do" first.)
+- **ViewSwitcher segments:** both active + de-selected are now **same weight + `text-foreground`** — the salmon thumb is the *sole* active indicator (a11y backed by `aria-pressed`). (De-selected was the receding muted grey before.)
+- **LAYOUT: 3-col → 2-col (big refactor).** Grid is now **`lg:grid-cols-[minmax(0,1fr)_var(--nav-w)]`** = **viewspace + navbar**. The viewspace content (cards/carousel/detail) is capped to **`--content-w: 49rem`** and **centered** (`mx-auto`), so cards stay a constant readable width and surplus becomes balanced margin — **retires the parked wide-screen debt**. Nav moved to `col-start-1`→ now `col-start-2`; cards `col-start-1`. ViewSwitcher mirror grid + `ProductIdeas` cap re-synced to `--content-w`. The old left-gutter track + the brief left-rail experiment are gone.
+- **Scrollbar:** tried (and reverted) a fixed-navbar/scrolling-viewspace model to move the scrollbar off the navbar; then tried recoloring the gutter; **settled on hiding scrollbars site-wide** (`scrollbar-width:none` + `::-webkit-scrollbar{display:none}`), dropped `scrollbar-gutter`. `html` bg = `--background`. Navbar bleeds full to the edge again.
+- **MODAL REMOVED (the big one).** `ProjectsExplorer` rewritten: **every** card opens in-place; deleted the `<dialog>` system, the WAAPI container-transform (box/backdrop/grid-fade), `targetBox`/`setBox`, the modal scroll-lock, the `dialog::backdrop` CSS, the prototype scaffolding (`INLINE_PROTOTYPE_SLUG`, badge, `?inline=` param, `aria-haspopup`). The **URL hash (`#slug`)** now drives the in-place detail (deep-link + back/forward + Esc + focus-restore-to-card preserved).
+- **`npm run build` passes; `/` fully static** (4 pages; only the benign Nata Sans font warning). **Nothing committed since `fb33273`** — this whole session is uncommitted.
+
+### ⚠️ Open / to confirm / TODO (Session 6)
+- **SEO regression (flagged, not yet addressed):** the modal kept *every* case-study body in the static HTML (crawlable). In-place renders only the active detail (hash-opened client-side), so case-study **text is no longer in the SSR output**. Option on the table: render all bodies into a hidden static block. **User to decide.**
+- **Dead code:** `data-nav-panel` on the `<aside>` (only the modal's geometry read it) is now unused — safe to drop.
+- **`redesigning-checkout.mdx`** (a placeholder) still holds the Footy **demo images** I dropped in to test image behaviour (`<Compare>`, `<Figure>`, a full phone screen) — remove with the placeholder cull.
+- **"designer" marker** — the `.accent-fill` highlight on the hero word is the parked demo placement; confirm keep.
+- Still pending from S5: **re-delete the 8 placeholder cards** (launch = footy only); add Heyfood then Energy; product-ideas real set; essays destination; revisit `role`; push to Vercel; OG/sitemap/robots.

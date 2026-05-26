@@ -7,22 +7,23 @@ import { NavMenu } from "@/components/NavMenu";
 export default function Home() {
   return (
     <ViewProvider>
-    {/* Full-width grid with gutter tracks (desktop): [left margin · cards · panel].
-        - Track 1 (minmax(2rem,8rem)): left margin — bounded, won't fatten past
-          8rem, so reclaimed width flows to the cards rather than the gutter.
-        - Track 2 (minmax(0,1fr)): the cards — flexes to fill whatever's left, so
-          shaving the nav (Track 3) grows the cards. (min 0 lets it shrink.)
-        - Track 3 (var(--nav-w)): the white identity panel — a fixed, dial-able
+    {/* Two-column layout (desktop): [viewspace · navbar].
+        - Track 1 (minmax(0,1fr)): the viewspace — fills all width that isn't the
+          navbar. The content inside (cards / carousel / detail) is capped to
+          --content-w and centered, so the cards stay a constant, readable width
+          at every screen size and surplus width becomes balanced margin rather
+          than oversized cards. (min 0 lets it shrink.)
+        - Track 2 (var(--nav-w)): the white identity panel — a fixed, dial-able
           width. As the last track of a full-width, edge-to-edge grid it bleeds to
           the right viewport edge on its own — no pseudo/clip needed. Content
           inside is capped + mx-auto'd so it centers within the panel (buttons
-          don't stretch). The 32px gap-x-8 leaves a warm gap before the white. */}
-    <div className="grid grid-cols-1 gap-x-8 gap-y-12 px-6 pb-24 pt-8 lg:min-h-dvh lg:grid-cols-[minmax(2rem,8rem)_minmax(0,1fr)_var(--nav-w)] lg:px-0">
+          don't stretch). The 32px gap-x-8 leaves a gap before the white. */}
+    <div className="grid grid-cols-1 gap-x-8 gap-y-12 px-6 pb-24 pt-8 lg:min-h-dvh lg:grid-cols-[minmax(0,1fr)_var(--nav-w)] lg:px-0">
       {/* Identity panel: nav + hero. First in DOM so it stacks on top on mobile;
-          moved to the right (col 3) on desktop. The negative top/bottom margins
+          moved to the right (col 2) on desktop. The negative top/bottom margins
           cancel the grid's pt-8/pb-24 so the white fills to the screen edges;
           the nav/hero pins via the inner sticky wrapper. */}
-      <aside data-nav-panel className="bg-nav-fill lg:col-start-3 lg:row-start-1 lg:-mb-24 lg:-mt-8 lg:pt-8">
+      <aside data-nav-panel className="bg-nav-fill lg:col-start-2 lg:row-start-1 lg:-mb-24 lg:-mt-8 lg:pt-8">
         <div className="text-center lg:sticky lg:top-8 lg:mx-auto lg:max-w-[28rem] lg:px-8">
           {/* Nav */}
         <div className="mt-4 flex items-center justify-center gap-4">
@@ -53,7 +54,8 @@ export default function Home() {
         <section className="mt-4 text-left">
           <h1 className="text-sm font-normal tracking-tight text-pretty lowercase">
             Hello, I&apos;m Chukwuka, a systems-oriented{" "}
-            <span className="text-accent">designer</span> building thoughtful
+            {/* DEMO: .accent-fill marker highlight (was text-accent). */}
+            <span className="accent-fill">designer</span> building thoughtful
             interfaces for complex products. I design products end to end — and
             I write about the decisions behind them (sometimes).
           </h1>
@@ -79,20 +81,25 @@ export default function Home() {
         </div>
       </aside>
 
-      {/* Cards column — projects grid or product-ideas carousel. */}
-      <section id="projects" className="lg:col-start-2 lg:row-start-1">
-        <CardsColumn projects={<ProjectsSection />} />
+      {/* Viewspace — fills track 1; its content is capped to --content-w and
+          centered, so cards/carousel/detail share one constant, centered width
+          (surplus viewspace becomes balanced margin, not bigger cards). */}
+      <section id="projects" className="lg:col-start-1 lg:row-start-1">
+        <div className="mx-auto w-full max-w-[var(--content-w)]">
+          <CardsColumn projects={<ProjectsSection />} />
+        </div>
       </section>
     </div>
 
       {/* Floating view switcher — fixed near the bottom of the viewport,
-          aligned under the cards by mirroring the page grid's tracks (so it
-          centers under the cards column, not the whole viewport). Must stay in
-          sync with the grid-cols above. pointer-events-none so only the pill is
-          interactive. */}
+          aligned under the cards by mirroring the page grid's tracks: it sits in
+          the viewspace (track 1) and centers there, so it lands under the
+          centered card container (which also centers in the viewspace). Must
+          stay in sync with the grid-cols above. pointer-events-none so only the
+          pill is interactive. */}
       <div className="pointer-events-none fixed inset-x-0 bottom-6 z-20">
-        <div className="grid grid-cols-1 gap-x-8 px-6 lg:grid-cols-[minmax(2rem,8rem)_minmax(0,1fr)_var(--nav-w)] lg:px-0">
-          <div className="flex justify-center lg:col-start-2">
+        <div className="grid grid-cols-1 gap-x-8 px-6 lg:grid-cols-[minmax(0,1fr)_var(--nav-w)] lg:px-0">
+          <div className="flex justify-center lg:col-start-1">
             <ViewSwitcher />
           </div>
         </div>

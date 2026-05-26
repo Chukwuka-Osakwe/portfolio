@@ -2,12 +2,23 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --background: #fdf6fb; /* white — page background */
+  --background: #fae8db; /* faint warm cream-peach — page background (field) */
   --foreground: #120e11; /* black — all text */
   --accent: #fb370a; /* highlight / emphasis (e.g. heading word) */
-  --accent-fill: color-mix(in srgb, var(--accent) 16%, transparent); /* faint accent (marker / fill) */
-  --card-ring: #fbeef8; /* card frame ring — a hair off the background */
-  --nav-fill: #ffffff; /* fill of the identity/nav column */
+  --accent-fill: color-mix(in srgb, var(--accent) 16%, transparent); /* faint accent (marker + active menu row) */
+  /* Switcher thumb — its own accent-derived fill, decoupled from --accent-fill
+     so it can read stronger on the frosted track without deepening the marker /
+     active row. Still tracks --accent. The % is the legibility dial. */
+  --switcher-thumb: color-mix(in srgb, var(--accent) 40%, transparent);
+  /* Card frame ring — a soft halo a hair lighter than the field. Tracks
+     --background (mixed toward the card surface) so it stays in-family whenever
+     the field colour changes, instead of needing a manual retune. */
+  --card-ring: color-mix(in srgb, var(--background) 75%, var(--nav-fill));
+  /* Stand-in image shade (card covers before/without a real image). Tracks
+     --background — a touch deeper than the field — so placeholders read as an
+     empty image well in the field rather than a brand-tinted block. */
+  --image-placeholder: color-mix(in srgb, var(--background) 92%, var(--foreground));
+  --nav-fill: #ffffff; /* white — raised surfaces: nav panel, left rail, cards */
   --text-muted: #878286; /* all muted text (role/excerpt, "read more" resting → accent on hover/focus, etc.) */
   /* NB: --muted below is now orphaned — --text-muted replaced its usages. */
   --danger: #d31d0c; /* destructive / close affordances (e.g. modal close button) */
@@ -19,6 +30,9 @@
      untouched, so the content just reflows into the narrower column. Replaced
      the track's old `1fr` (which let the panel grow on wide screens). */
   --nav-w: 21rem;
+  /* Max width of the viewspace content (cards / carousel / detail), centered in
+     track 1. The single "how wide do the cards sit" dial. */
+  --content-w: 49rem;
 }
 
 @theme inline {
@@ -26,7 +40,9 @@
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
   --color-accent-fill: var(--accent-fill);
+  --color-switcher-thumb: var(--switcher-thumb);
   --color-card-ring: var(--card-ring);
+  --color-image-placeholder: var(--image-placeholder);
   --color-text-muted: var(--text-muted);
   --color-nav-fill: var(--nav-fill);
   --color-danger: var(--danger);
@@ -51,16 +67,20 @@ body {
    doesn't shift the layout — which would make the source card jump as the
    modal animates out of / back into it. */
 html {
-  scrollbar-gutter: stable;
-  /* Paints the reserved scrollbar gutter (and overscroll area) so it matches
-     the nav panel's right-bleed instead of showing the page background. */
-  background: var(--nav-fill);
+  /* Page field colour (also the overscroll bounce colour). */
+  background: var(--background);
 }
 
-dialog::backdrop {
-  background: color-mix(in srgb, var(--foreground) 90%, transparent);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+/* Scrollbars hidden site-wide — scrolling still works (wheel / trackpad /
+   keyboard); we just drop the visible bar so it never sits on the nav panel.
+   No scrollbar-gutter needed since there's no bar to reserve space for. */
+* {
+  scrollbar-width: none; /* Firefox */
+}
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none; /* WebKit / Chromium / Safari */
 }
 
 /* Card elevation (ref: marijanapav.com) — a hairline ring + a micro soft
@@ -72,11 +92,11 @@ dialog::backdrop {
 }
 
 /* Hover spotlight (pointer devices only): when one project card is hovered,
-   softly blur the others so focus lands on the hovered one. The cards carry
-   Tailwind `transition` (which includes `filter`), so this eases in/out. */
+   softly dim the others so focus lands on the hovered one. (Blur removed on
+   hover per design call — kept for keyboard focus below.) The cards carry
+   Tailwind `transition` (which includes `opacity`), so this eases in/out. */
 @media (hover: hover) {
   .project-grid:has(.project-card:hover) .project-card:not(:hover) {
-    filter: blur(2px);
     opacity: 0.6;
   }
 }
@@ -99,6 +119,34 @@ dialog::backdrop {
 /* Markdown wraps a lone image in <p> — let those paragraphs break out full. */
 .case-body > p:has(img) {
   max-width: none;
+  text-align: center; /* center any image that doesn't fill the column (portraits) */
+  margin-bottom: 0; /* gap to the caption is owned by the caption's margin-top below */
+}
+/* Bound breakout images by HEIGHT as well as width: a wide landscape still
+   fills the column, but a tall portrait (e.g. a phone screen) scales down to
+   --shot-max-h and centers instead of stretching to a huge full-width block.
+   --shot-max-h is the single knob for "how tall a full screen gets." */
+.case-body > p:has(img) > img {
+  width: auto;
+  max-width: 100%;
+  max-height: var(--shot-max-h, min(36rem, 75vh));
+  margin-inline: auto;
+  margin-bottom: 0; /* override the img's my-8 so the caption sits 8px below */
+}
+/* The italic caption sits directly under a breakout image: tighten to 8px. */
+.case-body > p:has(img) + p {
+  margin-top: 8px;
+}
+
+/* Column-swap enter motion — a gentle fade + rise as a case-study detail
+   replaces the cards grid in place (see ProjectsExplorer). */
+@keyframes view-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.view-enter { animation: view-in 320ms cubic-bezier(0.65, 0, 0.35, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .view-enter { animation: none; }
 }
 
 /* Faint, uneven marker-style highlight behind inline text.

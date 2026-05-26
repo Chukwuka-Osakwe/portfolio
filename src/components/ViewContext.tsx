@@ -13,6 +13,11 @@ interface ViewCtx {
   setActive: (v: ViewId) => void;
   node: NodeCoord;
   setNode: (n: NodeCoord) => void;
+  // Slug of the project shown in-place (detail replaces the cards grid); null
+  // when the grid is showing. Lifted here so the ViewSwitcher can hide while a
+  // detail is open (the cards aren't rendered then).
+  detail: string | null;
+  setDetail: (s: string | null) => void;
 }
 
 const Ctx = createContext<ViewCtx | null>(null);
@@ -26,8 +31,11 @@ const Ctx = createContext<ViewCtx | null>(null);
 export function ViewProvider({ children }: { children: React.ReactNode }) {
   const [active, setActive] = useState<ViewId>("projects");
   const [node, setNode] = useState<NodeCoord>(null);
+  const [detail, setDetail] = useState<string | null>(null);
   return (
-    <Ctx.Provider value={{ active, setActive, node, setNode }}>
+    <Ctx.Provider
+      value={{ active, setActive, node, setNode, detail, setDetail }}
+    >
       {children}
     </Ctx.Provider>
   );
