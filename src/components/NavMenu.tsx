@@ -1,41 +1,37 @@
 "use client";
 
-import { useView, type ViewId } from "@/components/ViewContext";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-// `view` = where clicking sends you; `activeFor` = the views this item counts
-// as active for (defaults to [view]). "design" is a top-level route covering
-// both projects and product-ideas (the switcher toggles between them), so it
-// stays active across both.
+// `href` → destination. `external` items open in a new tab; internal items are
+// real routes. `activeFor` lists the pathnames the item should highlight on
+// (defaults to [href]). "design" covers both projects (/) and product-ideas, so
+// it stays active across both.
 type Item = {
   label: string;
-  href?: string;
-  view?: ViewId;
-  activeFor?: ViewId[];
+  href: string;
+  external?: boolean;
+  activeFor?: string[];
 };
 
-// "things i do" menu. `href` → external link (new tab); `view` → switches the
-// card column to that route (shared with the bottom switcher via ViewProvider);
-// neither → inert placeholder until it has a destination.
 const ITEMS: Item[] = [
-  { label: "design", view: "projects", activeFor: ["projects", "product-ideas"] },
-  { label: "essays", href: "https://thechukwukaosakwe.wordpress.com/" },
-  { label: "newsletter", href: "https://chukwukaosakwe.substack.com/" },
-  { label: "contact", view: "contact" },
+  { label: "design", href: "/", activeFor: ["/", "/product-ideas"] },
+  { label: "essays", href: "https://thechukwukaosakwe.wordpress.com/", external: true },
+  { label: "newsletter", href: "https://chukwukaosakwe.substack.com/", external: true },
+  { label: "contact", href: "/contact" },
 ];
 
 // Separated button stack: each item is its own full-width (equal), rounded,
-// flat outlined button with a gap between them (so they read as buttons, not
-// table rows). Left-aligned; hover fills the row; active = accent-fill. No
-// drop shadow — on the white panel it just reads as noise. (bg lives in the
-// state constants, not BASE, to avoid a Tailwind bg-* conflict between
-// inactive white and active accent-fill.)
+// flat outlined control with a gap between them. Left-aligned; hover fills the
+// row; active = accent-fill. (bg lives in the state constants, not BASE, to
+// avoid a Tailwind bg-* conflict between inactive white and active accent-fill.)
 const BASE =
   "block w-full rounded-lg border px-4 py-3 text-left text-base font-semibold outline-none transition focus-visible:border-accent";
 const INACTIVE = "border-border bg-nav-fill hover:bg-foreground/5 hover:text-accent";
 const ACTIVE = "border-border bg-accent-fill text-foreground";
 
 export function NavMenu() {
-  const { active, setActive } = useView();
+  const pathname = usePathname();
 
   return (
     <div className="mt-12">
@@ -47,7 +43,7 @@ export function NavMenu() {
       </p>
       <div className="mt-4 flex flex-col gap-2">
         {ITEMS.map((item) => {
-          if (item.href) {
+          if (item.external) {
             return (
               <a
                 key={item.label}
@@ -60,29 +56,16 @@ export function NavMenu() {
               </a>
             );
           }
-          const view = item.view;
-          if (view) {
-            const isActive = (item.activeFor ?? [view]).includes(active);
-            return (
-              <button
-                key={item.label}
-                type="button"
-                onClick={() => setActive(view)}
-                aria-current={isActive ? "page" : undefined}
-                className={`${BASE} ${isActive ? ACTIVE : INACTIVE}`}
-              >
-                {item.label}
-              </button>
-            );
-          }
+          const isActive = (item.activeFor ?? [item.href]).includes(pathname);
           return (
-            <button
+            <Link
               key={item.label}
-              type="button"
-              className={`${BASE} ${INACTIVE}`}
+              href={item.href}
+              aria-current={isActive ? "page" : undefined}
+              className={`${BASE} ${isActive ? ACTIVE : INACTIVE}`}
             >
               {item.label}
-            </button>
+            </Link>
           );
         })}
       </div>

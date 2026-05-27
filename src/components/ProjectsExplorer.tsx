@@ -49,6 +49,9 @@ export function ProjectsExplorer({ projects, panes }: Props) {
     return () => {
       window.removeEventListener("popstate", fromHash);
       window.removeEventListener("hashchange", fromHash);
+      // Leaving the projects route: clear any open detail so it can't keep the
+      // ViewSwitcher hidden on another view (the flag lives in the shared shell).
+      setDetail(null);
     };
   }, [projects, setDetail]);
 

@@ -4,6 +4,12 @@ import matter from "gray-matter";
 
 export type Section = "work" | "writing";
 
+// NOTE: "product ideas" are intentionally NOT a Section. An idea is just an image
+// + a one-line caption (no MDX body), so it lives as typed data in
+// src/content/ideas.ts rather than as per-file MDX. If ideas ever grow real
+// bodies, promote them: add "ideas" here, drop .mdx files in src/content/ideas/,
+// and swap getIdeas() for getAllMeta("ideas"). See src/content/ideas.ts.
+
 /** Frontmatter authored at the top of each .mdx file. */
 export interface Frontmatter {
   title: string;

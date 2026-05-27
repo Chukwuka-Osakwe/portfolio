@@ -206,3 +206,9 @@ A long live-iteration session. Net: the **modal is gone**, replaced by an **in-p
 - **`redesigning-checkout.mdx`** (a placeholder) still holds the Footy **demo images** I dropped in to test image behaviour (`<Compare>`, `<Figure>`, a full phone screen) — remove with the placeholder cull.
 - **"designer" marker** — the `.accent-fill` highlight on the hero word is the parked demo placement; confirm keep.
 - Still pending from S5: **re-delete the 8 placeholder cards** (launch = footy only); add Heyfood then Energy; product-ideas real set; essays destination; revisit `role`; push to Vercel; OG/sitemap/robots.
+
+### Session 7 — 2026-05-26 — gif decision parked + Footy doc re-render
+- **Gif (`defifa_spinner.gif`, 1.83 MB, 459×360, 63 frames, in `/the-notion/.../The Footy Mini-App/`) parked** until we tackle videos. When we add motion: it's NOT optimal as a raw gif (body images render as native `<img>`, no on-the-fly conversion → ships full 1.83 MB + gif's 256-colour ceiling bands gradients). Path: **animated WebP** (full colour, ~5–8× smaller, stays an `<img>`, no `<video>` infra) — revisit alongside the **"no videos for now"** rule.
+
+### ⏭️ Next session — to-do
+- **Review the current UI card style** — revisit the project card design (cover/excerpt/"read more" treatment, ring/surface, sizing) before adding more case studies. Flagged this session, parked for a fresh look next time.

@@ -1,4 +1,5 @@
 import type { MDXComponents } from "mdx/types";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 
 /**
@@ -45,29 +46,36 @@ export const mdxComponents: MDXComponents = {
     />
   ),
   // Side-by-side before → after comparison: two images in one row with an
-  // accent arrow between them (equal width, vertically centered).
-  // e.g. <Compare beforeSrc="…" beforeAlt="…" afterSrc="…" afterAlt="…" />
+  // accent arrow between them (equal width, vertically centered). Centered and
+  // width-capped via `width` (default 40rem, matching <Screens>) so the pair
+  // doesn't sprawl across the full content column.
+  // e.g. <Compare beforeSrc="…" beforeAlt="…" afterSrc="…" afterAlt="…" width="40rem" />
   /* eslint-disable @next/next/no-img-element */
   Compare: ({
     beforeSrc,
     beforeAlt = "",
     afterSrc,
     afterAlt = "",
+    width = "40rem",
   }: {
     beforeSrc?: string;
     beforeAlt?: string;
     afterSrc?: string;
     afterAlt?: string;
+    width?: string;
   }) => (
-    <div className="my-8 flex items-stretch justify-center gap-3 sm:gap-4">
+    <div
+      className="mx-auto my-8 flex items-stretch justify-center gap-3 sm:gap-4"
+      style={{ maxWidth: width }}
+    >
       <img
         src={typeof beforeSrc === "string" ? beforeSrc : ""}
         alt={beforeAlt}
         loading="lazy"
         className="min-w-0 flex-1 self-stretch object-cover border border-border"
       />
-      <span aria-hidden className="shrink-0 self-center text-3xl text-accent">
-        →
+      <span aria-hidden className="shrink-0 self-center text-4xl text-accent">
+        ⟶
       </span>
       <img
         src={typeof afterSrc === "string" ? afterSrc : ""}
@@ -78,6 +86,39 @@ export const mdxComponents: MDXComponents = {
     </div>
   ),
   /* eslint-enable @next/next/no-img-element */
+
+  // h2 wraps its text in an inline .accent-fill marker (the highlighter hugs
+  // the text rather than banding the full column). The rehype-slug `id` stays
+  // on the heading for anchor links. h3 is left as plain prose — it gets an
+  // auto-number via CSS counters instead (see .case-body rules in globals.css).
+  h2: ({ children, ...props }) => (
+    <h2 {...props}>
+      <span className="accent-fill">{children}</span>
+    </h2>
+  ),
+
+  // A centered, width-capped grid of app screens. Pass plain <img>s as children;
+  // the .screen-grid rule (globals.css) handles layout. `cols` sets the column
+  // count at sm+ (default 3), `width` the max-width (default 40rem). Reuse in any
+  // case study: <Screens cols={2} width="30rem">…imgs…</Screens>
+  Screens: ({
+    cols = 3,
+    width = "40rem",
+    children,
+  }: {
+    cols?: number;
+    width?: string;
+    children?: ReactNode;
+  }) => (
+    <div
+      className="screen-grid"
+      style={
+        { "--screens-cols": cols, "--screens-w": width } as CSSProperties
+      }
+    >
+      {children}
+    </div>
+  ),
 
   a: ({ href = "", children, ...props }) => {
     // Body / attribution links render in the brand accent (overrides prose's

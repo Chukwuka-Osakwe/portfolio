@@ -1,28 +1,29 @@
 "use client";
 
-import { useView, type ViewId } from "@/components/ViewContext";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useView } from "@/components/ViewContext";
 
-const VIEWS: { id: ViewId; label: string }[] = [
-  { id: "projects", label: "projects" },
-  { id: "product-ideas", label: "product ideas" },
+const VIEWS: { href: string; label: string }[] = [
+  { href: "/", label: "projects" },
+  { href: "/product-ideas", label: "product ideas" },
 ];
 
 /**
- * Segmented toggle for switching the visible set (currently visual only — the
- * "product ideas" content set isn't built yet, so this just slides the active
- * highlight). Lives inside the fixed switcher bar in `page.tsx`.
- *
- * The highlight is an absolutely-positioned "thumb" sized to one segment that
- * translates between the two equal-width (`grid-cols-2`) segments; the slide is
- * `motion-safe` so reduced-motion users get an instant swap.
+ * Segmented toggle for switching the visible set (projects ↔ product ideas).
+ * The two segments are real route links; the active one is derived from the
+ * pathname. The highlight is an absolutely-positioned "thumb" sized to one
+ * segment that translates between the two equal-width (`grid-cols-2`) segments
+ * as the route changes (the layout persists across client navigation, so the
+ * slide animates). `motion-safe` so reduced-motion users get an instant swap.
  */
 export function ViewSwitcher() {
-  const { active, setActive, detail } = useView();
-  const activeIndex = VIEWS.findIndex((v) => v.id === active);
+  const pathname = usePathname();
+  const { detail } = useView();
+  const activeIndex = VIEWS.findIndex((v) => v.href === pathname);
 
-  // The switcher is a sub-toggle within the "design" area (projects ↔ product
-  // ideas) — hide it entirely on other routes (e.g. contact), and while a
-  // project detail is open in-place (the cards grid isn't rendered then).
+  // Only shown on the projects ↔ product-ideas routes (hidden on e.g. contact),
+  // and while a project detail is open in-place (the cards grid isn't showing).
   if (activeIndex < 0 || detail) return null;
 
   return (
@@ -39,17 +40,16 @@ export function ViewSwitcher() {
       />
 
       {VIEWS.map((v) => {
-        const isActive = v.id === active;
+        const isActive = v.href === pathname;
         return (
-          <button
-            key={v.id}
-            type="button"
-            aria-pressed={isActive}
-            onClick={() => setActive(v.id)}
+          <Link
+            key={v.href}
+            href={v.href}
+            aria-current={isActive ? "page" : undefined}
             className="relative z-10 rounded-md px-4 py-1.5 text-center text-base text-foreground transition-colors"
           >
             {v.label}
-          </button>
+          </Link>
         );
       })}
     </div>

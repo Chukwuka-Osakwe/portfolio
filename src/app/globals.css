@@ -19,7 +19,12 @@
      empty image well in the field rather than a brand-tinted block. */
   --image-placeholder: color-mix(in srgb, var(--background) 92%, var(--foreground));
   --nav-fill: #ffffff; /* white — raised surfaces: nav panel, left rail, cards */
-  --text-muted: #878286; /* all muted text (role/excerpt, "read more" resting → accent on hover/focus, etc.) */
+  /* All muted text (role/excerpt, "read more" resting → accent on hover/focus,
+     etc.). Now tracks --foreground (faded toward the field) so it stays
+     in-family if the text/field colour is retuned. The % is the dial: higher =
+     darker/stronger. Was hardcoded #878286 (≈52% lands closest — revert to that
+     hex if the computed version doesn't read better). */
+  --text-muted: color-mix(in srgb, var(--foreground) 52%, var(--background));
   /* NB: --muted below is now orphaned — --text-muted replaced its usages. */
   --danger: #d31d0c; /* destructive / close affordances (e.g. modal close button) */
   --logo: var(--accent); /* logo now uses the accent color */
@@ -57,6 +62,13 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Tailwind v4 Preflight reverted buttons to the native cursor: default (arrow).
+   Restore the v3 behaviour so all interactive buttons read as clickable. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
 }
 
 :root {
@@ -116,6 +128,43 @@ html {
   max-width: 42rem;
   margin-inline: auto;
 }
+/* prose-stone renders list markers in a near-white stone-300 that vanishes on
+   the peach field. Pull bullets + counters to a legible neutral (the marker is
+   small, so it needs decent contrast, not the muted-text grey). */
+.case-body {
+  /* Body copy sits at 500 (prose's default is 400); headings and **bold**
+     keep their own heavier prose weights, so hierarchy is preserved. */
+  font-weight: 500;
+  --tw-prose-bullets: color-mix(in srgb, var(--foreground) 55%, transparent);
+  --tw-prose-counters: color-mix(in srgb, var(--foreground) 70%, transparent);
+}
+/* Auto-number subheadings: each <h2> opens a fresh count, each <h3> within it
+   increments, so numbering restarts per section (e.g. "1. Information
+   Density"). The number prefixes the plain h3 (no marker — that's h2-only). */
+.case-body h2 { counter-reset: subheading; }
+.case-body h3 { counter-increment: subheading; }
+.case-body h3::before {
+  content: counter(subheading) ". ";
+}
+/* Screen grid: a centered, width-capped grid of app screens that auto-applies
+   to any case study via the <Screens> MDX component. One column on mobile;
+   --screens-cols (default 3) at sm+. The two knobs are --screens-cols and
+   --screens-w (max-width). Member images lose their default my-8. */
+.screen-grid {
+  margin-block: 2rem;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  max-width: var(--screens-w, 40rem);
+}
+.screen-grid > img { margin-block: 0; }
+@media (min-width: 640px) {
+  .screen-grid {
+    grid-template-columns: repeat(var(--screens-cols, 3), minmax(0, 1fr));
+  }
+}
+
 /* Markdown wraps a lone image in <p> — let those paragraphs break out full. */
 .case-body > p:has(img) {
   max-width: none;

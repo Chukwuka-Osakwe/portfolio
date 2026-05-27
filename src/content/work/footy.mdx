@@ -6,105 +6,140 @@ date: "2025-10-15"
 # TODO(role): provisional label — revisit this last (user may change it). See SESSION_NOTES.
 role: "Product & Visual Designer · 2025"
 image: "/work/footy/components.webp"
-tags: ["Design System", "UI Redesign", "Visual Design"]
+tags: ["Design System", "Product Design", "UI Redesign"]
 featured: true
 ---
 
 ## Overview
 
-[**Footy**](https://farcaster.xyz/miniapps/vRlFDfogkgrw/footy-app) is a football-focused mini-app on Farcaster, built to be the ultimate hub for everything football related. Its flagship feature, **Score Square**, is a matchday betting game where users buy squares representing potential final scores. The buyer of the winning square — matching the game's actual final score — wins the entire prize pool collected from ticket sales.
+Footy is a football-focused Farcaster mini-app built by KMac. Designed as a hub for football communities on Farcaster, the app combined live match discussions, team notifications, Fantasy Premier League tools, and interactive matchday experiences into a single product.
 
-Beyond Score Square, Footy keeps fans connected with their teams through notifications when their teams are playing, live match chats, community discussions, and real-time updates, making it the go-to destination for football lovers.
+Its flagship feature, **Score Square**, was a prediction game where users bought squares representing possible final scores of football matches. At full time, the user holding the correct scoreline won the entire prize pool.
 
-## Project Objective
+As Footy expanded, Score Square became the product's most important and heavily used experience — but the interface struggled with information density, inconsistent interaction patterns, and a lack of visual cohesion. My role was to redesign the experience, establish a scalable visual system, and improve clarity across the entire purchase flow.
 
-The Footy mini-app was built by [**KMac**](https://farcaster.xyz/kmacb.eth) with a focus on functionality over visual polish, but the app had gotten to the point where it was functional enough and needed some visual love. There were also some user experience pain points that needed ironing out to make using the app a smoother and better experience.
+## The Problem
 
-My goal was to overhaul the visual language of the Footy mini-app to create a more engaging and visually pleasing user experience. Alongside the redesign, I also wanted to develop a comprehensive design system to ensure every part of the app consistently reflects the new visual identity and supports future scalability and feature development.
+Footy was originally designed with functionality as the primary concern. By the time I began redesigning it, the product already worked, but the interface lacked consistency, visual cohesion, and clear interaction patterns.
 
-## The Footy Mini-App Before I Began
+I decided to focus first on **Score Square**, Footy's core and most heavily used feature. It represented the highest-impact opportunity to improve both usability and the overall product identity.
 
-These are screenshots of a few screens of the mini-app taken before I began officially redesigning it.
+The Score Square experience revolved around a simple interaction model: users selected a football match, bought one or more squares representing possible final scores, and progressed through the entire purchase flow on a single screen. Rather than moving users between multiple pages, the interface relied heavily on state changes to communicate progress throughout the transaction process.
 
-![A few screens of the Footy mini-app before the redesign](/work/footy/before.webp)
+![The Score Square purchase flow as it was before the redesign](/work/footy/before-score-square.webp)
 
-## The Process
+This created an interesting design challenge. The interface needed to:
+- present a large amount of contextual information,
+- communicate state changes clearly, and
+- support fast decision-making without overwhelming the user.
 
-I chose to redesign the Score Square feature first as it is Footy's most-used and most impactful product. Redesigning the Footy core experience (Score Square), the redesign promised the highest and most immediate returns in terms of usability, engagement, and overall design improvement.
+As I audited the existing experience, three key problems emerged.
 
-Score Square has only two screens. Screen 1 is the screen showing all live games at any given time.
+### Information Density
 
-Screens 2–4 are all the same screen in different states. When you select any game you get taken to a screen with more details about the game and an interface to allow you purchase "squares" and buy in to the game. That process updates the screen numerous times from square selection to the successful purchase of one or several squares.
+Score Square compressed a significant amount of information into a small interface: match context, payout information, square selection, purchase states, and transaction feedback all competed for attention simultaneously.
 
-![The Score Square screens as they were before the redesign](/work/footy/before-score-square.webp)
+Most of this information was necessary, but presenting everything at once created unnecessary cognitive load and made the flow feel harder to navigate than it needed to be.
 
-The second screen required particular attention because of all the state changes that occur. In addition to the state changes, it's also a text-heavy interface where a significant amount of context must be presented to help users make informed decisions. However, presenting too much information at once risks overwhelming the user, leading to them abandoning the process.
+### Visual Cohesion
 
-My redesign focused on two key objectives:
+The visual language lacked consistency across screens and interaction states. Colours, spacing, and hierarchy shifted unpredictably throughout the experience, making related screens feel disconnected from one another.
 
-1. **Streamlining content** to ensure only the most relevant information is displayed at each step.
-2. **Elevating the visual identity** to create a cleaner, more intuitive experience that supports decision-making without cognitive overload.
+The redesign needed a clearer and more scalable visual system that could unify the product across states and future features.
 
-## Act 1: Streamlining Content
+### State Communication
 
-Score Square is information-heavy, so managing screen real estate effectively is crucial to helping users navigate easily and have a smooth experience.
+The product depended heavily on state changes during the purchase flow. Users needed to understand immediately:
+- where they were in the process,
+- what action had just occurred, and
+- what would happen next.
 
-To address this, I began by establishing a clear hierarchy of content based on priority — focusing on what users need to see to achieve their goal of buying into a game. I also kept [Miller's Law](https://lawsofux.com/millers-law/) in mind, aiming to reduce cognitive load by limiting how much information appears on each screen.
+However, important transitions and feedback states were often visually disconnected from the square-selection interface itself, making the experience feel fragmented at critical moments.
 
-Here are some changes I made at the end of this process:
+## Designing the System
 
-1. I moved instructions into a modal instead of displaying them on the screen along with everything else when the user clicks on "show instructions". This helped to declutter the interface and keep the main flow free of unnecessary distractions.
-2. I moved the final payout details into the instruction modal as well. While transparency about why the winner doesn't receive the full pot is important, that information isn't essential when a user is focused on buying a square. Moving it into the modal helped declutter the main page, and users still see a full breakdown of their winnings when they win — maintaining transparency without sacrificing clarity.
-3. Initially, state changes were split between the squares frame and an area above it, which fragmented the user experience. To improve clarity, I updated the design so that all state changes occur within the frame. This not only creates a more cohesive visual experience but also matches the user's mental model of "looking at the square" to understand what is happening while they wait for their transaction to be completed. An example is shown below: when the user taps "buy squares", one of the states shown is "transaction submitted, waiting for confirmation" — but there has been a change in how this information is displayed in the redesign.
+The redesign focused on making the Score Square experience easier to navigate by improving information hierarchy, system consistency, and state communication across the purchase flow.
+
+### Creating a Cohesive Visual System
+
+With the interaction challenges clearly defined, I turned my attention to creating a more cohesive visual system for the mini-app.
+
+The existing interface lacked consistency across colours, typography, and hierarchy, which made related screens feel disconnected from one another. Since Score Square relied heavily on repeated interaction patterns and rapid state changes, consistency became especially important — users needed the interface to feel predictable as they moved through the purchase flow.
+
+I started with colour.
+
+The redesigned system was built around three core colour tokens: Footy's existing magenta brand colour, a black surface colour, and an off-white for contrast and structure. Each token was then expanded into a wider range of shades to support different interaction and interface states across the product.
+
+This allowed the interface to handle:
+- active and inactive states,
+- emphasis and de-emphasis,
+- feedback states, and
+- layered hierarchy,
+
+while still maintaining visual consistency across screens.
+
+{/* Colours + typography are a centered pair, both inset to 69% (matched side
+    margins). Colours is square so it sits taller than the 1.45:1 typography. */}
+<Figure src="/work/footy/colours.webp" alt="The Footy brand colour scale — magenta, black, and soft-pink" width="69%" />
+
+Next, I refined the typography system.
+
+Because Score Square relied heavily on dense informational text, readability and scanning speed became more important than expressive typography. Rather than pairing multiple typefaces together, I chose a single typeface — Josefin Sans — with a wide range of weights that could create hierarchy while keeping the interface visually consistent.
+
+This made it easier to:
+- scan match information quickly,
+- distinguish primary and secondary content, and
+- maintain clarity across different interface states.
+
+<Figure src="/work/footy/typography.webp" alt="Josefin Sans shown in the primary, secondary, and muted text colours" width="69%" />
+
+### Clarifying Information Hierarchy
+
+The first step in the redesign process was auditing the information displayed across the Score Square flow and ranking it by importance.
+
+For every screen, I focused on two questions:
+- What action is the user trying to complete?
+- What information is essential to completing that action confidently?
+
+This led to a simple hierarchy system:
+- **Primary information** remained visible at all times because it directly supported the user's immediate task.
+- **Secondary information** was still useful, but not critical in the moment. This content was either moved into modals or relocated elsewhere within the mini-app to reduce visual clutter.
+- **Unnecessary information** was removed entirely when it did not meaningfully support the user's decision-making process.
+
+{/* TODO(image): "[ Insert examples ]" in the Notion doc — no existing asset
+    cleanly fits hierarchy examples. Slot left empty pending a real visual. */}
+
+This process significantly reduced visual noise throughout the purchase flow while preserving the contextual information users needed to understand match states, payouts, and transaction progress.
+
+### Clearer State Communication
+
+The purchase flow relied heavily on state changes to communicate progress during transactions, making clear feedback especially important throughout the experience.
+
+In the original interface, transaction states were split between the square-selection frame and a separate area above it. This fragmented the interaction flow and made important feedback feel disconnected from the action the user had just taken.
+
+I redesigned the flow so that all transaction and progress states were communicated directly within the square-selection frame itself.
 
 <Compare
   beforeSrc="/work/footy/state-before.webp"
   beforeAlt="Before: the state change is shown above the square frame"
   afterSrc="/work/footy/state-after.webp"
   afterAlt="After: the state change updates the square frame itself"
+  width="40rem"
 />
 
 *Before (left): the state change sat above the square frame. After (right): the change updates the frame containing the squares itself.*
 
-Finally, I removed information that didn't support the user's immediate goal. For instance, the "date deployed" detail adds no real value when all the user is trying to do is buy into a game, so removing it helped maintain focus and reduce cognitive load.
+This created a more cohesive interaction pattern and better aligned with the user's mental model: users naturally looked toward the square-selection area to understand what was happening during the purchase process.
 
-Having dealt with the information hierarchy problem, I turned my attention to the visual identity.
+By consolidating feedback into a single interaction surface, the experience became easier to follow and visually more predictable during critical transaction states.
 
-## Act 2: Elevating Visual Identity
+## The Outcome
 
-I focused on two things predominantly while redesigning the visual identity: colours and typography. Of course I also worked on things like spacing and iconography — however, the colours and typeface used (as well as how they are used) are foundational elements to any good design system.
+The redesign transformed Score Square from a rough proof-of-concept into a more cohesive and scalable product experience.
 
-### Colours
+Using the new visual system and interaction patterns, I designed nine screens covering the complete purchase flow — from arriving on the Score Square homepage to successfully buying squares for a match.
 
-The first step in the redesign was refreshing the colour palette by simplifying it. I reduced the system to three core colours, using their variations to communicate state changes and act as visual signifiers. Muted tones helped deprioritise supporting elements, while stronger accents directed attention to key actions and information. Using these three core colours I created colour styles for UI elements like buttons, surfaces, text, borders, and so on. I focused on simplicity, coherence, and covering the full range of necessary interaction states (active, disabled, etc.) for interactive elements.
-
-{/* Colours + typography are a centered pair, both inset to 69% (matched side
-    margins). Colours is square so it sits taller than the 1.45:1 typography. */}
-<Figure src="/work/footy/colours.webp" alt="The Footy brand colour scale — magenta, black, and soft-pink" width="69%" />
-
-### Typography
-
-After refining the colour palette, I turned my attention to typography — aiming for clarity and consistency rather than expressiveness.
-
-It's common practice in design to use at least two typefaces for a project — a serif typeface and a complementary sans-serif typeface.
-
-However, Score Square is a content-heavy page with minimal headers and largely uniform text. Because most of the content serves an informational role, I chose a single typeface with strong readability and flexible weights to maintain consistency and make it easier for users to scan and locate specific information. I chose Josefin Sans for its legibility at small sizes, its modern feel, and a wide weight range, and then I paired that with colour styles to convey visual hierarchy.
-
-<Figure src="/work/footy/typography.webp" alt="Josefin Sans shown in the primary, secondary, and muted text colours" width="69%" />
-
-## Act 3: What Things Look Like Now
-
-Here's what some of the components and UI cards looked like once I started applying the colour styles and new typeface to them.
-
-![Redesigned Footy components and game cards](/work/footy/components.webp)
-
-![The "Your Cart" component across its states — empty, filled, buying, and purchased](/work/footy/component-set-1.webp)
-
-![The "Your Cart" component states shown in fuller detail](/work/footy/components2.webp)
-
-To turn this new design system and the components into the finished product, I designed nine screens covering the entire process — from arriving at the Score Square homepage all the way to purchasing squares and buying into a game. In keeping with the logic of Score Square, screens 2–9 are all the same screen with different states depending on how far along the square-purchasing process the user happens to be.
-
-<div className="my-8 grid grid-cols-1 gap-4 sm:grid-cols-2 [&_img]:my-0">
+<Screens cols={3} width="40rem">
   <img src="/work/footy/screen-1.webp" alt="Score Square — final screen 1" />
   <img src="/work/footy/screen-2.webp" alt="Score Square — final screen 2" />
   <img src="/work/footy/screen-3.webp" alt="Score Square — final screen 3" />
@@ -114,14 +149,24 @@ To turn this new design system and the components into the finished product, I d
   <img src="/work/footy/screen-7.webp" alt="Score Square — final screen 7" />
   <img src="/work/footy/screen-8.webp" alt="Score Square — final screen 8" />
   <img src="/work/footy/screen-9.webp" alt="Score Square — final screen 9" />
-</div>
+</Screens>
 
-## Act 4: Some UX Extras
+Although the flow spans multiple states, the experience was intentionally designed around a single core interaction surface. Screens 2–9 are variations of the same screen, with specific sections updating dynamically as users progress through square selection, transaction submission, and purchase confirmation.
 
-Although I started the process of redesigning the entire app by focusing on a visual redesign of Score Square, talking to users has led to several UX tweaks in the meantime.
+This approach helped:
+- preserve continuity throughout the flow,
+- reduce unnecessary navigation, and
+- make state changes easier to follow during transactions.
 
-For example, the first page a user saw when they opened the app used to be a generic **Matches** page that showed the next round of English Premier League games. Once we started enabling users to set their favourite teams and receive notifications for them, we realised that the first screen users see needs to be more personalised. Now we show users a **For You** page that shows games for the teams they select, no matter the league.
+Beyond the visual redesign itself, the project also established:
+- a reusable foundation for future Footy features,
+- clearer interaction patterns across states, and
+- a more consistent interface language for the product moving forward.
 
-![The new personalised "For You" page](/work/footy/for-you.webp)
+## Reflection
 
-*The lights fade to black. End of play.*
+Working on Footy reinforced the importance of treating interfaces as connected systems rather than isolated screens.
+
+The most interesting challenge wasn't visual polish, but designing interaction patterns that could handle information density, rapid state changes, and transaction feedback without overwhelming users.
+
+The project also pushed me to think more deeply about scalability — not just in terms of visual consistency, but in how interface decisions affect future product development, implementation clarity, and user understanding over time.
