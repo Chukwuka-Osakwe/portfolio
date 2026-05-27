@@ -212,3 +212,40 @@ A long live-iteration session. Net: the **modal is gone**, replaced by an **in-p
 
 ### ⏭️ Next session — to-do
 - **Review the current UI card style** — revisit the project card design (cover/excerpt/"read more" treatment, ring/surface, sizing) before adding more case studies. Flagged this session, parked for a fresh look next time.
+
+---
+
+## Session 7 (cont.) — 2026-05-27 — Footy MDX polish · real routes · product-ideas build-out
+
+### Footy case study + MDX components
+- **Re-rendered `footy.mdx`** from Chukwuka's updated Notion doc. New structure: Overview → The Problem (Information Density / Visual Cohesion / State Communication) → Designing the System (Cohesive Visual System: colour + typography / Clarifying Information Hierarchy / Clearer State Communication) → The Outcome → Reflection. Headers demoted (`#`→`##`), Notion `---` dividers dropped, `tags` aligned to the doc. Images mapped: `before-score-square` / `colours` / `typography` / `<Compare>` state-before→after / the 9-screen grid. One slot left empty (`{/* TODO(image) */}` — the Info-Hierarchy "examples", no clean asset).
+- **Subheading auto-numbering** via `.case-body` CSS counters: each `##` resets, each `###` increments → "1. …", restarting per section. Number neutral (inherits heading colour).
+- **`.accent-fill` marker scoped to `##` only** (h2 override wraps text in a span); `###` is plain + numbered.
+- **`<Screens>` component + `.screen-grid` rule** — centered, width-capped grid of app screens; knobs `cols` (default 3) + `width` (default 40rem); 1-col on mobile. Replaced the inline Footy screens grid.
+- **`<Compare>`** — width-capped (`width` prop, default 40rem, `mx-auto`) + bigger/wider arrow (`text-4xl`, `⟶`).
+- **Prose fixes:** list markers were near-invisible (prose-stone `stone-300` on the peach field) → `.case-body` sets `--tw-prose-bullets`/`--tw-prose-counters` to track `--foreground`. Body copy → `font-weight: 500` (headings/bold keep their weights). Moved "and" onto the penultimate bullet of each sentence-continuation list.
+
+### Tokens / global
+- **`--text-muted` now tracks `--foreground`**: `color-mix(in srgb, var(--foreground) 52%, var(--background))` (≈ the old hardcoded `#878286`). Joins the auto-deriving tokens.
+- **Global `button { cursor: pointer }`** (+ `[role=button]`, excluding disabled) — Tailwind v4 Preflight reverted buttons to the native arrow; restores it for the switcher, nav buttons, carousel chevrons.
+
+### Real routes (committed `4b6b561`)
+- Views are now **real routes** under `app/(site)/`: `/` (projects), `/contact`, `/product-ideas`, sharing one chrome layout. Fixes (a) refresh always reset to projects and (b) the client-side view flash — each URL server-renders its own view; all routes stay static. `ViewContext` slimmed to `node` + `detail` (active view = pathname). `NavMenu`/`ViewSwitcher` → `<Link>` + `usePathname`. `CardsColumn` retired; `ProjectsExplorer` clears `detail` on unmount. SEO note from S6 is moot — the grid already ships a hidden crawlable copy of every body.
+
+### Product ideas — data + covers + carousel
+- **Data:** extracted to `src/content/ideas.ts` (typed `Idea[]` + `getIdeas()`), sibling to the MDX sections; promote-to-MDX path documented + pointer in `lib/content.ts`. `ProductIdeas.tsx` consumes `getIdeas()`.
+- **Real covers (4):** `store-3` (Farcaster e-commerce), `grok-customisation`, `subscriptions-mini-app`, `arsenal-agent` — each with caption, intrinsic `width`/`height`, and a base64 `blurDataURL` (sharp LQIP) for `placeholder="blur"`. Masters → `/sources/ideas/` (gitignored), derivatives → `/public/ideas/`.
+- **Cover aspect saga → resolved:** fixed 4:3 frame cropped the non-4:3 covers; tried a blurred-fill 4:3 (`scripts/cover-4x3.mjs`); tried per-image intrinsic frames; finally Chukwuka **re-exported all four at a uniform ~1.55:1 (2000×1293)**. Filenames versioned (`-v2/-v3/-v4`) to dodge the `next/image` same-URL stale-cache trap.
+- **Cleanup:** TEMP placeholder ideas nuked; 6 orphaned `/public` Unsplash/batman images deleted; `width`/`height` made required on `Idea`; dead placeholder branch removed from the carousel.
+- **Carousel single-page polish:** cover **height-capped** (`lg:max-h-[calc(100dvh-22rem)]`, `w-auto`) → scales down on short viewports, no scroll, no crop/letterbox. Caption aligned to image-frame width (`max-w-[calc(100%-6rem)]`) inset 32px (`px-8`), `font-medium`. Position counter moved **out of the frame** → frosted pill below (matches ViewSwitcher material), `text-accent`. Header in **Nico Moji** (`clamp(1.125rem,3.5vw,1.5rem)`), `mb-4` breathing room. **Product-ideas is the first genuinely-finished part of the app.**
+
+### Lesson (cache)
+- Don't run `npm run build` while `next dev` is live — they share `.next` and the prod build corrupts the dev server (broke the page mid-session). Verify with `tsc --noEmit` (doesn't touch `.next`) or the dev server's own compile. For cover swaps, also clear `.next/cache/images` or version the filename.
+
+### ⚠️ Open / still pending
+- **Re-delete the 8 placeholder case-study cards** (+ `redesigning-checkout.mdx` with its demo images) — `src/content/work/` still holds them alongside `footy.mdx`; the grid shows all 9. Launch = footy (+ Heyfood/Energy when added).
+- Footy loose ends: the one empty image slot (Info-Hierarchy "examples"); provisional `role`; the indigo DRAFT hero alternate; the gif (animated-WebP, with the videos pass).
+- Add **Heyfood** then **Energy**; **essays** → WordPress destination.
+- Consider **blur placeholders** for case-study card covers too (ideas already have them).
+- Push to **Vercel**; OG/sitemap/robots.
+- (Still queued) **review the current UI card style** before adding more case studies.

@@ -19,42 +19,60 @@ export interface Idea {
   image: string;
   /** One-line description shown under the image in the carousel. */
   caption: string;
+  /** Tiny base64 LQIP for next/image placeholder="blur". Set it on real covers
+   *  (generate from the image with sharp); placeholder covers go without. */
+  blurDataURL?: string;
+  /** Intrinsic cover dimensions. The carousel renders the cover at its own
+   *  aspect ratio (no crop, no letterbox) and caps its height so the page fits
+   *  without scrolling. Required — every cover needs them. */
+  width: number;
+  height: number;
   /** Hide while drafting (mirrors Frontmatter.draft). */
   draft?: boolean;
 }
 
-// TEMP: placeholder set — reuses the project/Unsplash images + sample one-liners.
-// Swap in the real ideas (and their cover images under /public) later.
 export const ideas: Idea[] = [
   {
-    slug: "focus-timer",
-    image: "/batman.jpg",
-    caption: "A focus timer that rewards deep work, not streaks.",
+    // First real idea. Slug intentionally kept as the filename for now — rename
+    // to the idea concept (not the file) before any promotion to MDX/routes.
+    slug: "store-3",
+    image: "/ideas/store-3-v3.webp",
+    width: 2000,
+    height: 1293,
+    caption:
+      "A Farcaster e-commerce mini-app. Everyday products with the full gamut of crypto payment options available to the user",
+    blurDataURL:
+      "data:image/webp;base64,UklGRswAAABXRUJQVlA4WAoAAAAQAAAADwAACQAAQUxQSEEAAAABd6CgbRuGP+PumkZEhFtonzcPNZHtRL8jJUrujjoVdkBPNCABEyAjMjgcRPQ/tPIW7qqE6WBPBuNCmJ8lL8lNAQBWUDggZAAAALABAJ0BKhAACgADgFoliAAC1oLnewAA/vX8Qn2Rc1I0QO0BaYEFJNG1pBplJj8WEqgYpdYL0rPyAQqBwV71lwf83vT1VAkFOsgKOr4uRJz6PS45MjS6YrPUWfA9s/+SMDz8AAA=",
   },
   {
-    slug: "calm-weather",
-    image: "/anders-jilden-GjwsHRIcQjU-unsplash.jpg",
-    caption: "Calm weather, told as a single sentence.",
+    slug: "grok-customisation",
+    image: "/ideas/grok-customisation-v2.webp",
+    width: 2000,
+    height: 1293,
+    caption:
+      "What if you could talk to a social media platform's agent and ask it to tailor your feed to very precise customisation?",
+    blurDataURL:
+      "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAQAgCdASoQAAoAA4BaJZwAAn/gu1enagIAAP7zXyNaftpDtZaXzsajUKZx96Ng+u9UIKcwiiFsoMUViYFyh6BQ4ouKC8JTXdnB4A8rb4fV3bgAL3IAZpAAAAA=",
   },
   {
-    slug: "reading-queue",
-    image: "/jacob-kiesow-Mb_Rgr8iD88-unsplash.jpg",
-    caption: "Reading queue that surfaces what you'll actually finish.",
+    slug: "subscriptions-mini-app",
+    image: "/ideas/subscriptions-mini-app-v4.webp",
+    width: 2000,
+    height: 1293,
+    caption:
+      "A Farcaster mini-app tracking all the onchain subscriptions associated with a wallet. Obviously this one can grow beyond mini-app to become a one-stop shop for onchain subscriptions.",
+    blurDataURL:
+      "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAAAwAgCdASoQAAoAA4BaJYwCdDBAAX/5CBD/gAD+Flm6TRx8mYz8aKtf2Wz+xPmAJP/T+tPq01I+KGGg1VVSgPM0YAN9JRwQgAA=",
   },
   {
-    slug: "trip-planning",
-    image: "/john-fowler-RsRTIofe0HE-unsplash.jpg",
-    caption: "Trip planning that thinks in days, not lists.",
-  },
-  {
-    slug: "night-sky-journal",
-    image: "/nasa-WKT3TE5AQu0-unsplash.jpg",
-    caption: "A night-sky journal for backyard astronomers.",
-  },
-  {
-    slug: "habit-tracker",
-    image: "/nitish-meena-RbbdzZBKRDY-unsplash.jpg",
-    caption: "Habit tracker that fades into the background.",
+    slug: "arsenal-agent",
+    image: "/ideas/arsenal-agent-v4.webp",
+    width: 2000,
+    height: 1293,
+    caption:
+      "A club having a dedicated football agent could be an interesting direction. What if the Arsenal agent could help you purchase tickets to the Arsenal game conditionally?",
+    blurDataURL:
+      "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAAAwAgCdASoQAAoAA4BaJYwC7AEQUKPOgtBcAAD++RcrCvdT9AznuZDwqB+FhrL+3A5ih91Jh2TMDiuS3q8Ev9h1vOI15Qz5mpTydnkjY0LsrVAA",
   },
 ];
 

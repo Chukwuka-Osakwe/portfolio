@@ -38,8 +38,11 @@ export function ProductIdeas() {
     "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-background/70 text-foreground shadow-sm backdrop-blur transition hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
   return (
-    <div className="mx-auto flex w-full max-w-[var(--content-w)] flex-col items-center justify-center gap-4 lg:min-h-[calc(100dvh-8rem)]">
-      <p className="text-center text-pretty text-accent">
+    <div className="mx-auto flex w-full max-w-[var(--content-w)] flex-col items-center justify-center gap-2 lg:min-h-[calc(100dvh-8rem)]">
+      <p
+        className="mb-4 text-center text-balance text-[clamp(1.125rem,3.5vw,1.5rem)] text-accent"
+        style={{ fontFamily: "var(--font-nico-moji)" }}
+      >
         these ideas don&apos;t exist yet but maybe they should
       </p>
 
@@ -48,18 +51,22 @@ export function ProductIdeas() {
           {chevron("M15 6l-6 6 6 6")}
         </button>
 
-        <div className="project-card relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-image-placeholder">
+        {/* Centering wrapper takes the row's free width; the cover sizes itself
+            within it, capped by viewport height (lg:max-h) so the page never
+            scrolls — on short viewports the cover scales down, staying centered.
+            Frame styling lives on the image, so there's no letterbox. */}
+        <div className="flex min-w-0 flex-1 justify-center">
           <Image
             src={idea.image}
             alt=""
-            fill
+            width={idea.width}
+            height={idea.height}
             priority
             sizes="(min-width: 768px) 42rem, 100vw"
-            className="object-cover"
+            placeholder={idea.blurDataURL ? "blur" : "empty"}
+            blurDataURL={idea.blurDataURL}
+            className="project-card block h-auto w-auto max-w-full rounded-lg lg:max-h-[calc(100dvh-22rem)]"
           />
-          <span className="absolute bottom-2 right-2 rounded-md bg-foreground/70 px-2 py-0.5 text-xs font-medium text-background backdrop-blur">
-            {index + 1} / {total}
-          </span>
         </div>
 
         <button type="button" onClick={next} aria-label="Next idea" className={handle}>
@@ -67,7 +74,19 @@ export function ProductIdeas() {
         </button>
       </div>
 
-      <p className="text-center text-pretty text-text-muted" aria-live="polite">
+      {/* Position indicator — moved out of the frame, on the page field, for
+          better visibility. */}
+      <span className="rounded-lg border border-border bg-background/70 px-3 py-1 text-sm font-medium tabular-nums text-accent shadow-sm backdrop-blur">
+        {index + 1} / {total}
+      </span>
+
+      {/* Caption aligned to the image-frame width (the carousel row minus the
+          two chevrons + gaps = w-9·2 + gap-3·2 = 6rem), then inset 32px (px-8)
+          from each frame edge. */}
+      <p
+        className="w-full max-w-[calc(100%-6rem)] px-8 text-center text-pretty font-medium text-text-muted"
+        aria-live="polite"
+      >
         {idea.caption}
       </p>
     </div>
