@@ -107,7 +107,7 @@ export function ProjectsExplorer({ projects, panes }: Props) {
             back to work
           </button>
           <article className="mx-auto mt-8 max-w-[44rem]">
-            <header className="mb-8 border-b-2 border-accent pb-4">
+            <header className="mb-8 border-b-4 border-accent pb-4">
               <h2 className="text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-balance">
                 {p.title}
               </h2>
@@ -146,7 +146,7 @@ export function ProjectsExplorer({ projects, panes }: Props) {
                 setNode({ row: Math.floor(i / COLS) + 1, col: (i % COLS) + 1 })
               }
               onBlur={() => setNode(null)}
-              className="project-card group flex h-full w-full flex-col overflow-hidden rounded-lg bg-nav-fill text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent motion-safe:hover:scale-[1.02]"
+              className="project-card group flex h-full w-full flex-col overflow-hidden rounded-lg bg-nav-fill text-left transition hover:outline-2 hover:outline-offset-2 hover:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent motion-safe:hover:scale-[1.02]"
             >
               {/* Card cover from `image:` frontmatter; field-tracking placeholder if unset. */}
               {p.image ? (

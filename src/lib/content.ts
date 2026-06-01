@@ -26,7 +26,10 @@ export interface Frontmatter {
   image?: string;
   /** Mark true to hide from listings while drafting. */
   draft?: boolean;
-  /** Pin to the homepage "featured" rail. */
+  /** Pin to the top of the listing (sorted ahead of unpinned entries, then
+   *  date-desc within each group). Use sparingly — it's a manual override on
+   *  chronological order, intended for the real case studies while placeholder
+   *  entries are still around. */
   featured?: boolean;
 }
 
@@ -66,12 +69,19 @@ export function getEntry(section: Section, slug: string): Entry {
   };
 }
 
-/** All non-draft entries in a section, newest first. */
+/** All non-draft entries in a section. Featured entries float to the top;
+ *  within each group (featured / not), sort is date-desc (newest first). */
 export function getAllMeta(section: Section): ContentMeta[] {
   return getSlugs(section)
     .map((slug) => getEntry(section, slug).meta)
     .filter((m) => !m.draft)
-    .sort((a, b) => +new Date(b.date) - +new Date(a.date));
+    .sort((a, b) => {
+      // Pinned first, then newest first within each group.
+      const af = a.featured ? 1 : 0;
+      const bf = b.featured ? 1 : 0;
+      if (af !== bf) return bf - af;
+      return +new Date(b.date) - +new Date(a.date);
+    });
 }
 
 /** Featured entries across both sections for the homepage. */

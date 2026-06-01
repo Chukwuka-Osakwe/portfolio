@@ -249,3 +249,74 @@ A long live-iteration session. Net: the **modal is gone**, replaced by an **in-p
 - Consider **blur placeholders** for case-study card covers too (ideas already have them).
 - Push to **Vercel**; OG/sitemap/robots.
 - (Still queued) **review the current UI card style** before adding more case studies.
+
+---
+
+## Session 8 — 2026-06-01 — Heyfood landed (no cover)
+
+### Summary
+- **Added the Heyfood case study** (`src/content/work/heyfood.mdx`). Voice kept first-person + personal (Tiwa Savage / Ibadan / Chowdeck) — deliberately different register from Footy (which is professional/distanced). Structure: **Overview → The Problem → The Process → The Screens → Reflection** (4 `##` sections after Overview; the auto-numbered `###` device wasn't needed — Heyfood's flatter than Footy).
+- **Cover deferred** — only landscape source asset is `Frame_246.png` (sparse wireframe-y diagram, weak as a thumbnail); the visual payoff is the two redesigned phones (portraits, crop badly per the Footy lesson). Frontmatter ships without `image:` → ProjectsExplorer renders the `bg-image-placeholder` block. Options surfaced: composite the two phones side-by-side OR use Frame_246 as-is OR defer. **User chose defer**; revisit with a stronger asset (or accept the placeholder).
+- **Image pipeline (S5 policy, unchanged):** masters → `sources/work/heyfood/` (gitignored): `current-checkout.png` / `categories.png` / `split-flow.png` / `redesigned-order.png` / `redesigned-payment.png`. Derivatives → `public/work/heyfood/*.webp` via inline `sharp`: phone screens + categories sheet near-lossless, the wide diagram (`split-flow`) q80. **Totals: 5 PNGs (~880KB) → 5 WebPs (~250KB), longest edge 1600.** Video (`heyfood.mp4`) skipped per the "no videos for now" rule (parked alongside Footy's gif for the videos pass).
+- **Compare vs Screens call:** opted for `<Screens cols={2} width="34rem">` for the two redesigned screens rather than `<Compare>`. Reasoning: the narrative is "step 1 → step 2", not "before → after"; the screens are tall portraits (1:2.17 and 1:2.51), and `<Compare>`'s `items-stretch + object-cover` would crop ~15% off the sides of the shorter one (the order-summary screen). `<Screens cols={2}>` shows both at natural aspect. JSX comment in the MDX records the alt path so future-you can swap.
+- **Sort order check:** Footy `2025-10-15` ▸ Heyfood `2024-06-01` (provisional). When the 9 placeholders get culled, the grid becomes **Footy → Heyfood** (newest first). Heyfood `date` + `role` both flagged `# TODO` like Footy was — revisit together.
+- **Verified:** `tsc --noEmit` clean; dev server :3000 returns 200; Heyfood body present in SSR HTML (Tiwa Savage / Miller / Constantia / over-stuffed / categories all grep-positive); card title + blurb render. Did **not** run `npm run build` (S7 lesson: corrupts dev server's `.next`).
+
+### ⚠️ Open / still pending (deltas)
+- ~~Add Heyfood~~ ✅ done; **Energy** still queued.
+- **Heyfood cover** — deferred; placeholder is live. Composite-the-two-phones is the leading option if user picks it back up.
+- **Heyfood `date` + `role`** — both provisional with `# TODO` comments. Bundle the revisit with Footy's `role` TODO.
+- All previous open items unchanged (re-delete 8 placeholders, Footy loose ends, essays destination, blur placeholders for work covers, Vercel/OG/sitemap/robots, card-style review).
+
+### Session 8 (cont.) — same day — caption system overhaul · Compare refactor · Heyfood body rewrite
+A long iteration session. The initial Heyfood landing above became the starting point for a much bigger arc: unifying every case-study caption through `<figure>/<figcaption>`, refactoring `<Compare>`, and rewriting the Heyfood body from a fresh Notion export.
+
+#### Featured = pin · card hover (small UX shifts up front)
+- **`featured` repurposed from "homepage rail" → "pin to top of listing".** `getAllMeta` (`lib/content.ts`) now sorts `featured: true` ahead of date-desc within each group. Footy + Heyfood pinned; stripped `featured: true` from two placeholders (`onboarding-activation`, `redesigning-checkout`) that were stealing the top slots via newer dates. Frontmatter doc updated. Sort is durable past the placeholder cull (both still pinned, falls through to date-desc cleanly).
+- **Cards get an accent outline on hover** (matching the existing `focus-visible` treatment). `hover:outline-2 hover:outline-offset-2 hover:outline-accent` on `.project-card` (`ProjectsExplorer.tsx`). Tailwind's `hover:` is `@media (hover: hover)`-gated → won't sticky-fire on touch.
+
+#### Caption system overhaul — `<figure>/<figcaption>` is now the single truth
+- **Diagnosis.** Captions on `<Figure>` / `<Screens>` / `<Compare>` sat ~32px below their media instead of the intended 8px. Cause: each component's outer wrapper had `my-8` (or `margin-block: 2rem`), and the caption's `margin-top: 8px` collapsed against the larger 32px → max wins. The old fix had been a `:has(+ p:has(> em:only-child))` selector to zero the wrapper's margin-bottom when followed by a caption — but it never matched in practice (browser cascade quirk with nested `:has()` + sibling combinator).
+- **Real fix.** Added an optional `caption` prop to **`<Figure>`**, **`<Screens>`**, and **`<Compare>`**. When set, the component renders `<figure><media/><figcaption>{caption}</figcaption></figure>`, owning the image↔caption gap **internally** — no sibling-selector hack needed. New CSS:
+  - `.case-body figure { margin-block: 2rem }` (outer 32px stays)
+  - `.case-body figure > img/div/picture { margin-block: 0 }` (internal media zeroed)
+  - `.case-body figure > figcaption { margin-top: 8px; max-width: 36rem; margin-inline: auto; text-align: center; font-size: 0.875rem; line-height: 1.3; color: var(--text-muted) }` (tightened from 28rem after "After (right): …" wrapped in Footy's Compare caption)
+  - `.case-body figure > figcaption > p { margin: 0 }` (for two-`<p>` captions like Footy's split before/after)
+  - **`.case-body figure img { margin-block: 0 }`** (NOT `margin: 0` — that shorthand trampled `margin-inline: auto` and left `<Figure>` images left-aligned. Burned an hour on it before catching that subtlety.)
+- **Captions are upright** (italics dropped from figcaption styling). Markdown-image italic em also overridden to upright while the placeholder still uses that path.
+- **All real case studies now route every caption through the figcaption path.** Orphan rules deleted: `.case-body > p:has(> em:only-child)` (the lone-italic-p styling) and its `> em { font-style: normal }` follower. The only remaining `*caption*` usage is the throwaway `redesigning-checkout.mdx` placeholder (renders acceptably with prose defaults until the cull).
+- **Gap below uncaptioned markdown images** patched: `.case-body > p:has(img) + :not(p:has( > em:only-child)) { margin-top: 2rem }` so Footy's `before-score-square` shot sits 32px above AND below its surrounding paragraphs (the existing `margin-bottom: 0` on the image-wrapper was leaving a tight ~20px below).
+
+#### `<Compare>` refactor — ghost-space fix + SVG arrow + split caption
+- **Flex+image ghost-space bug.** Inside the Compare row, the two phone images didn't reliably stretch to the container height: `align-self: stretch` is silently ignored on images with an intrinsic aspect-ratio (browsers treat the aspect-derived height as "definite enough" to skip the stretch), so the shorter image left empty space below it AND prose's `margin-top: 2em` pushed each image down inside its cell, leaving a phantom strip above.
+- **Fix:** each img now lives inside a flex-1 wrapper div with an explicit `aspect-ratio` (default `9 / 20`, configurable via the new `aspect` prop). Cells render at identical w×h; the img inside fills via `h-full w-full object-cover`. Margins on imgs inside figures zeroed (see caption section above). No more ghost space.
+- **SVG arrow** replaces the `⟶` unicode glyph. Inline 48×40 SVG, `stroke="currentColor"`, `stroke-width="4"`, round caps/joins. Precise visual weight; font-independent. Inherits `text-accent` via `currentColor`.
+- **Two-line caption support via `captionBefore` / `captionAfter` string props.** The `caption` prop also accepts ReactNode, but a JSX-expression `caption={<><p>…</p><p>…</p></>}` is **silently dropped by `next-mdx-remote/rsc`** (same class of bug as `cols={2}` not propagating — only `caption="…"` strings or `cols="2"` strings make it through). Component composes the two strings into `<p>` + `<p>` inside the figcaption when set. Footy's "Before (left): … / After (right): …" caption now stacks on two lines.
+
+#### Heyfood — image swap, caption unification, full body rewrite
+- **Image swap (3 of 5 slots).** New files dropped at `/portfolio/` root: `information-categories.png` / `screen-split-architecture.png` / `redesigned-payment.png`. **Slot rename** for the two diagrams to match descriptive names: `categories.webp` → **`information-categories.webp`**, `split-flow.webp` → **`screen-split-architecture.webp`**. `redesigned-payment.webp` content updated, name preserved. Old derivatives deleted from `/public`; old PNG masters left in `/sources` as gitignored orphans (per the "mv into /sources, never rm" convention). New WebPs: ~135KB total (q80 for the two landscape diagrams, near-lossless for the phone screen).
+- **All Heyfood captions now go through `<Figure caption>` / `<Screens caption>`.** The two markdown-image+`*caption*` pairs converted to `<Figure>` calls. Final captions (sentence case): "The current Heyfood checkout" · "Information categories" · "Screen split architecture" · "The redesigned flow — step 1 (order summary) on the left, step 2 (payment) on the right."
+- **`<Figure width>` dial for landscape diagrams** — walked 66% (off-balance: caption hung past image) → 80% → **100%** (image fills case-body; caption sits inside its bounds). Current-checkout keeps explicit `width="18rem"` (narrow phone, intentional).
+- **Body fully rewritten** from a new Notion export the user landed mid-session (`/the-notion/.../The Heyfood Redesign (Case Study) …md`). New structure: **Overview → The Problem → Designing the System (with `### Final Review Before Commitment` / `### Supporting Alternative Purchase Paths`) → The Outcome → Reflection**. Voice shifted from personal/casual (old: "Tiwa Savage", "four years on", "frankly the motivation") to measured/analytic ("multivariable decision-making", "sequential choice architecture"). User's tone-feedback iteration:
+  - Reintroduced **Chowdeck** name into the Overview as a credibility marker ("Eventually I settled on Chowdeck because it was better designed, more visually appealing, and frankly the mental models just made more sense (especially when it came to ordering food).")
+  - Split the "Despite that…" sentence into its own paragraph for rhythm
+  - Added a **typography-elevation Reflection paragraph** ("Changing the typeface elevated the design so much, and I wasn't expecting that at all").
+- **Frontmatter aligned to Notion source:** title → "Heyfood Checkout Redesign"; tags → `["UX Design", "Information Architecture", "Mobile Design"]`. Summary reframed (dropped Miller's Law).
+
+#### Layout/visual polish
+- **Header underline** bumped `border-b-2` → **`border-b-4`** on the case-study detail (`ProjectsExplorer.tsx`) to match the nav panel's two `h-1 bg-accent` rules (both now read as the same 4px accent line).
+
+#### MDX gotcha (logged for future me)
+- `next-mdx-remote/rsc` **silently drops JSX-expression props in MDX** for at least two cases: numeric expressions (`cols={2}`) and JSX-fragment ReactNode expressions (`caption={<>…</>}`). The component receives `undefined` and falls back to its default. **String-form props work** (`cols="2"`, `caption="…"`, `captionBefore="…"`, etc.). Footy's `<Screens cols={3}>` only ever "worked" because `3` matched the default. New convention: always use string-form props in MDX.
+
+#### Turbopack wedging — diagnosed
+- Twice this session the dev server stopped recompiling CSS after a globals.css edit (chunk URL stable, content stale, even after `touch` and restart). Cause is a known **Turbopack ↔ Tailwind v4 CSS HMR desync** — when file-watch events arrive mid-rebuild, Tailwind's incremental output and Turbopack's chunk cache can fall out of sync; Turbopack keeps serving the previously-built chunk under the same stable filename. JS HMR keeps working through it; only CSS gets stuck.
+- **Workaround:** `rm -rf .next && npm run dev`. ~10s nuke + cold rebuild. Logged in DESIGN-adjacent notes via this entry; revisit if it gets noisy.
+
+### ⚠️ Open / still pending (after Session 8)
+- **Heyfood cover** — still deferred. Will revisit with a stronger asset (composite-the-two-phones leading option) or accept the placeholder long-term.
+- **Heyfood `date` + `role`** — both still provisional with `# TODO` comments. Bundle with Footy's `role` TODO.
+- **Re-delete the 8 placeholder case-study cards** (+ `redesigning-checkout.mdx`) — featured-pin keeps Footy/Heyfood at the top, but the placeholders still pollute the grid.
+- **Energy case study** — still queued.
+- **Footy loose ends** unchanged: empty Info-Hierarchy image slot, indigo DRAFT hero alternate, the gif (animated-WebP).
+- **Push to Vercel; OG/sitemap/robots; essays destination; blur placeholders for work covers; card-style review** — all still queued.

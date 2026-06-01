@@ -171,6 +171,14 @@ html {
   text-align: center; /* center any image that doesn't fill the column (portraits) */
   margin-bottom: 0; /* gap to the caption is owned by the caption's margin-top below */
 }
+/* When the image-wrapper is NOT followed by an italic-only caption, force a
+   32px gap on the next sibling (any element type) — otherwise the zeroed
+   margin-bottom collapses with prose's ~20px p.margin-top and the gap below
+   shrinks. The caption case (`+ p:has(em:only-child)`) matches the :not()
+   exclusion and keeps its 8px margin-top from the figcaption-style rule. */
+.case-body > p:has(img) + :not(p:has(> em:only-child)) {
+  margin-top: 2rem;
+}
 /* Bound breakout images by HEIGHT as well as width: a wide landscape still
    fills the column, but a tall portrait (e.g. a phone screen) scales down to
    --shot-max-h and centers instead of stretching to a huge full-width block.
@@ -182,9 +190,46 @@ html {
   margin-inline: auto;
   margin-bottom: 0; /* override the img's my-8 so the caption sits 8px below */
 }
-/* The italic caption sits directly under a breakout image: tighten to 8px. */
-.case-body > p:has(img) + p {
+/* Captions now live exclusively in <figure>/<figcaption> via <Figure> /
+   <Screens> / <Compare>'s `caption` prop. The older `*caption*` italic-p
+   path has been retired from all real case studies — the only remaining use
+   is the throwaway redesigning-checkout.mdx placeholder, which renders
+   acceptably with prose defaults until the placeholder cull. */
+/* <Figure>, <Screens>, and <Compare> use a `caption` prop and render image +
+   caption together inside a single <figure>, so the gap is owned internally
+   (no sibling-selector hack needed for JSX components). Markdown-image
+   captions still flow through the `.case-body > p:has(img) + p` path above. */
+.case-body figure {
+  margin-block: 2rem;
+}
+.case-body figure > img,
+.case-body figure > div,
+.case-body figure > picture {
+  margin-block: 0;
+}
+/* Zero img's block margins anywhere inside a figure — prose applies a global
+   `margin-top: 2em; margin-bottom: 2em` to every img in `.prose`, which would
+   otherwise push deeply-nested imgs (e.g. inside <Compare>'s cell wrappers)
+   down inside their containers, leaving a phantom strip above them. Scoped to
+   `margin-block` (NOT `margin: 0`) so we don't trample `margin-inline: auto`
+   on Figure's centered <img>. */
+.case-body figure img {
+  margin-block: 0;
+}
+.case-body figure > figcaption {
   margin-top: 8px;
+  max-width: 36rem;
+  margin-inline: auto;
+  text-align: center;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  color: var(--text-muted);
+}
+/* When a figcaption has multiple <p> lines (e.g. before / after labels),
+   stack them tight — drop prose's 1.25em paragraph margin so they read as
+   one block, not two separate captions. */
+.case-body figure > figcaption > p {
+  margin: 0;
 }
 
 /* Column-swap enter motion — a gentle fade + rise as a case-study detail
