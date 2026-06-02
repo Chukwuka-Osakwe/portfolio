@@ -37,7 +37,20 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${nataSans.variable} ${geistMono.variable} ${nicoMoji.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        {/* Pre-paint theme application — runs synchronously before the body
+            renders, so the page paints in the user's saved theme immediately
+            (no FOUC on reload). Reads localStorage; if the user has picked
+            light or dark explicitly, sets html[data-theme]. If absent or set
+            to "system", does nothing and the OS preference drives the CSS. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark'){document.documentElement.dataset.theme=t}}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <main className="flex-1">{children}</main>
       </body>

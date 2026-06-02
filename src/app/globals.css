@@ -19,6 +19,19 @@
      empty image well in the field rather than a brand-tinted block. */
   --image-placeholder: color-mix(in srgb, var(--background) 92%, var(--foreground));
   --nav-fill: #ffffff; /* white — raised surfaces: nav panel, left rail, cards */
+  /* Dark palette siblings — defined once here, applied by the two dark-mode
+     triggers below (system pref + explicit ThemeToggle). Live = COFFEE;
+     ESPRESSO is the parked alternate. Foreground (#f4ead8) is the shared
+     warm-cream that pairs with both. */
+  --background-dark: #181311; /* coffee field */
+  --foreground-dark: #f4ead8; /* warm cream text */
+  --nav-fill-dark: #241c19;   /* coffee lifted surface */
+  --border-dark: #362c28;     /* coffee low-contrast border */
+  /* ESPRESSO (parked alternate) — deeper, more dramatic elevation.
+  --background-dark: #0e0a08;
+  --nav-fill-dark: #1a1311;
+  --border-dark: #2c211d;
+  */
   /* All muted text (role/excerpt, "read more" resting → accent on hover/focus,
      etc.). Now tracks --foreground (faded toward the field) so it stays
      in-family if the text/field colour is retuned. The % is the dial: higher =
@@ -38,6 +51,72 @@
   /* Max width of the viewspace content (cards / carousel / detail), centered in
      track 1. The single "how wide do the cards sit" dial. */
   --content-w: 49rem;
+  /* Reading measure — text-column cap inside case-study panels (body + header).
+     Single source of truth; was drifting between 42rem and 44rem. */
+  --reading-measure: 42rem;
+  /* Figcaption measure — tighter than the body on purpose (captions stay
+     short / center-able). */
+  --caption-measure: 36rem;
+  /* Card cover height — the image well at the top of each project card.
+     Was hardcoded 200px (S5: "tuned so ~4 cards show on screen"); single
+     dial now so card-style retune lands here. */
+  --card-cover-h: 12.5rem;
+  /* House easing curve — symmetric ease-in-out (S3: "smooth in-out, neither
+     direction noticeably picks up speed"). For page-level / scene-change
+     motion. Snappier control-level motion (e.g. switcher thumb) deliberately
+     uses ease-out instead — don't unify. */
+  --ease-house: cubic-bezier(0.65, 0, 0.35, 1);
+  color-scheme: light;
+}
+
+/* Dark mode — two triggers, one source of truth.
+   (1) OS prefers dark AND user hasn't forced light via the ThemeToggle.
+   (2) User has explicitly toggled dark (html[data-theme="dark"]).
+   Both selectors re-point the four colour primitives to their --*-dark
+   siblings (defined in :root above). The auto-derived tokens (--accent-fill,
+   --switcher-thumb, --card-ring, --image-placeholder, --text-muted) cascade
+   automatically because they're color-mix() of the primitives. Accent +
+   danger unchanged (vivid orange-red reads on both fields). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: var(--background-dark);
+    --foreground: var(--foreground-dark);
+    --nav-fill: var(--nav-fill-dark);
+    --border: var(--border-dark);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --background: var(--background-dark);
+  --foreground: var(--foreground-dark);
+  --nav-fill: var(--nav-fill-dark);
+  --border: var(--border-dark);
+  color-scheme: dark;
+}
+
+/* Frosted control surface — the shared recipe for floating chrome (switcher
+   track, carousel chevrons, position pill). Sources from --background +
+   --border so it auto-adapts in dark mode; shadow uses low-opacity black
+   (theme-neutral — fades in dark fields, which is the convention for
+   floating chips). Apply as a single class; replaces the
+   `border border-border bg-background/70 shadow-sm backdrop-blur` recipe. */
+@utility frosted {
+  background-color: color-mix(in srgb, var(--background) 70%, transparent);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+  backdrop-filter: blur(8px);
+}
+
+/* Keyboard-focus marker — the brand's a11y outline. Baked-in :focus-visible
+   selector, so callers just write `focus-ring` (not `focus-visible:focus-ring`).
+   Replaces the `focus-visible:outline-2 focus-visible:outline-offset-2
+   focus-visible:outline-accent` triplet. NB: card hover uses the same triplet
+   on `hover:*` deliberately — that's left at the callsite, not unified here. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 }
 
 @theme inline {
@@ -69,10 +148,6 @@ body {
 button:not(:disabled),
 [role="button"]:not([aria-disabled="true"]) {
   cursor: pointer;
-}
-
-:root {
-  color-scheme: light;
 }
 
 /* Reserve the scrollbar gutter so locking page scroll (when a modal opens)
@@ -125,16 +200,30 @@ html {
    full panel width. The prose wrapper itself runs full width (max-w-none); we
    only cap the text-flow elements here. */
 .case-body > :where(p, h2, h3, h4, ul, ol, blockquote) {
-  max-width: 42rem;
+  max-width: var(--reading-measure);
   margin-inline: auto;
 }
-/* prose-stone renders list markers in a near-white stone-300 that vanishes on
-   the peach field. Pull bullets + counters to a legible neutral (the marker is
-   small, so it needs decent contrast, not the muted-text grey). */
+/* Source the entire prose palette from OUR tokens (not prose-stone, not
+   prose-invert). Both modes flip via --foreground/--accent/--text-muted/--border
+   so prose follows automatically — no `prose-stone dark:prose-invert` needed on
+   the wrapper. Bullets/counters use foreground-at-opacity (the markers are
+   small; full --text-muted reads too faint at marker size). */
 .case-body {
   /* Body copy sits at 500 (prose's default is 400); headings and **bold**
      keep their own heavier prose weights, so hierarchy is preserved. */
   font-weight: 500;
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-lead: var(--foreground);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-links: var(--accent);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--accent);
+  --tw-prose-captions: var(--text-muted);
+  --tw-prose-hr: var(--border);
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--border);
   --tw-prose-bullets: color-mix(in srgb, var(--foreground) 55%, transparent);
   --tw-prose-counters: color-mix(in srgb, var(--foreground) 70%, transparent);
 }
@@ -217,8 +306,8 @@ html {
   margin-block: 0;
 }
 .case-body figure > figcaption {
-  margin-top: 8px;
-  max-width: 36rem;
+  margin-top: 0.5rem;
+  max-width: var(--caption-measure);
   margin-inline: auto;
   text-align: center;
   font-size: 0.875rem;
@@ -235,10 +324,10 @@ html {
 /* Column-swap enter motion — a gentle fade + rise as a case-study detail
    replaces the cards grid in place (see ProjectsExplorer). */
 @keyframes view-in {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(0.5rem); }
   to { opacity: 1; transform: none; }
 }
-.view-enter { animation: view-in 320ms cubic-bezier(0.65, 0, 0.35, 1) both; }
+.view-enter { animation: view-in 320ms var(--ease-house) both; }
 @media (prefers-reduced-motion: reduce) {
   .view-enter { animation: none; }
 }

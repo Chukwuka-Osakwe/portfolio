@@ -320,3 +320,112 @@ A long iteration session. The initial Heyfood landing above became the starting 
 - **Energy case study** — still queued.
 - **Footy loose ends** unchanged: empty Info-Hierarchy image slot, indigo DRAFT hero alternate, the gif (animated-WebP).
 - **Push to Vercel; OG/sitemap/robots; essays destination; blur placeholders for work covers; card-style review** — all still queued.
+- **Final pass on cover images (case studies + product ideas)** — once the rest of the site reads "done," revisit covers together so they look intentional side-by-side.
+  - *Case studies:* Footy's `components.png` is workable but never deliberately art-directed; Heyfood is still placeholder.
+  - *Product ideas:* canvases are uniform 2000×1293, but **content inside the frame is inconsistent** — `grok-customisation` and `retro-chat-app` have ~25% empty padding bands (top/bottom) while `store-3`/`subscriptions`/`arsenal-agent` fill the canvas edge-to-edge. Reads as both "shorter" covers AND a perceived **jump between slides 4↔5** in the carousel (frame is stable; the subject shrinks + the field swaps). Fix: re-export the two outliers with the content scaled up to fill the canvas (same 1.55:1 frame). Confirmed not a carousel bug — see `ProductIdeas.tsx:68` (`h-auto w-auto max-w-full lg:max-h-[…]`, no `object-fit` swap).
+  - *Animated covers (parked design flag):* if a cover ever goes motion (animated-WebP path per S7 — `next/image` + `unoptimized`), looping motion next to four static neighbours will pull a lot of attention in the carousel. Prefer **single-play-on-enter** (animated WebP ending on a final frame) over perpetual loop. Decide before producing the asset.
+
+---
+
+## Session 9 — 2026-06-02 (started 2026-06-01) — content swaps · dark mode · tokenization sweep · theme toggle
+
+A long, multi-arc session. Started with small content tweaks, ended with manual dark mode + a tri-state theme toggle wired in. Net result: the site now has a full dark theme (light is default, dark is opt-in or OS-driven), prose colors source from our tokens directly (no `prose-stone`/`dark:prose-invert`), and the token discipline has deepened (4 new CSS custom-properties + 2 `@utility` classes). **Nothing committed this session** — everything sits uncommitted on `main` past `4b6b561`.
+
+### Small wins up front
+- **Swapped Heyfood's first Outcome image.** New `redesigned-order.png` (root drop) → archived old master as `redesigned-order-v1.png` in `/sources/work/heyfood/`, regenerated derivative `public/work/heyfood/redesigned-order.webp` (736×1600, 68KB, near-lossless). Cleared `.next/cache/images` to dodge the S7 same-URL stale-cache trap. MDX unchanged (filename preserved).
+- **Added a new product idea — `retro-chat-app`.** Master at 8000×5172 (aspect 1.547 — matched the existing 4 covers exactly). Pipeline: master → `/sources/ideas/`, derivative `/public/ideas/retro-chat-app-v1.webp` (2000×1293, 45KB, q80), LQIP `blurDataURL` generated via sharp. Wired into `src/content/ideas.ts` as the 5th idea. Caption: *"Messaging app but it's the 2010s again."*
+- **TODO note added** for "final pass on cover images" — bundles Footy/Heyfood case-study covers + product-idea covers (incl. the grok-customisation / retro-chat-app padding bands) + the animated-cover design flag (single-play > loop in a carousel of statics). Diagnostic captured so future-me doesn't have to re-derive: same canvas, content too small inside, fix = re-export with content scaled to fill the 1.55:1 frame. Not a carousel bug — see `ProductIdeas.tsx:68`.
+
+### Dark mode — first OS-driven pass
+- **Audited the codebase for theme-readiness first.** Zero hardcoded hexes outside `globals.css` in components (across 9 files, all reach through tokens). Only outlier: the indigo `text-[#4f46e5]` draft hero line in `(site)/layout.tsx:69` (deliberately off-brand, kept as-is). The token discipline from S2 onward made this trivial.
+- **One CSS block added.** `@media (prefers-color-scheme: dark) :root { --background … --foreground … --nav-fill … --border … color-scheme: dark }` — only flips the four colour primitives; the auto-derived tokens (`--accent-fill`, `--switcher-thumb`, `--card-ring`, `--image-placeholder`, `--text-muted`) cascade automatically because they're `color-mix()` of these. Folded the standalone `:root { color-scheme: light }` block into the main `:root`.
+- **Debugged "I switched OS to dark, nothing happened."** Cause was **Chrome's own appearance setting** (`chrome://settings/appearance`) overriding the OS — when Chrome's theme is "Light," it reports `prefers-color-scheme: light` to all sites no matter what the OS says. Fix: set Chrome appearance → "Device." Logged as a debug cookbook entry.
+- **Palette iteration — landed on COFFEE.** Walked the warm-dark spec: original draft (`#1c1715`) → "slightly darker" (`#181311`) → "espresso swing" (`#0e0a08`, too much) → **landed on COFFEE `#181311 / #241c19 / #362c28`** (field / nav-fill / border). Foreground stayed `#f4ead8` (warm cream, never changed). Espresso parked as commented-out alternate in `globals.css` for future eyeball.
+- **Case-study readability fix.** Prose-stone palette defaults rendered body/headings as near-invisible stone tones on the coffee field. First fix: added `dark:prose-invert` to the wrapper. Then **refactored to source the entire prose palette from OUR tokens** (`--tw-prose-body`/`-headings`/`-bold`/`-links`/`-quotes`/`-code`/`-hr`/`-th-borders`/`-td-borders`/`-captions` all → `var(--foreground)` / `var(--accent)` / `var(--text-muted)` / `var(--border)`). Dropped `prose-stone dark:prose-invert` from the wrapper — single source of truth.
+
+### Tokenization sweep
+Audited the codebase for tokenization candidates, ranked by leverage. Five items landed:
+
+| # | Token / Utility | Was | Now |
+|---|---|---|---|
+| 1 | `--reading-measure: 42rem` + `--caption-measure: 36rem` | 42rem in `.case-body`, **44rem** in `ProjectsExplorer.tsx:109`, 36rem in figcaption | Single dial each; **42/44 drift killed** (unified at 42) |
+| 2 | `--card-cover-h: 12.5rem` | `h-[200px]` × 2 in `ProjectsExplorer.tsx` | `h-[var(--card-cover-h)]` |
+| 3 | `--ease-house: cubic-bezier(0.65, 0, 0.35, 1)` | inline in `.view-enter` | `var(--ease-house)`; switcher's `ease-out` deliberately NOT unified (different intent — snappy slide ≠ scene change) |
+| 4 | `@utility frosted` | `border border-border bg-background/70 shadow-sm backdrop-blur` × 3 callsites | Single class. Shadow uses pure-black-low-alpha (theme-neutral; foreground-mix would glow in dark) |
+| 5 | `@utility focus-ring` | `focus-visible:outline-2 outline-offset-2 outline-accent` × 2 callsites | Single class; `:focus-visible` baked in via Tailwind v4 `& { &:focus-visible {…} }` |
+
+Side cleanup while in the file: stray `8px` → `0.5rem` for the typographic figcaption margin + the view-enter `translateY`. **Left intentionally in `px`**: shadow-blur / spread / offset values + `filter: blur(2px)` — these are render-pixel effects, *invariant* to root font-size by design.
+
+**Drifts flagged**:
+- A) Reading-measure 42 vs 44 — resolved by #1.
+- B) `Contact.tsx` CTA uses `focus-visible:ring-2 ... ring-offset-2 ring-offset-background` while everywhere else uses `outline-*`. **Parked** for the Contact restyle.
+
+### Theme toggle — the climax (manual override on top of OS)
+- **Matrix coord wiring fully nuked first.** `MatrixReadout.tsx` deleted; `node`/`setNode`/`NodeCoord` removed from `ViewContext` (now `detail`/`setDetail` only); `ProjectsExplorer` lost its 4 hover/focus handlers + the `COLS` constant + the unused `i` map index. Brand name "chukwuka's matrix" stays (it's the logo, unrelated).
+- **CSS restructured for dual triggers.** Dark palette values factored into `--*-dark` siblings in `:root` (single source of truth). Two trigger blocks both re-point the live tokens at those siblings:
+  - `@media (prefers-color-scheme: dark) :root:not([data-theme="light"])` — system dark, *unless* user has explicitly forced light.
+  - `:root[data-theme="dark"]` — user has explicitly toggled dark (regardless of OS).
+  - Espresso block carried over as parked alternate.
+- **Pre-paint script** added to root `<head>` (inline IIFE wrapped in try/catch). Reads `localStorage.getItem('theme')`, sets `html[data-theme]` synchronously before paint — no FOUC on reload when user has forced a theme. `<html suppressHydrationWarning>` (canonical Next.js pattern; React can't see the post-paint attribute mutation).
+- **`ThemeToggle.tsx` — long iteration.** Originally built as a **single cycle button** (light → system → dark → click again to cycle), with SVG icons that swapped on state. User wanted all three visible → **rebuilt as a segmented control** mirroring the ViewSwitcher design language (frosted track, sliding thumb 33.333% wide, `motion-safe:transition-transform`, three sun/monitor/moon SVG icons). `aria-pressed` per segment + `aria-label` strings.
+- **SSR-safe pattern.** Initial state = "system"; `useEffect` reconciles to localStorage post-mount. The cycle/choose function writes both `html.dataset.theme` AND `localStorage` (or deletes both when returning to "system"). One frame of possible icon mismatch on hydration — no warning, no layout shift.
+- **Centering bug:** initial `inline-flex` + `mx-auto` didn't work (auto margins need block-level + defined width). Fixed: `inline-grid` → `grid` + `w-full`.
+- **Width match to nav buttons.** Final form: `grid w-full grid-cols-3`; segments `w-full` so each fills its 1/3 grid cell. Lines up exactly with the menu buttons above.
+- **Centered-in-viewport-tail layout.** User clocked that the toggle was glued 48px below the bottom accent rule (`mt-12`), not centered in the gap between the rule and viewport bottom — so on tall viewports it looked top-heavy in the tail. Restructured the sticky wrapper:
+  - `lg:flex lg:h-[calc(100dvh-2rem)] lg:flex-col` on the sticky inner wrapper.
+  - **Upper block** = logo + hero + rules + menu (natural height).
+  - **Lower block** = `lg:flex lg:flex-1 lg:items-center lg:justify-center` — fills the remaining tail and centers the toggle inside it.
+  - Mobile keeps `mt-12 lg:mt-0` natural stacking (mobile re-jig deferred — user's note).
+  - **Concession flagged**: if the upper content grows tall enough to fight for space with the lower block on a short viewport, the toggle gets crushed. Current content has lots of headroom; revisit if menu/hero balloons.
+- **`tsc --noEmit` clean** throughout.
+
+### Things still parked / open after Session 9
+- **Bribe project** — next session starts here per user's explicit pointer. Add a case study NOT in the Notion export. (Will need a slug, frontmatter, body, and at minimum a cover/image strategy.)
+- **Re-delete the 8 placeholder case studies** (+ `redesigning-checkout.mdx` placeholder demo images) — featured-pin keeps Footy/Heyfood top, but the grid still shows 9 cards.
+- **Heyfood**: cover deferred (placeholder live); `date` + `role` still TODO; full body rewrite from latest Notion landed S8.
+- **Energy case study** — still queued.
+- **Footy loose ends**: empty Info-Hierarchy image slot; provisional `role`; the indigo DRAFT hero alternate; the gif (animated-WebP path).
+- **Drift B (`Contact.tsx` `ring-*` vs `outline-*`)** — bundled with Contact restyle.
+- **Mobile re-jig of the nav panel** — user-flagged; not started.
+- **Push to Vercel; OG/sitemap/robots; essays destination; blur placeholders for work covers; card-style review** — all still queued.
+- **Final pass on cover images (case studies + product ideas)** — see expanded TODO above; includes the animated-cover design flag.
+
+### Decisions worth recording in DESIGN.md (TODO this session-end)
+- Dark mode: warm coffee palette, single source of truth via `--*-dark` siblings, two triggers (OS + explicit `data-theme="dark"`), `prefers-color-scheme: dark` respects an explicit-light override via `:not([data-theme="light"])`.
+- Prose tokens: now sourced from `--foreground` / `--accent` / `--text-muted` / `--border` directly. `prose-stone` and `dark:prose-invert` dropped.
+- New tokens: `--reading-measure: 42rem`, `--caption-measure: 36rem`, `--card-cover-h: 12.5rem`, `--ease-house`.
+- New utilities: `@utility frosted`, `@utility focus-ring`.
+- "Render-pixel values stay in px" (shadows, filter-blur) — typographic / layout values go in rem. Established this session.
+
+### Session 9 (cont.) — same day — clear-the-deck (cull · sync · commit)
+A short housekeeping pass before opening the Bribe project. Three discrete moves:
+
+- **Culled the 8 placeholder case studies.** `rm`'d `dashboard-hierarchy.mdx`, `design-system-foundations.mdx`, `empty-states-onboarding.mdx`, `notifications-attention.mdx`, `onboarding-activation.mdx`, `pricing-page-clarity.mdx`, `redesigning-checkout.mdx`, `search-that-feels-fast.mdx` from `src/content/work/`. Grid is now real work only (**Footy + Heyfood**, in that order via featured-pin → date-desc). `redesigning-checkout.mdx` had a few Footy demo images inlined for testing (`<Compare>`, `<Figure>`, full phone screen) — those images live under `/public/work/footy/` and are still referenced by `footy.mdx`, so no asset cleanup needed.
+- **Synced DESIGN.md** to S9's working tree. Most S9 decisions had already been written in (prose tokens, reading-measure / card-cover-h / ease-house, frosted/focus-ring utilities, dark-mode coffee palette + dual triggers, "render-pixel values stay in px"). What was still stale:
+  - **Matrix readout block retired** (Layout & Structure) — component was deleted in S9; the doc still described it. Rewrote the bullet as "retired 2026-06-02" + noted the tail slot is now the theme toggle.
+  - **`ViewContext` description** (Stack & Architecture) — was `(node, detail)`; now `(detail)` only, with a `node`-removal aside.
+  - **Nav-panel content order** (Layout & Structure) — bottom item was "matrix readout"; now describes the theme toggle's **centered-in-viewport-tail** layout (sticky `flex h-[calc(100dvh-2rem)] flex-col`, upper natural-height block, lower `flex-1 items-center justify-center` block), with the short-viewport-crush concession flagged.
+- **Found and corrected an S9 misread.** S9 said "nothing committed past `4b6b561`" — actually S7 (`545b258`, product-ideas) and S8 (`3e95800`, Heyfood + caption system) were both committed. So this commit covers **S9 only**: dark mode, theme toggle, tokenization sweep, Matrix coord wiring nuke, retro-chat-app addition, Heyfood `redesigned-order` swap, prose-token refactor — plus this session's cull + DESIGN.md sync.
+
+#### Staged for the commit
+- All S9 component/CSS/layout changes (`globals.css`, `layout.tsx` × 2, `ProductIdeas.tsx`, `ProjectsExplorer.tsx`, `ViewContext.tsx`, `ViewSwitcher.tsx`, `ideas.ts`).
+- New files: `ThemeToggle.tsx`, `public/ideas/retro-chat-app-v1.webp`.
+- Deletion: `MatrixReadout.tsx`.
+- Heyfood asset swap: `public/work/heyfood/redesigned-order.webp`.
+- 8 placeholder MDX deletions in `src/content/work/`.
+- `DESIGN.md` + `SESSION_NOTES.md`.
+
+#### Staying out of this commit
+- **`bribe.png`** (root-drop) — for the next phase; will land with the Bribe case study.
+- **`Mockuuups Free mockup of man in khaki shirt holding the iPhone.jpeg`** (root-drop) — unused since project start. Not part of this commit; can be `mv`'d into `/sources` or deleted later if confirmed dead.
+
+#### Verification
+- `tsc --noEmit` clean before commit.
+- Did **not** run `npm run build` (S7 lesson: corrupts dev server's `.next` if dev is live).
+
+### Resume here — Bribe
+With the deck clear, next is the **Bribe project** — a case study NOT in the Notion export. Needs slug, frontmatter, body, cover/image strategy. `bribe.png` already in root waiting to be processed via the masters/derivatives convention.
+
+### Useful commands (unchanged)
+- `npx tsc --noEmit` for type-only verification (doesn't touch `.next` — safe with dev server live).
+- `rm -rf .next/cache/images` when an image filename is preserved across a content swap (S7 cache trap workaround).

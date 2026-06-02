@@ -35,7 +35,7 @@ export function ProductIdeas() {
   const next = () => setIndex((i) => (i + 1) % total);
 
   const handle =
-    "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-background/70 text-foreground shadow-sm backdrop-blur transition hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
+    "frosted focus-ring flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-foreground transition hover:text-accent";
 
   return (
     <div className="mx-auto flex w-full max-w-[var(--content-w)] flex-col items-center justify-center gap-2 lg:min-h-[calc(100dvh-8rem)]">
@@ -76,7 +76,7 @@ export function ProductIdeas() {
 
       {/* Position indicator — moved out of the frame, on the page field, for
           better visibility. */}
-      <span className="rounded-lg border border-border bg-background/70 px-3 py-1 text-sm font-medium tabular-nums text-accent shadow-sm backdrop-blur">
+      <span className="frosted rounded-lg px-3 py-1 text-sm font-medium tabular-nums text-accent">
         {index + 1} / {total}
       </span>
 

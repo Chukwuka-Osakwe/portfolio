@@ -74,6 +74,15 @@ export const ideas: Idea[] = [
     blurDataURL:
       "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAAAwAgCdASoQAAoAA4BaJYwC7AEQUKPOgtBcAAD++RcrCvdT9AznuZDwqB+FhrL+3A5ih91Jh2TMDiuS3q8Ev9h1vOI15Qz5mpTydnkjY0LsrVAA",
   },
+  {
+    slug: "retro-chat-app",
+    image: "/ideas/retro-chat-app-v1.webp",
+    width: 2000,
+    height: 1293,
+    caption: "Messaging app but it's the 2010s again.",
+    blurDataURL:
+      "data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAABwAQCdASoQAAoABUB8JZQCdAFAAAD+7K46TP5M/t6ctYoAjMb5gAAA",
+  },
 ];
 
 /** Non-draft ideas, in author order. Parallels getAllMeta() for work/writing. */

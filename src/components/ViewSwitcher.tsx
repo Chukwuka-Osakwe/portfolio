@@ -30,7 +30,7 @@ export function ViewSwitcher() {
     <div
       role="group"
       aria-label="Choose a view"
-      className="pointer-events-auto relative inline-grid grid-cols-2 rounded-lg border border-border bg-background/70 p-1 shadow-sm backdrop-blur"
+      className="frosted pointer-events-auto relative inline-grid grid-cols-2 rounded-lg p-1"
     >
       {/* Sliding thumb */}
       <span

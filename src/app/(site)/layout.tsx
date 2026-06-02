@@ -1,6 +1,7 @@
 import { ViewSwitcher } from "@/components/ViewSwitcher";
 import { ViewProvider } from "@/components/ViewContext";
 import { NavMenu } from "@/components/NavMenu";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 /**
  * Shared site shell for all views (projects · product-ideas · contact). The
@@ -28,7 +29,11 @@ export default function SiteLayout({
             margins cancel the grid's pt-8/pb-24 so the white fills to the screen
             edges; the nav/hero pins via the inner sticky wrapper. */}
         <aside className="bg-nav-fill lg:col-start-2 lg:row-start-1 lg:-mb-24 lg:-mt-8 lg:pt-8">
-          <div className="text-center lg:sticky lg:top-8 lg:mx-auto lg:max-w-[28rem] lg:px-8">
+          <div className="text-center lg:sticky lg:top-8 lg:mx-auto lg:flex lg:h-[calc(100dvh-2rem)] lg:max-w-[28rem] lg:flex-col lg:px-8">
+            {/* Upper block — logo + hero + accent rules + menu. Takes natural
+                height at lg+; below lg this is a no-op and content flows
+                normally inside the parent. */}
+            <div>
             {/* Nav */}
             <div className="mt-4 flex items-center justify-center gap-4">
               <span
@@ -82,6 +87,15 @@ export default function SiteLayout({
 
             {/* 4px accent rule 32px below the menu (mirrors the one above it). */}
             <div className="mt-12 h-1 bg-accent lg:-mx-8" aria-hidden />
+            </div>
+
+            {/* Lower block — at lg+ this is a flex-1 cell that fills the
+                remaining viewport tail and centers the ThemeToggle inside it.
+                Below lg it just stacks naturally with its own mt-12 (the
+                established 48px section gap). */}
+            <div className="mt-12 lg:mt-0 lg:flex lg:flex-1 lg:items-center lg:justify-center">
+              <ThemeToggle />
+            </div>
           </div>
         </aside>
 
