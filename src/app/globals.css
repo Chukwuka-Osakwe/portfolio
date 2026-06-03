@@ -18,7 +18,7 @@
      --background — a touch deeper than the field — so placeholders read as an
      empty image well in the field rather than a brand-tinted block. */
   --image-placeholder: color-mix(in srgb, var(--background) 92%, var(--foreground));
-  --nav-fill: #ffffff; /* white — raised surfaces: nav panel, left rail, cards */
+  --nav-fill: #fcf3ed; /* warm off-white — raised surfaces: nav panel, left rail, cards */
   /* Dark palette siblings — defined once here, applied by the two dark-mode
      triggers below (system pref + explicit ThemeToggle). Live = COFFEE;
      ESPRESSO is the parked alternate. Foreground (#f4ead8) is the shared
@@ -187,23 +187,6 @@ html {
   box-shadow:
     0 0 0 4px var(--card-ring),
     0 1px 2px color-mix(in srgb, var(--foreground) 8%, transparent);
-}
-
-/* Hover spotlight (pointer devices only): when one project card is hovered,
-   softly dim the others so focus lands on the hovered one. (Blur removed on
-   hover per design call — kept for keyboard focus below.) The cards carry
-   Tailwind `transition` (which includes `opacity`), so this eases in/out. */
-@media (hover: hover) {
-  .project-grid:has(.project-card:hover) .project-card:not(:hover) {
-    opacity: 0.6;
-  }
-}
-
-/* Same spotlight on keyboard focus — not pointer-gated (keyboard users vary).
-   The focused card also keeps its accent `focus-visible:outline-*` marker. */
-.project-grid:has(.project-card:focus-visible) .project-card:not(:focus-visible) {
-  filter: blur(2px);
-  opacity: 0.6;
 }
 
 /* Case-study body (inside the wide modal): text holds a centered reading

@@ -653,3 +653,61 @@ Launch queue (unchanged):
 ### Resume here — card-style review
 
 User picked card-style review as the next item (longest-deferred Pre-launch Polish item, flagged since S6). Cards are the homepage's primary content and most-seen surface; fresh eyes before launch.
+
+---
+
+## Session 12 — 2026-06-03 (cont. into 06-04) — card-style review · viewspace TOC + slide-out BTT · `--nav-fill` tuned · grid-spotlight retired
+
+A long, three-arc session. Started with the deferred card-style review, turned into a substantive card-body restructure + a new in-place reading nav (TOC bar with a Marijana-style slide-out BTT). Plus a tokenization update and the full retirement of the grid-spotlight hover system.
+
+### Card-style review — anatomy + surface
+- **Card body restructure** in `ProjectsExplorer.tsx`. New shape top→bottom: cover → **type eyebrow** above title → title → blurb. Specifically:
+  - **"Read more →" line dropped entirely.** Whole card is the click target; the arrow CTA implied a separate destination and double-served the title's hover-accent.
+  - **Type pill → plain text eyebrow ABOVE the title** (was a `bg-accent-fill rounded-md px-2 py-1 self-start` chip BELOW title). Now `text-text-muted` `text-xs font-semibold tracking-wider`. The chip was double-buttoning on a card that's already a button-shaped element.
+  - **Blurb stays `text-text-muted`** (briefly tried `text-foreground`, reverted — Marijana-style restraint, title carries the only commitment).
+  - Title (h2) keeps `text-xl text-balance`, gains `mt-2` (now follows the eyebrow).
+- **Card grid gap** `gap-8` (32px) → **`gap-16` (64px)**. Intentional break from the page's `gap-x-8` = 32px column rhythm — cards needed more breathing room than the page-level gap provided. Walked through `gap-12` (48px) → `gap-[60px]` (off-grid, **flagged and rejected**) → `gap-16`. Both still on the 8px grid.
+- **Detail-header pill** also stripped of chip styling (same eyebrow language as the card) — but **position kept BELOW H1** per user intent. They envision adding a future **"view live"** CTA pill alongside it; plain-text-label-vs-chip-shaped-CTA visually distinguishes function (label = metadata, chip = clickable) when the row exists.
+- **Hover stack simplified, grid-spotlight fully retired.** Card hover keeps: `outline-2 outline-offset-2 outline-accent` + `motion-safe:hover:scale-[1.02]` + title→accent. **Both halves of the grid-spotlight system were removed** in `globals.css`: the pointer-gated hover dim (`:has(:hover) :not(:hover) { opacity:.6 }`) AND the keyboard-focus blur+dim (`:has(:focus-visible) :not(:focus-visible) { blur(2px) opacity:.6 }`). The keyboard variant had been kept in S3 for a11y; today's call: focus-ring + title shift on the focused card itself is enough indication; the field-wide dim+blur was the heaviest visual change in the grid and made browsing feel restless.
+
+### Surface tuning — `--nav-fill` like-for-like-of-dark
+- **`--nav-fill`** `#FFFFFF` → **`#FCF3ED`**. Driven by the question: given dark's `--background-dark #181311` → `--nav-fill-dark #241C19` is a +4 L lift in the same hue family, what would the equivalent navbar fill be in light? Three readings:
+  - **Additive (+4 L same direction):** `hsl(25°, 76°, 96%)` ≈ **`#FCF3ED`** — picked
+  - **Multiplicative (same ratio):** clamps to pure white = what we had
+  - **Inverted (+4 L magnitude, opposite direction):** ≈ `#F8DDC4` — recessed/saturated peach, unconventional
+- Cascades to nav panel + cards together (both are raised surfaces, by design — token discipline holds). Knock-on: `--card-ring` recomputes ~3 channel units more peach-tinted (imperceptible). Useful side effect: the Heyfood cover's near-white edges now visibly seam against the warm-tinted card body, separating "image" from "metadata" in the card rather than bleeding into one column.
+
+### CaseToc + slide-out BTT — the new in-place reading nav
+- **First attempt:** a corner-floating `BackToTop.tsx` button (`fixed bottom-8 right-8` of viewport, up-arrow SVG, frosted circle, threshold 400px, smooth scroll to top). User pushed back: "don't want it in navbar area, want it on viewspace," and proposed the richer pattern: a TOC button set for case-study subheadings, with the BTT sliding out of the set's right edge on scroll — **Marijana homepage pattern** (BTT that emerges from her navbar).
+- **Spec landed for `CaseToc.tsx`:**
+  - Horizontal frosted pill bar at the bottom of the viewspace, **same fixed slot as ViewSwitcher** (mounted alongside in `layout.tsx`), **mutually exclusive** via `ViewContext.detail` (only one renders at a time — ViewSwitcher hides when detail is set; CaseToc shows then).
+  - **5 sliding-thumb segments** for the standardised `## The X` sections — Overview / Problem / Design / Outcome / Reflection — **hardcoded** (S10 heading standardisation guarantees the shape across all case studies; not worth deriving from rendered content for 3 entries).
+  - Click → **`scrollIntoView({ behavior: 'smooth' })`** — deliberately **NOT URL hash navigation**, which would collide with `/#slug` case-study routing and close the detail (`projects.some(p => p.slug === hash)` check would find no match → `setDetail(null)`).
+  - **Active section** = last `<h2>` whose top crossed the 120px trigger line from viewport top. **Bottom-of-page shortcut** promotes the last section when the document runs out of scroll (without it, the final heading never reaches the trigger line geometrically, and the thumb parks on the second-to-last section).
+  - **Thumb mechanic mirrors ViewSwitcher exactly:** `grid-cols-5`, thumb width `calc((100% - 8px) / 5)` (one segment's exact inner width — 8px = bar's `p-1` left+right padding), `translateX(activeIndex * 100%)` snaps segment-to-segment cleanly. Active label is `text-foreground` (no color/weight shift) — thumb is the sole indicator.
+  - **BTT as a sibling tucked behind the bar's right edge.** Initial state `ml-2 -translate-x-12 opacity-0` overlaps the bar (invisible because opacity is zero); past **400px** of scroll it animates to `translate-x-0 opacity-100`, sliding into rest position to the right of the bar. Sized **`h-10 w-10 rounded-lg`** to match the bar's outer corner + height (bar = `text-sm` ~20px + `py-1.5` 12px + outer `p-1` 8px = 40px = `h-10`).
+  - Hidden below `lg` (`lg:flex` on wrapper); mobile pass deferred.
+- **Two scrollspy bugs surfaced + fixed inline:**
+  - **Bug 1 — thumb cycled through intermediates on long jumps.** Click Overview → Reflection visibly chewed through every section as the smooth-scroll passed each heading. **Fix v1:** commit user's target activeId immediately on click, then lock scrollspy for 800ms via a `navLockRef` flag (suppresses scroll-driven activeId updates; BTT visibility still tracks scroll).
+  - **Bug 2 — second-to-last flicker on long jumps.** With v1, the 800ms lock expired just before the smooth scroll settled; one stray scrollspy pass promoted Outcome briefly before the bottom-of-page shortcut fired on the next tick. **Real fix:** replace the timer with **`scrollend` event** (canonical settle signal — Chrome 114+, Firefox 109+ since 2023; Safari 17.4+ March 2024). 2000ms fallback timer covers older Safari + scrolls the user interrupts mid-flight by manually scrolling (where `scrollend` may not fire). Both unlock paths call the same `unlock()`; double-fire harmless.
+- `BackToTop.tsx` deleted after CaseToc absorbed the BTT.
+- **Threshold dialing.** `SCROLL_TRIGGER` walked 50 (too early for case-study reading; "first scroll tick" works on a landing page where any scroll means "leaving the hero," but on a case study you're scrolling through content from the jump) → settled on **400**. `ACTIVE_TRIGGER` kept at 120 from viewport top. `NAV_LOCK_FALLBACK_MS` = 2000.
+
+### Lessons logged this session
+1. **`scrollend` is the right settle signal** for any "lock derived state until a smooth animation actually finishes" pattern — not a guessed timer. Pattern: set authoritative state on intent (e.g. activeId = clicked target), lock observed/scrollspy state with a ref flag, unlock on `scrollend` with a generous timer fallback for older browsers / interrupted scrolls. Both call the same unlock; idempotent.
+2. **`inline-flex` / `inline-block` children get blockified** in flex/grid layouts (per CSS spec) — bit us silently on the eyebrow span in the detail header (block context this time, so `block` class needed explicitly when sibling positioning matters). Existing S11 lesson reaffirmed.
+3. **A token swap that cascades is correct, even if it surprises a side surface.** `--nav-fill` shifting from white to warm off-white was specifically about the navbar but cascaded to cards (both raised tier). Right outcome (token discipline holds, both raised surfaces shift in lockstep); the Heyfood cover-seam side effect was useful, not noise.
+
+### DESIGN.md synced this session (5 surgical edits)
+- `type` label spec rewritten (card-eyebrow + detail-below-H1; chip retired)
+- Card-row entry updated (gap-16, anatomy reorder, Read more dropped)
+- Card edge/hover-focus section rewritten (grid-spotlight retired in full, hover stack simplified)
+- `--nav-fill` value + the additive-vs-multiplicative derivation rationale
+- NEW two bullets under Projects: `CaseToc` design + `scrollend` settle pattern
+
+### Status
+- `tsc --noEmit` clean throughout. Did **not** `npm run build` (S7 lesson: dev :3000 live throughout the session).
+- **Uncommitted past `eb749cc`:** 4 source files + DESIGN.md + SESSION_NOTES.md. Single coherent arc → single commit imminent.
+
+### Resume here — final navbar pass
+S11 flagged "final navbar pass" as a queue item; would be cohesive with the design-polish thread we've been pulling (cards → CaseToc → navbar would close out the chrome surfaces). Alternative quick wins: blur placeholders for case-study covers (extend ideas `blurDataURL` pattern), final frontmatter pass (residual date/role cleanup), or jump to the bigger items (mobile re-jig of nav panel + CaseToc; cover-image pass; videos).

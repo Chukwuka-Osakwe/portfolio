@@ -119,8 +119,11 @@ export function ProjectsExplorer({ projects, panes }: Props) {
               <h1 className="text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-balance">
                 {p.title}
               </h1>
+              {/* Metadata row below H1 — type label here today, room for action
+                  pills (e.g. "view live →") alongside it later. Plain text now
+                  so future chip-shaped CTAs visually distinguish themselves. */}
               {p.type ? (
-                <span className="mt-2 inline-block rounded-md bg-accent-fill px-2 py-1 text-xs font-semibold tracking-wider text-text-muted">
+                <span className="mt-2 inline-block text-xs font-semibold tracking-wider text-text-muted">
                   {p.type}
                 </span>
               ) : (
@@ -137,7 +140,7 @@ export function ProjectsExplorer({ projects, panes }: Props) {
   // --- Grid view: preview cards (+ a hidden, crawlable copy of every body). ---
   return (
     <>
-    <ul className="project-grid grid gap-8 sm:grid-cols-2">
+    <ul className="project-grid grid gap-16 sm:grid-cols-2">
       {projects.map((p) => {
         const pane = panes.find((x) => x.slug === p.slug);
         return (
@@ -178,22 +181,24 @@ export function ProjectsExplorer({ projects, panes }: Props) {
                 <div className="aspect-[31/20] w-full bg-image-placeholder" aria-hidden />
               )}
               <div className="flex flex-1 flex-col p-4">
-                <h2 className="text-xl font-semibold tracking-tight text-balance transition-colors group-hover:text-accent group-focus-visible:text-accent">
-                  {p.title}
-                </h2>
+                {/* Type label is now an eyebrow ABOVE the title — editorial
+                    card pattern. No chip background (the card itself is the
+                    button-shaped element; a second one was double-buttoning).
+                    Color committed to accent so it actually reads as a category
+                    signal. */}
                 {p.type ? (
-                  <span className="mt-2 self-start rounded-md bg-accent-fill px-2 py-1 text-xs font-semibold tracking-wider text-text-muted">
+                  <span className="text-xs font-semibold tracking-wider text-text-muted">
                     {p.type}
                   </span>
                 ) : (
-                  p.role && <p className="mt-2 text-sm font-semibold text-text-muted">{p.role}</p>
+                  p.role && <p className="text-sm font-semibold text-text-muted">{p.role}</p>
                 )}
+                <h2 className="mt-2 text-xl font-semibold tracking-tight text-balance transition-colors group-hover:text-accent group-focus-visible:text-accent">
+                  {p.title}
+                </h2>
                 {pane?.excerpt && (
                   <p className="mt-2 line-clamp-3 text-text-muted">{pane.excerpt}</p>
                 )}
-                <span className="mt-auto inline-block pt-4 text-sm font-semibold text-text-muted transition-colors group-hover:text-accent group-focus-visible:text-accent">
-                  Read more →
-                </span>
               </div>
             </div>
           </li>

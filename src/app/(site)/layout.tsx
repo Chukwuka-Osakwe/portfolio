@@ -1,4 +1,5 @@
 import { ViewSwitcher } from "@/components/ViewSwitcher";
+import { CaseToc } from "@/components/CaseToc";
 import { ViewProvider } from "@/components/ViewContext";
 import { NavMenu } from "@/components/NavMenu";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -107,6 +108,7 @@ export default function SiteLayout({
         <div className="grid grid-cols-1 gap-x-8 px-6 lg:grid-cols-[minmax(0,1fr)_var(--nav-w)] lg:px-0">
           <div className="flex justify-center lg:col-start-1">
             <ViewSwitcher />
+            <CaseToc />
           </div>
         </div>
       </div>
