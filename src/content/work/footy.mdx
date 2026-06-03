@@ -1,16 +1,14 @@
 ---
 title: "Footy"
-summary: "A visual overhaul and design system for Footy, a football mini-app on Farcaster — starting with its flagship Score Square betting game."
-blurb: "Overhauling the visual language of a football mini-app on Farcaster — and building the design system behind it."
+summary: "Visual overhaul and design system for Footy, a Farcaster football mini-app — starting with its flagship Score Square betting game."
+blurb: "Redesigning a Farcaster football mini-app and building a design system for its visual language."
 date: "2025-10-15"
-# TODO(role): provisional label — revisit this last (user may change it). See SESSION_NOTES.
-role: "Product & Visual Designer · 2025"
-image: "/work/footy/components.webp"
-tags: ["Design System", "Product Design", "UI Redesign"]
+type: "PRODUCT DESIGN"
+image: "/work/footy/alt-cover.webp"
 featured: true
 ---
 
-## Overview
+## The Overview
 
 Footy is a football-focused Farcaster mini-app built by KMac. Designed as a hub for football communities on Farcaster, the app combined live match discussions, team notifications, Fantasy Premier League tools, and interactive matchday experiences into a single product.
 
@@ -56,7 +54,7 @@ The product depended heavily on state changes during the purchase flow. Users ne
 
 However, important transitions and feedback states were often visually disconnected from the square-selection interface itself, making the experience feel fragmented at critical moments.
 
-## Designing the System
+## The Design System
 
 The redesign focused on making the Score Square experience easier to navigate by improving information hierarchy, system consistency, and state communication across the purchase flow.
 
@@ -106,8 +104,12 @@ This led to a simple hierarchy system:
 - **Secondary information** was still useful, but not critical in the moment. This content was either moved into modals or relocated elsewhere within the mini-app to reduce visual clutter.
 - **Unnecessary information** was removed entirely when it did not meaningfully support the user's decision-making process.
 
-{/* TODO(image): "[ Insert examples ]" in the Notion doc — no existing asset
-    cleanly fits hierarchy examples. Slot left empty pending a real visual. */}
+<Figure
+  src="/work/footy/comparison.webp"
+  alt="Match cards before and after: the redesigned cards drop the league pill and date deployed"
+  width="100%"
+  caption="The redesigned match cards drop the league pill and date — neither is essential to playing."
+/>
 
 This process significantly reduced visual noise throughout the purchase flow while preserving the contextual information users needed to understand match states, payouts, and transaction progress.
 
@@ -119,12 +121,10 @@ In the original interface, transaction states were split between the square-sele
 
 I redesigned the flow so that all transaction and progress states were communicated directly within the square-selection frame itself.
 
-<Compare
-  beforeSrc="/work/footy/state-before.webp"
-  beforeAlt="Before: the state change is shown above the square frame"
-  afterSrc="/work/footy/state-after.webp"
-  afterAlt="After: the state change updates the square frame itself"
-  width="40rem"
+<Figure
+  src="/work/footy/state-changes.webp"
+  alt="Before and after: the state change moves from above the square frame into the frame itself"
+  width="100%"
   captionBefore="Before (left): the state change sat above the square frame."
   captionAfter="After (right): the change updates the frame containing the squares itself."
 />
@@ -135,23 +135,32 @@ By consolidating feedback into a single interaction surface, the experience beca
 
 ## The Outcome
 
-The redesign transformed Score Square from a rough proof-of-concept into a more cohesive and scalable product experience.
+The redesign tightened the visual language and interaction model of Score Square — turning an early prototype into a more coherent product.
 
-Using the new visual system and interaction patterns, I designed nine screens covering the complete purchase flow — from arriving on the Score Square homepage to successfully buying squares for a match.
+Using the new visual system and interaction patterns, I designed the complete purchase flow — from arriving on the Score Square homepage to successfully buying squares for a match.
 
-<Screens cols={3} width="40rem">
-  <img src="/work/footy/screen-1.webp" alt="Score Square — final screen 1" />
-  <img src="/work/footy/screen-2.webp" alt="Score Square — final screen 2" />
-  <img src="/work/footy/screen-3.webp" alt="Score Square — final screen 3" />
-  <img src="/work/footy/screen-4.webp" alt="Score Square — final screen 4" />
-  <img src="/work/footy/screen-5.webp" alt="Score Square — final screen 5" />
-  <img src="/work/footy/screen-6.webp" alt="Score Square — final screen 6" />
-  <img src="/work/footy/screen-7.webp" alt="Score Square — final screen 7" />
-  <img src="/work/footy/screen-8.webp" alt="Score Square — final screen 8" />
-  <img src="/work/footy/screen-9.webp" alt="Score Square — final screen 9" />
-</Screens>
+<Figure
+  src="/work/footy/outcome-1.webp"
+  alt="Match list and selecting squares — the entry points to the purchase flow"
+  width="100%"
+  caption="From the match list to selecting squares — the entry points to the purchase flow."
+/>
 
-Although the flow spans multiple states, the experience was intentionally designed around a single core interaction surface. Screens 2–9 are variations of the same screen, with specific sections updating dynamically as users progress through square selection, transaction submission, and purchase confirmation.
+<Figure
+  src="/work/footy/outcome-2.webp"
+  alt="Confirming the purchase — in-app confirmation, then the wallet handshake"
+  width="100%"
+  caption="Confirming the purchase — in-app confirmation, then the wallet handshake."
+/>
+
+<Figure
+  src="/work/footy/outcome-3.webp"
+  alt="Post-purchase states: submitted, fetching from chain, then confirmed"
+  width="100%"
+  caption="Post-purchase states: submitted, fetching from chain, then confirmed."
+/>
+
+Although the flow spans multiple states, it was designed around a single core interaction surface. Beyond the entry point, every state is a variation of the same screen — sections updating dynamically as users move through selection, submission, and confirmation.
 
 This approach helped:
 - preserve continuity throughout the flow,
@@ -163,7 +172,7 @@ Beyond the visual redesign itself, the project also established:
 - clearer interaction patterns across states, and
 - a more consistent interface language for the product moving forward.
 
-## Reflection
+## The Reflection
 
 Working on Footy reinforced the importance of treating interfaces as connected systems rather than isolated screens.
 

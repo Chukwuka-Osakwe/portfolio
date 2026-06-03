@@ -382,13 +382,14 @@ Side cleanup while in the file: stray `8px` → `0.5rem` for the typographic fig
 ### Things still parked / open after Session 9
 - **Bribe project** — next session starts here per user's explicit pointer. Add a case study NOT in the Notion export. (Will need a slug, frontmatter, body, and at minimum a cover/image strategy.)
 - **Re-delete the 8 placeholder case studies** (+ `redesigning-checkout.mdx` placeholder demo images) — featured-pin keeps Footy/Heyfood top, but the grid still shows 9 cards.
-- **Heyfood**: cover deferred (placeholder live); `date` + `role` still TODO; full body rewrite from latest Notion landed S8.
+- **Heyfood**: cover deferred (placeholder live); full body rewrite from latest Notion landed S8.
 - **Energy case study** — still queued.
-- **Footy loose ends**: empty Info-Hierarchy image slot; provisional `role`; the indigo DRAFT hero alternate; the gif (animated-WebP path).
+- **Footy loose ends**: empty Info-Hierarchy image slot; the indigo DRAFT hero alternate; the gif (animated-WebP path).
 - **Drift B (`Contact.tsx` `ring-*` vs `outline-*`)** — bundled with Contact restyle.
 - **Mobile re-jig of the nav panel** — user-flagged; not started.
 - **Push to Vercel; OG/sitemap/robots; essays destination; blur placeholders for work covers; card-style review** — all still queued.
 - **Final pass on cover images (case studies + product ideas)** — see expanded TODO above; includes the animated-cover design flag.
+- **Final pass on frontmatter (`date` + `role` across all case studies)** — every case study currently ships with provisional `# TODO(date)` and/or `# TODO(role)` comments: Footy `role`, Heyfood `date` + `role`, Bribe `date` + `role`. Revisit together once everything else reads "done" so the labels stay consistent across the grid (and the chronological sort order is intentional, not provisional). Inline `# TODO` comments stay in the MDX files as code-level breadcrumbs; this is the cross-file tracker.
 
 ### Decisions worth recording in DESIGN.md (TODO this session-end)
 - Dark mode: warm coffee palette, single source of truth via `--*-dark` siblings, two triggers (OS + explicit `data-theme="dark"`), `prefers-color-scheme: dark` respects an explicit-light override via `:not([data-theme="light"])`.
@@ -429,3 +430,104 @@ With the deck clear, next is the **Bribe project** — a case study NOT in the N
 ### Useful commands (unchanged)
 - `npx tsc --noEmit` for type-only verification (doesn't touch `.next` — safe with dev server live).
 - `rm -rf .next/cache/images` when an image filename is preserved across a content swap (S7 cache trap workaround).
+
+---
+
+## Session 10 — 2026-06-02 (cont. into 06-03) — Bribe landed · reload-fix duo · Footy polish + heading standardisation
+
+A long, multi-arc session in three movements: **(a)** Bribe case study end-to-end (file, body, 8 images through the pipeline, cover A/B); **(b)** two visible-flash reload bugs killed with the same pre-paint-script + CSS-mask recipe; **(c)** Footy polish — frontmatter pass with global side-effects (`tags` dropped, `type` pill introduced, card-button→card-div for HTML validity), Outcome rewrite (3 composites replace the 9-screen grid), and a heading-name standardisation across all three case studies.
+
+### Bribe — end-to-end landing
+- **`bribe.mdx`** authored from Notion source. Image pipeline through `/sources/work/bribe/` + `/public/work/bribe/`: `definition.png` + `matrix-narrative.png` (base64-extracted from Notion md), `matrix-colour-palette.webp`, `bribe-logo.webp` (closes The Design System section), `before.webp` (single composite of 4 mini-app screens — replaced an earlier `<Screens cols=4>` grid the user briefly tried), `outcome-1/2/3.webp` (storyboard composites grouping the redesigned screens by flow stage).
+- **Cover A/B** via versioned filenames: `cover-v1.webp` (from `bribe-cover-1.png`) and `cover-v2.webp` (from `bribe-cover-2.jpeg`); settled on **v1**. Versioning pattern bulletproofs the S7 cache trap (different URL = cold fetch).
+- **Notion archive consolidation:** Footy + Heyfood + Bribe source `.md` files now sit alongside their curated masters in `/sources/work/<slug>/`. Once Energy lands, `/the-notion` can be deleted entirely.
+- **Lesson — base64 image res:** Notion's md export embeds inline images at thumbnail-size (~624px wide). Mid-session the user re-exported `definition.png` (1614×638) and `matrix-narrative.png` (1498×1482) at higher res — and asked for PNG-direct paths instead of WebP "for max clarity." The previous softness was source resolution, not codec (near-lossless WebP would have been visually identical at the new sizes) — but PNG was their stated preference.
+
+### Reload-fix duo — pre-paint script + CSS mask pattern
+Two visible-flash bugs on reload, same architectural cause, same fix shape.
+
+#### 1. Theme-toggle thumb flashing system → light on every reload
+SSR couldn't read localStorage → segmented thumb rendered in the `system` cell → useEffect reconciled to `light` post-hydration → user saw a brief thumb slide on every page load.
+
+First attempt — gate the `transition-transform` class on a double-rAF `animate` flag — killed the slide *animation* only. The visible flash itself persisted because the first paint still showed the wrong cell.
+
+**Final fix — CSS-driven thumb position via `html[data-theme]`:**
+- New CSS: `.theme-thumb { transform: translateX(100%) }` (system default); `html[data-theme="light"] .theme-thumb { transform: translateX(0) }`; `html[data-theme="dark"] .theme-thumb { transform: translateX(200%) }`
+- React component drops `style={{ transform }}`; thumb just carries the `theme-thumb` class
+- The existing pre-paint script (which already set `html[data-theme]` from localStorage before paint) now resolves the correct transform *before the browser paints anything*. No React in the visual loop.
+- `animate` flag retained — gates the transition class — so user clicks still slide; reload commits the corrected position instantly.
+
+#### 2. Case-study reload (`/#slug`) flashed grid before detail swap
+Architectural: SSR has no access to `location.hash` (browsers strip `#` server-side); `/#bribe` reload SSR'd the grid, painted it, then `useEffect` read the hash post-hydration and swapped to detail. Cold JS bundle = visible window of 100-300ms with grid showing.
+
+**Fix — pre-paint mask + `useLayoutEffect`:**
+- New inline `<head>` script in `layout.tsx`: `if (location.hash.length > 1) document.documentElement.dataset.detailPending = '1'`
+- CSS: `html[data-detail-pending] .project-grid { visibility: hidden }` (visibility, not display — keeps layout stable through the JS-load window).
+- `ProjectsExplorer` initial hash read moved from `useEffect` → `useLayoutEffect`. setState in useLayoutEffect forces a *synchronous* re-render before paint; we then `delete dataset.detailPending` in the same effect (still pre-paint). First paint shows the detail view, never the grid.
+- Subsequent hash changes (popstate/hashchange) stay async in a regular useEffect.
+
+#### Lesson — same recipe both times
+Anything the server doesn't know about (localStorage, location.hash) needs either to defer until post-paint (and accept a flash) OR be resolved by a pre-paint inline script that writes to `<html>` attributes. CSS then derives presentation, OR React uses `useLayoutEffect` to commit corrections before paint. Both fixes follow this pattern verbatim.
+
+### Frontmatter pass (Footy walked end-to-end; Heyfood + Bribe partial)
+- **`tags` field nuked globally** — declared in schema but never rendered anywhere. Same dead-metadata shape as the orphan `EntryList` component, also deleted this session (was the only consumer of `summary` for display). Type field dropped from `Frontmatter`.
+- **`summary` kept distinct from `blurb`** — `summary` is genuinely SEO/OG-reserved (type comment says so); `blurb` is the card hook. Both are real; only `blurb` renders today. User passed summary-writing to me ("you're better at SEO than I am") — Footy summary tightened (drop leading "A", denser keyword cluster).
+- **`role` → `type` migration introduced:** new optional `type?: string` added to `Frontmatter`; renderer prefers `type` over `role` when set. Value is uppercase (e.g. `"PRODUCT DESIGN"`) and renders as an **accent-fill pill** on card + detail-header — 12px semibold tracking-wider, `self-start` to defeat flex-column cross-axis stretch (the flex parent silently stretched `inline-block` items full-width before — surprised me), `bg-accent-fill`, `rounded-md`. Footy migrated. Heyfood + Bribe still on `role` — next session.
+- **`featured` clarified** in conversation: it pins ABOVE non-featured but doesn't pick a winner within the tier — date-desc still sorts among featured. User un-featured Bribe so grid reads **Footy → Heyfood → Bribe**.
+- **`date` kept** — invisible after EntryList delete (sort-only), but cheap metadata that unlocks future SEO surfaces (sitemap `lastmod`, OG `article:published_time`, JSON-LD `datePublished`). Date TODOs dropped from Heyfood + Bribe — pick plausible values; exact accuracy doesn't matter since the field's invisible.
+
+### Card design pass (global, fall-out from the Footy walk)
+- **Excerpt clamp** `line-clamp-2` → `line-clamp-3`. Room for ~130-char hooks without truncation.
+- **Card title** `<p>` → `<h2>` with `text-xl` (20px), `text-balance`, hover/focus accent.
+- **Detail-header title** `<h2>` → `<h1>`. Semantic fix — the case-study title IS the page's primary heading; body sections stay h2. Hierarchy is now clean h1 → h2 → h3.
+- **Card root** refactored `<button>` → `<div role="button" tabIndex={0}>` + onKeyDown for Enter/Space. **Why:** `<button>` only permits phrasing content per HTML spec; `<h2>` (and the earlier `<p>`) inside `<button>` is invalid. Browsers auto-correct silently and divergently; React 19/Next 16 now surfaces this as a hydration mismatch warning that React 18 tolerated. Ref type `HTMLButtonElement` → `HTMLDivElement`. `focus-ring` utility carries.
+- **Card cover slot** `h-[var(--card-cover-h)]` (200px fixed) → **`aspect-[31/20]`** (1.55:1). **Why:** every curated cover exports at 1.55:1 from Figma brand boards; the old fixed-200px slot resolved to ~1.76:1 at 22rem card width, horizontally cropping ~23px off each side. With aspect-ratio, covers render full-canvas; no crop. **Cover art direction is now prescriptive: export at 1.55:1.** `--card-cover-h` token removed. Cards grow ~13% taller — acceptable.
+
+### Footy body work
+- **Cover swapped twice** — `components.webp` → `footy-cover.webp` → `alt-cover.webp` (current, 52KB, settled).
+- **Information Hierarchy section** — added `comparison.webp` (closes the S7-parked "Insert examples" TODO). Caption: *"The redesigned match cards drop the league pill and date — neither is essential to playing."*
+- **Clearer State Communication section** — replaced `<Compare beforeSrc afterSrc>` two-image block with `<Figure src="state-changes.webp">` single composite. Two-line caption stacking preserved by adding **`captionBefore`/`captionAfter` props to `<Figure>`** (mirrors `<Compare>` from S8). Any future composite "before/after" Figure can now stack captions.
+- **`before-score-square` master replaced twice** — once with the user's higher-res 1.87:1 export (28764×15384), then again with a cleaned-up version (initial export had visible numbering that was outdated post-rewrite). Archive lineage now `-v1` (7191×3846 original) · `-v2` (28764×15384 numbered) · canonical (28764×15384 cleaned).
+- **Outcome section** — replaced 9-screen `<Screens cols={3}>` grid with **3 `<Figure>` composites** (storyboard groupings: match-list+selection, transaction confirmation, post-purchase states). 9 orphan `screen-1..9.webp` derivatives removed from `/public`; masters preserved in `/sources` per convention.
+- **Outcome prose rewritten** at three lines: line 140 drops "nine screens" count; line 154 reframes Screens-2-9 reference to *"Beyond the entry point, every state is a variation of the same screen — sections updating dynamically as users move through selection, submission, and confirmation"*; line 138's portfolio-tagline opener (*"transformed Score Square from a rough proof-of-concept into a more cohesive and scalable product experience"*) replaced with a tone-matched version: *"The redesign tightened the visual language and interaction model of Score Square — turning an early prototype into a more coherent product."* Drops the boast, drops "scalable" claim that the body doesn't actually demonstrate.
+- **Misplaced-asset incident** — user dropped `outcome-1/2/3.png` at root intending Footy; I read context as Bribe (since Bribe had `outcome-1/2/3` files) and processed them into `public/work/bribe/`. User caught it; Bribe reverted (restored from `-v1`/`-v2` master archives — the lineage is what enabled clean revert), misplaced assets moved to `/sources/work/footy/`, re-derived correctly. **Lesson: when filename matches an existing slot in another case study, ask before assuming.**
+
+### Heading standardisation (across all three case studies — 9 edits)
+All three case studies normalised to identical 5-section structure:
+
+> **The Overview → The Problem → The Design System → The Outcome → The Reflection**
+
+User initially proposed *"The Designing"* and *"The Reflections"*; pushed back on both:
+- *"The Designing"* reads grammatically odd (present participle isn't a noun phrase). Landed on *"The Design System"* — more accurate to what the section covers (colour + typography + hierarchy + state).
+- *"The Reflections"* (plural) broke the singular-noun rhythm. Landed on *"The Reflection"* (singular).
+
+### Status
+
+**Footy: DONE.** Frontmatter and body both complete. Zero TODOs.
+```yaml
+title: "Footy"
+summary: "Visual overhaul and design system for Footy, a Farcaster football mini-app — starting with its flagship Score Square betting game."
+blurb: "Redesigning a Farcaster football mini-app and building a design system for its visual language."
+date: "2025-10-15"
+type: "PRODUCT DESIGN"
+image: "/work/footy/alt-cover.webp"
+featured: true
+```
+
+**Bribe: image-complete, frontmatter partial.** Body fully landed (all 5 sections, every image hole closed). Frontmatter `role: "Visual Designer · 2026"` still pending migration to `type`; summary at 172 chars (over Google's 160 cap — needs trim); blurb has an em-dash; `featured: false` (un-featured this session to fix grid order).
+
+**Heyfood: walk-through deferred to next session.** Cover still placeholder (S8 deferral; composite-the-two-phones leading option), `role` → `type` pending, summary + blurb refinement pending.
+
+### Lessons logged this session
+1. **Turbopack ↔ Tailwind v4 desync bit again** — twice. Edits to `globals.css` not appearing in the served CSS bundle. Workaround unchanged from S8: `rm -rf .next && npm run dev`.
+2. **S7 cache trap also bit again** on body images — same `/public` path with different bytes serves stale. Two workarounds in play: (a) for `next/image` covers, `rm -rf .next/cache/images`; (b) for raw-`<img>` body images, version the filename (`outcome-1-v2.webp` pattern). **Versioning is bulletproof; cache-clear still needs a browser hard-refresh too.** Default to versioning on swap.
+3. **`<img>` vs `next/image` for body** — body uses raw `<img>` because MDX images have unknown dimensions at author time. We trade `next/image`'s responsive `srcset` + format negotiation + blur placeholders for authoring simplicity. The masters/derivatives pipeline already does ~90% of what `next/image` provides for free.
+4. **HTML invalidity catches up eventually.** `<button>` containing `<h2>` (or `<p>`, or any block element) is invalid per spec; browsers auto-correct silently and divergently. React 19/Next 16 now surfaces this as a hydration mismatch; React 18 tolerated it. Pattern: clickable cards containing structured content need `<div role="button" tabIndex={0}>` + keyboard handlers, not `<button>`.
+
+### Things parked / next session
+- **Heyfood walk-through** — start here. `role` → `type`, summary refinement, blurb review, cover decision (composite-the-two-phones, or accept placeholder long-term).
+- **Bribe walk-through** — `role` → `type`, summary trim (172 → ≤160 chars), blurb review.
+- **DESIGN.md sync (substantial drift this session):** drop `tags` from schema doc, `type` field + pill spec, `EntryList` orphan deletion, `line-clamp-3`, card-button → card-div pattern, theme-thumb CSS-driven, detail-pending mask + useLayoutEffect, `<Figure>` `captionBefore`/`captionAfter`, h1 promotion of detail-header title, `aspect-[31/20]` cover slot + removal of `--card-cover-h`. Lands before next batch so it doesn't drift further.
+- **Footy `footy-cover.webp` orphan** (89KB) — old cover, unreferenced since alt-cover swap. Clean up next time if alt-cover stays.
+- **`/sources/work/footy/screen-1..9.png`** — orphaned after Outcome rewrite, but stay per never-rm-masters.
+- **Long-parked queue** unchanged: Energy case study, Drift B (Contact `ring-*` vs `outline-*`), mobile re-jig of nav panel, Vercel push, OG/sitemap/robots, essays destination, blur placeholders for work covers, card-style review, final cover-image pass, final frontmatter pass (date + role/type residual).

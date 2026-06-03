@@ -25,15 +25,32 @@ const SEGMENTS: { value: Theme; label: string }[] = [
  * can't read localStorage); after mount, state is reconciled to the persisted
  * value if any. One frame of possible mismatch — no hydration warning, no
  * layout shift.
+ *
+ * `animate` is a separate flag that gates the thumb's `transition-transform`
+ * class. It flips on after a double-rAF (one paint past the theme
+ * reconciliation), so the thumb LANDS at its correct position on reload
+ * instead of sliding into it from the SSR-default "system" cell.
  */
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("system");
   const [mounted, setMounted] = useState(false);
+  const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const stored = localStorage.getItem("theme");
     if (stored === "light" || stored === "dark") setTheme(stored);
+    // Double-rAF: a single rAF would still fire before the corrected-thumb
+    // paint and react would batch both commits together; the second rAF
+    // guarantees we're past at least one paint with the reconciled transform.
+    let r1 = 0, r2 = 0;
+    r1 = requestAnimationFrame(() => {
+      r2 = requestAnimationFrame(() => setAnimate(true));
+    });
+    return () => {
+      cancelAnimationFrame(r1);
+      cancelAnimationFrame(r2);
+    };
   }, []);
 
   const choose = (next: Theme) => {
@@ -48,19 +65,21 @@ export function ThemeToggle() {
     }
   };
 
-  const activeIndex = SEGMENTS.findIndex((s) => s.value === theme);
-
   return (
     <div
       role="group"
       aria-label="Theme"
       className="frosted relative grid w-full grid-cols-3 rounded-lg p-1"
     >
-      {/* Sliding thumb — 1/3 of track, translates between segments. */}
+      {/* Sliding thumb — position driven by `.theme-thumb` rules in globals.css
+          reading html[data-theme]. CSS-driven (not inline-style) so the thumb
+          lands in the correct cell on the first paint, before React mounts —
+          the pre-paint script in layout.tsx sets html[data-theme] from
+          localStorage. The transition class is gated on `animate` (double-rAF
+          after mount) so reload doesn't slide; user clicks animate normally. */}
       <span
         aria-hidden
-        className="absolute inset-y-1 left-1 w-[calc(33.333%_-_4px)] rounded-md bg-switcher-thumb motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out"
-        style={{ transform: `translateX(${activeIndex * 100}%)` }}
+        className={`theme-thumb absolute inset-y-1 left-1 w-[calc(33.333%_-_4px)] rounded-md bg-switcher-thumb ${animate ? "motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out" : ""}`}
       />
 
       {SEGMENTS.map((s) => {

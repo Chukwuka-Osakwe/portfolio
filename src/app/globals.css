@@ -57,10 +57,6 @@
   /* Figcaption measure — tighter than the body on purpose (captions stay
      short / center-able). */
   --caption-measure: 36rem;
-  /* Card cover height — the image well at the top of each project card.
-     Was hardcoded 200px (S5: "tuned so ~4 cards show on screen"); single
-     dial now so card-style retune lands here. */
-  --card-cover-h: 12.5rem;
   /* House easing curve — symmetric ease-in-out (S3: "smooth in-out, neither
      direction noticeably picks up speed"). For page-level / scene-change
      motion. Snappier control-level motion (e.g. switcher thumb) deliberately
@@ -118,6 +114,26 @@
     outline-offset: 2px;
   }
 }
+
+/* Theme toggle thumb position — CSS-driven from html[data-theme] (set by the
+   pre-paint script in layout.tsx from localStorage) so the thumb lands in the
+   correct cell on the FIRST paint, before React mounts. State-driven
+   positioning previously produced a visible "system → light" flash on reload:
+   SSR has no localStorage, so it always rendered the thumb in the system cell,
+   and React only corrected it post-hydration. The transition is gated in the
+   component (the `animate` flag) so the corrected position lands without a
+   slide on reload — clicks animate normally afterward. */
+.theme-thumb { transform: translateX(100%); /* system: no html[data-theme] */ }
+html[data-theme="light"] .theme-thumb { transform: translateX(0); }
+html[data-theme="dark"]  .theme-thumb { transform: translateX(200%); }
+
+/* Detail-reload mask — hide the projects grid while the JS-load window is
+   pending on a /#slug reload. Pre-paint script in layout.tsx sets the
+   attribute when location.hash is non-empty; ProjectsExplorer clears it
+   synchronously inside a useLayoutEffect after committing the detail, so
+   the grid never actually paints. visibility (not display) keeps layout
+   stable, so the swap-in doesn't reflow the page. */
+html[data-detail-pending] .project-grid { visibility: hidden; }
 
 @theme inline {
   --color-background: var(--background);

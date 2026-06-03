@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 import type { ContentMeta } from "@/lib/content";
 import { useView } from "@/components/ViewContext";
@@ -28,18 +28,30 @@ interface Props {
  * the `.view-enter` CSS (reduced-motion-safe).
  */
 export function ProjectsExplorer({ projects, panes }: Props) {
-  const cardRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   // The open detail slug lives in ViewContext so the ViewSwitcher can hide while
   // a detail is open.
   const { detail, setDetail } = useView();
 
-  // Drive the open detail from the URL hash (#slug): initial load + back/forward.
+  // Drive the open detail from the URL hash (#slug). The INITIAL read uses
+  // useLayoutEffect so the detail commits BEFORE the browser paints — paired
+  // with the pre-paint `data-detail-pending` mask (see layout.tsx + globals.css),
+  // this eliminates the /#slug-reload grid flicker: setState in useLayoutEffect
+  // forces a synchronous re-render, after which we delete the mask attribute,
+  // and only then does the browser paint (showing the detail, not the grid).
+  // Subsequent hash changes (popstate / hashchange) run async via useEffect
+  // — the mask is already gone by then.
+  useLayoutEffect(() => {
+    const slug = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+    setDetail(slug && projects.some((p) => p.slug === slug) ? slug : null);
+    delete document.documentElement.dataset.detailPending;
+  }, [projects, setDetail]);
+
   useEffect(() => {
     const fromHash = () => {
       const slug = decodeURIComponent(window.location.hash.replace(/^#/, ""));
       setDetail(slug && projects.some((p) => p.slug === slug) ? slug : null);
     };
-    fromHash();
     window.addEventListener("popstate", fromHash);
     window.addEventListener("hashchange", fromHash);
     return () => {
@@ -104,11 +116,15 @@ export function ProjectsExplorer({ projects, panes }: Props) {
           </button>
           <article className="mx-auto mt-8 max-w-[var(--reading-measure)]">
             <header className="mb-8 border-b-4 border-accent pb-4">
-              <h2 className="text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-balance">
+              <h1 className="text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-balance">
                 {p.title}
-              </h2>
-              {p.role && (
-                <p className="mt-2 font-semibold text-text-muted">{p.role}</p>
+              </h1>
+              {p.type ? (
+                <span className="mt-2 inline-block rounded-md bg-accent-fill px-2 py-1 text-xs font-semibold tracking-wider text-text-muted">
+                  {p.type}
+                </span>
+              ) : (
+                p.role && <p className="mt-2 font-semibold text-text-muted">{p.role}</p>
               )}
             </header>
             <div className="case-body prose max-w-none">{pane?.node}</div>
@@ -126,19 +142,30 @@ export function ProjectsExplorer({ projects, panes }: Props) {
         const pane = panes.find((x) => x.slug === p.slug);
         return (
           <li key={p.slug}>
-            <button
-              type="button"
+            {/* Card is a div+role=button rather than a native <button> so it
+                can legally contain block-level children like <h2> and <p>
+                (button only permits phrasing content per the HTML spec).
+                Click + keyboard handlers replicate native button behavior. */}
+            <div
+              role="button"
+              tabIndex={0}
               ref={(el) => {
                 const refs = cardRefs.current;
                 if (el) refs.set(p.slug, el);
                 else refs.delete(p.slug);
               }}
               onClick={() => openDetail(p.slug)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  openDetail(p.slug);
+                }
+              }}
               className="project-card focus-ring group flex h-full w-full flex-col overflow-hidden rounded-lg bg-nav-fill text-left transition hover:outline-2 hover:outline-offset-2 hover:outline-accent motion-safe:hover:scale-[1.02]"
             >
               {/* Card cover from `image:` frontmatter; field-tracking placeholder if unset. */}
               {p.image ? (
-                <div className="relative h-[var(--card-cover-h)] w-full overflow-hidden bg-image-placeholder">
+                <div className="relative aspect-[31/20] w-full overflow-hidden bg-image-placeholder">
                   <Image
                     src={p.image}
                     alt=""
@@ -148,23 +175,27 @@ export function ProjectsExplorer({ projects, panes }: Props) {
                   />
                 </div>
               ) : (
-                <div className="h-[var(--card-cover-h)] w-full bg-image-placeholder" aria-hidden />
+                <div className="aspect-[31/20] w-full bg-image-placeholder" aria-hidden />
               )}
               <div className="flex flex-1 flex-col p-4">
-                <p className="font-semibold tracking-tight transition-colors group-hover:text-accent group-focus-visible:text-accent">
+                <h2 className="text-xl font-semibold tracking-tight text-balance transition-colors group-hover:text-accent group-focus-visible:text-accent">
                   {p.title}
-                </p>
-                {p.role && (
-                  <p className="mt-2 text-sm font-semibold text-text-muted">{p.role}</p>
+                </h2>
+                {p.type ? (
+                  <span className="mt-2 self-start rounded-md bg-accent-fill px-2 py-1 text-xs font-semibold tracking-wider text-text-muted">
+                    {p.type}
+                  </span>
+                ) : (
+                  p.role && <p className="mt-2 text-sm font-semibold text-text-muted">{p.role}</p>
                 )}
                 {pane?.excerpt && (
-                  <p className="mt-2 line-clamp-2 text-text-muted">{pane.excerpt}</p>
+                  <p className="mt-2 line-clamp-3 text-text-muted">{pane.excerpt}</p>
                 )}
                 <span className="mt-auto inline-block pt-4 text-sm font-semibold text-text-muted transition-colors group-hover:text-accent group-focus-visible:text-accent">
                   Read more →
                 </span>
               </div>
-            </button>
+            </div>
           </li>
         );
       })}
@@ -181,7 +212,7 @@ export function ProjectsExplorer({ projects, panes }: Props) {
         return (
           <article key={p.slug}>
             <h2>{p.title}</h2>
-            {p.role && <p>{p.role}</p>}
+            {(p.type ?? p.role) && <p>{p.type ?? p.role}</p>}
             {pane?.node}
           </article>
         );

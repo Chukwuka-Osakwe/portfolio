@@ -36,25 +36,42 @@ export const mdxComponents: MDXComponents = {
     alt = "",
     width = "66%",
     caption,
+    captionBefore,
+    captionAfter,
   }: {
     src?: string;
     alt?: string;
     width?: string;
+    /** Single-line caption (string or ReactNode). For two-line captions —
+     *  e.g. a "before / after" pair where the image is one composite — use
+     *  `captionBefore`/`captionAfter` instead. (Mirrors <Compare>.) */
     caption?: ReactNode;
+    captionBefore?: string;
+    captionAfter?: string;
   }) => {
+    const hasCaption = !!(caption || captionBefore || captionAfter);
     const img = (
       <img
         src={typeof src === "string" ? src : ""}
         alt={alt}
         loading="lazy"
-        className={caption ? "mx-auto block border border-border" : "my-8 mx-auto block border border-border"}
+        className={hasCaption ? "mx-auto block border border-border" : "my-8 mx-auto block border border-border"}
         style={{ width, maxWidth: "100%" }}
       />
     );
-    return caption ? (
+    return hasCaption ? (
       <figure>
         {img}
-        <figcaption>{caption}</figcaption>
+        <figcaption>
+          {captionBefore || captionAfter ? (
+            <>
+              {captionBefore && <p>{captionBefore}</p>}
+              {captionAfter && <p>{captionAfter}</p>}
+            </>
+          ) : (
+            caption
+          )}
+        </figcaption>
       </figure>
     ) : (
       img
@@ -169,6 +186,9 @@ export const mdxComponents: MDXComponents = {
   // the text rather than banding the full column). The rehype-slug `id` stays
   // on the heading for anchor links. h3 is left as plain prose — it gets an
   // auto-number via CSS counters instead (see .case-body rules in globals.css).
+  // Note: the case-study TITLE at the top of the detail view is rendered as
+  // <h1> in ProjectsExplorer; body section headings stay h2 so the hierarchy
+  // is h1 (title) → h2 (sections) → h3 (subsections), no skipped levels.
   h2: ({ children, ...props }) => (
     <h2 {...props}>
       <span className="accent-fill">{children}</span>

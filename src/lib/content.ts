@@ -19,9 +19,12 @@ export interface Frontmatter {
   blurb?: string;
   /** ISO date string, e.g. "2026-05-01". */
   date: string;
-  tags?: string[];
   /** Work-only: the role you played on the project. */
   role?: string;
+  /** Work-only: the category of work this case study represents (e.g.
+   *  "PRODUCT DESIGN", "VISUAL DESIGN"). When set, takes precedence over
+   *  `role` in the card + detail-header slot. */
+  type?: string;
   /** Card cover image — a path under /public, e.g. "/work/footy/cover.png". */
   image?: string;
   /** Mark true to hide from listings while drafting. */
