@@ -68,13 +68,6 @@ export default function SiteLayout({
                 interfaces for complex products. I design products end to end —
                 and I write about the decisions behind them (sometimes).
               </h1>
-              {/* DRAFT — alternate hero voice from the Notion "about" page, kept
-                  for future consideration (see SESSION_NOTES). Coloured indigo to
-                  mark it as provisional, NOT the live line. Remove or promote. */}
-              <p className="mt-4 text-sm font-normal tracking-tight text-pretty lowercase text-[#4f46e5]">
-                I&apos;m an armchair philosopher at heart, cosplaying as a product
-                designer. In love with gradients.
-              </p>
             </section>
 
             {/* 4px accent rule between the text and the menu. lg:-mx-8 cancels the

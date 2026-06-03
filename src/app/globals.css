@@ -38,10 +38,7 @@
      darker/stronger. Was hardcoded #878286 (≈52% lands closest — revert to that
      hex if the computed version doesn't read better). */
   --text-muted: color-mix(in srgb, var(--foreground) 52%, var(--background));
-  /* NB: --muted below is now orphaned — --text-muted replaced its usages. */
-  --danger: #d31d0c; /* destructive / close affordances (e.g. modal close button) */
   --logo: var(--accent); /* logo now uses the accent color */
-  --muted: #78716c;
   --border: #e5dfe4;
   /* Nav panel width (desktop only). The single "shave the navbar" dial — only
      this width changes; gutters, vertical spacing, text, logo and strokes are
@@ -145,9 +142,7 @@ html[data-detail-pending] .project-grid { visibility: hidden; }
   --color-image-placeholder: var(--image-placeholder);
   --color-text-muted: var(--text-muted);
   --color-nav-fill: var(--nav-fill);
-  --color-danger: var(--danger);
   --color-logo: var(--logo);
-  --color-muted: var(--muted);
   --color-border: var(--border);
   --font-sans: var(--font-nata-sans);
   --font-mono: var(--font-geist-mono);

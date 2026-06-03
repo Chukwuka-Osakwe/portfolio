@@ -531,3 +531,125 @@ featured: true
 - **Footy `footy-cover.webp` orphan** (89KB) — old cover, unreferenced since alt-cover swap. Clean up next time if alt-cover stays.
 - **`/sources/work/footy/screen-1..9.png`** — orphaned after Outcome rewrite, but stay per never-rm-masters.
 - **Long-parked queue** unchanged: Energy case study, Drift B (Contact `ring-*` vs `outline-*`), mobile re-jig of nav panel, Vercel push, OG/sitemap/robots, essays destination, blur placeholders for work covers, card-style review, final cover-image pass, final frontmatter pass (date + role/type residual).
+
+---
+
+## Session 11 — 2026-06-03 (continued from S10, same day) — frontmatter pass · sync drift · contact restyle
+
+A long, multi-arc session resuming directly from S10. Three substantive movements: **(a)** finished the Heyfood + Bribe frontmatter pass left open by S10 and landed Heyfood's cover; **(b)** synced DESIGN.md to multi-session drift in two focused passes (S10 list + S8 caption system) plus a new flex-layout gotcha; **(c)** restyled the Contact page end-to-end — bio copy iterated through many voices, primary + secondary CTA pair built (with copy-to-clipboard), container width and alignment landed via live iteration. Plus housekeeping: favicon recolored to current accent (caught it was still the original `#9F106B` from S1), four cleanup items knocked out.
+
+### Heyfood + Bribe frontmatter pass
+
+- **Heyfood walk-through landed.** `type: "PRODUCT DESIGN"` pill (replacing provisional `role`). Summary rewritten: dropped "self-initiated redesign" (internal framing — portfolio reader cares about the work, not provenance), dropped "sequential-choice flow" jargon (the IA term works in the body but not in a snippet). Final: *"Redesigning the Heyfood checkout — splitting one overloaded screen into a two-step flow that surfaces decisions at the moment they become relevant."* (149 chars).
+- **Heyfood blurb — problem-led hook.** First draft (`"Rethinking a cluttered and inefficient checkout screen using better information architecture practices"`) had two issues: (a) "IA practices" tells a methodology, not a move, (b) "IA" is recruiter-jargon — the user had just asked what IA means in the same session, so spelled-out "information architecture" eats half the blurb. Landed: *"A cluttered single-screen checkout, redesigned around how people actually make purchase decisions."* (98 chars).
+- **Heyfood cover landed mid-session.** User dropped `heyfood-cover.png` (8000×5172, exact 1.547 ratio — matches the brand-board 1.55:1 export). Pipeline through `/sources/work/heyfood/heyfood-cover-v1.png` (master, gitignored) + `/public/work/heyfood/heyfood-cover-v1.webp` (derivative, **20KB** at q80 — flat brand-board / SVG-style art compresses to almost nothing). Versioned `-v1` per the S10 lesson (default-version-on-drop bulletproofs against S7's same-URL cache trap). **Heyfood is now fully done.**
+- **Bribe walk-through landed.** Body framing explicitly says *"the ask here wasn't to redesign the UX top-down"* — scope is genuinely visual, not full product. Real fork from Footy + Heyfood's PRODUCT DESIGN; landed `type: "VISUAL DESIGN"`. Grid now tells two stories (PRODUCT DESIGN × 2, VISUAL DESIGN × 1), honest to the scope of each project.
+- **Bribe summary trim (174 → 144 chars).** Old framing doubled "rooted/narrative" metaphor and trailed off into a feature list ("colour, type, and personality"). New: *"A visual-language redesign of Bribe — a Farcaster mini-app where voice notes come with bribes attached, anchored in a Matrix-inspired narrative."*
+- **Bribe blurb restructured.** Old: *"Overhauling the visual language of a Farcaster voice-notes-with-bribes mini-app — anchored in a Matrix narrative."* — five-stacked-hyphen `voice-notes-with-bribes` was gnarly, structure echoed the summary. New: *"A Matrix-inspired visual identity for a Farcaster mini-app where voice notes come with bribes attached."* (102 chars). Blurb and summary now lead with different angles (Matrix-first vs scope-first) — no echo across surfaces.
+
+### DESIGN.md sync — S10 list (7 surgical edits)
+
+1. **Frontmatter schema** — dropped `tags` (declared but never rendered, deleted S10 with the orphan EntryList); replaced `role`→`type` with deprecation note; added a dedicated **`type` pill spec** bullet (uppercase, `text-xs`, `tracking-wider`, `bg-accent-fill`, `self-start` to defeat flex parent's cross-axis stretch — `inline-block` would silently get pulled full-width otherwise; takes precedence over legacy `role`).
+2. **`<Figure>` caption props** — added `caption` / `captionBefore` / `captionAfter` doc + the **MDX JSX-expression-props gotcha** linked to `[[mdx-jsx-expression-props-dropped]]` (string-form props only).
+3. **Card grid markup** — title is `<h2>` (`text-xl`, `text-balance`); type pill renders; `line-clamp-3`; card root is `<div role="button" tabIndex={0}>` not `<button>` (HTML-validity fix — `<button>` only permits phrasing content per spec; React 19/Next 16 surface this as hydration mismatch where React 18 tolerated).
+4. **In-place detail header** — title promoted `<h2>` → `<h1>` (semantic fix; case-study title IS the page's primary heading); border bumped `border-b-2` → `border-b-4` to match the navbar's two `h-1` accent rules; cap reads from `--reading-measure` token.
+5. **Reload-fix duo** — `/#slug` cold-reload flash documented (pre-paint `<head>` script sets `html[data-detail-pending]`, CSS masks `.project-grid` through the JS-load window, `useLayoutEffect` commits the detail synchronously before paint, same effect clears the attribute). General pattern named: server-unknown state (localStorage, `location.hash`) → resolve via pre-paint `<head>` script + CSS or `useLayoutEffect`.
+6. **Theme-toggle thumb CSS-driven** — `.theme-thumb` transform tied to `html[data-theme]` so the correct cell resolves *before paint* (was React-driven; flashed system→light every reload). Same pattern as #5.
+7. **Stale italic-caption reference** — line about "image→italic-caption gap tightened to 8px" updated to reflect captions now live in `<figcaption>` inside `<figure>`, gap owned internally.
+
+### DESIGN.md sync — S8 caption system + flex gotcha
+
+After the S10 list emptied, two more entries:
+
+- **Caption system CSS architecture** — full S8 system documented as a sibling to `<Figure>`'s prop doc. Covers the unified `<figure>/<figcaption>` path replacing the old `*italic*` paragraph-after-image pattern; the four `.case-body figure` CSS rules (outer 2rem margin-block, internal media zeroed, figcaption styling at `--caption-measure: 36rem`, multi-`<p>` tight stacking for two-line captions); the **`margin-block: 0` vs `margin: 0` trap** — using the shorthand trampled `margin-inline: auto` and left-aligned Figure's centered imgs (burned an hour on this once). Reasoning explained: one CSS rule set covers Figure / Screens / Compare because all three render the same `<figure>/<figcaption>` shape.
+- **"Watch for (flex children blockify)" — new bullet** at end of Layout & Structure. Documents the spec rule: `inline-flex` / `inline-block` children of flex/grid containers get **blockified** at layout time (`display: inline-flex` → `display: flex`), so the "inline" no longer protects from default `align-items: stretch`. Either add `self-start` (or `self-center`/`self-end`) on each child OR keep an explicit `items-*` on the parent. Children with `w-full max-w-*` (e.g. the Contact bio block) are accidentally immune because the max-width caps the stretch. **Bit us once on the Contact email CTA** (stretched 140px → 576px when `items-center` came off the column) and silently on the channels row.
+
+### Favicon recolor + new convention
+
+- **Caught `src/app/icon.png` was still solid `#9F106B`** — the original S1 accent. The accent has cycled `#9F106B` → `#140C34` → `#FF6440` → `#FB370A`; the favicon never tracked because browsers don't apply CSS to favicons. The on-page logo (CSS-masked alpha + `bg-accent`) auto-tracks the token, so the asymmetry was easy to miss until the user noticed.
+- **Regenerated deterministically from `public/portfolio-logo.png` alpha + current accent.** Inline `sharp` script: extract alpha channel, build RGB layer filled with `#FB370A`, stitch into RGBA, write to `src/app/icon.png`. Verified 100% pixel match (95088 px @ `#fb370a`, 0 px @ anything else).
+- **New convention logged in DESIGN.md:** "Favicon — regenerate on accent change" subsection in Color & Theme. Documents the asymmetry, captures the exact regen script verbatim (HEX is the one knob — swap and rerun), notes the cache-bust dance (`rm -rf .next/cache` + hard-refresh), and flags the "why not automate" decision so we don't relitigate. Logo row in palette table updated to call out the auto-tracks-vs-doesn't asymmetry.
+
+### Cleanup category emptied (4 items)
+
+User explicitly asked to empty Cleanup, with Footy gif kept and promoted to Pre-launch Polish as a new "Figure out videos" item (alongside an in-mind "bribe digital rain"):
+
+- **`--muted` token removed** (orphaned since S4; `--text-muted` replaced all usages). Stripped from `:root` + `@theme inline`.
+- **`--danger` token removed** (orphaned since S6 — its only consumer was the deleted modal close button). Stripped from `:root` + `@theme inline`.
+- **`public/work/footy/footy-cover.webp` deleted** (89KB, unreferenced since the S10 `alt-cover.webp` swap).
+- **Indigo DRAFT hero alternate removed** from `(site)/layout.tsx` (the parked "armchair philosopher at heart…" line in indigo). Voice ended up living on Contact in a different form, so the parked hero alt became redundant.
+
+### Drift B — Contact `ring-*` → `focus-ring`
+
+- `Contact.tsx`'s `email me` button was the only place using `focus-visible:ring-2 ring-accent ring-offset-2 ring-offset-background`; everywhere else uses the `focus-ring` utility (`outline: 2px solid var(--accent); outline-offset: 2px`). Visual outcome on a solid-accent button is near-identical between the two — but unified the architecture (one focus primitive across all interactive elements).
+- **Not drift, just looked like it:** `LINK` constant uses `focus-visible:underline + focus-visible:text-accent` (no outline) — deliberate for inline text links where outline would feel heavy. Confirmed live and explicitly documented as intentional pattern.
+
+### Contact page restyle — the long arc
+
+By far the longest arc of the session. Bookkeeping captured here so the journey is reconstructible.
+
+**Bio copy journey:**
+- Started from the S5 placeholder (bare hero + lead + CTA + channels).
+- Explored two reference pages: **anneboysen.dk/about** (substance-led: bio + awards + portrait) and **marijanapav.com/contact** (restraint-led: one headline + email + channels, no bio). Picked substance density + reflective tone from Boysen but explicitly NOT the portrait or minimal-contact treatment.
+- **Drafted a 3-paragraph reflective bio in indigo DRAFT styling** (voice ported from the parked hero-alt). Surfaced the *substance vs restraint* tension: Marijana works because her work pages do the substance lifting; the site's home hero already does identity, so contact doing identity again is double-substancing.
+- User landed on **"identity in broad strokes, not paragraphs"** — Marijana minus the spartan, Boysen minus the bio block. Replaced the 3-paragraph block with personality + CTA-framing 2-paragraph block.
+- **User wrote the personality line themselves:** *"Hello, I'm an armchair philosopher at heart, cosplaying as a product designer. I love gradients, typography, and seeing client's faces light up when they see what I've designed."* Three flags applied with permission: casing (`Hello`→`hello`, site convention), `client's`→`clients'` (plural possessive), `seeing… see` repetition → `watching… see`.
+- **User wrote the CTA framing themselves:** *"contact me if you've got something you'd like me to look at. whether it's a weeklong sprint or a monthslong contract, we'll turn your product or idea into something beautiful and great to use."* Flagged the "great to use" softness and the singular→plural "we'll" voice pivot. User confirmed "we'll" was intentional and inserted **"together,"** as a comma-fenced parenthetical to make it explicit. The "great to use" iteration went: `delightful` (designer cliché — half-flagged) → `a joy to use` (user's pick after a deeper synonym hunt; warm register without the cliché tax).
+- **Promoted out of indigo DRAFT styling** once copy settled — block flattened from `<div><p>DRAFT</p><div><p>...</p><p>...</p></div></div>` to `<div><p>...</p><p>...</p></div>`. Inherits page foreground.
+- **Late-session major revision:** user dropped the first sentence ("hello, i'm an armchair philosopher cosplaying as a product designer") and merged into one paragraph. Then nuked everything and tried a service-pitch rewrite ("if you're building a product and need help making it clearer, more cohesive, or easier to use..."). Then reverted partway: brought the old bio back with the service-pitch's first sentence as a new closing. Then dropped that middle sentence (doubled-invite redundancy). Then added a NEW middle sentence — interests list — *"i'm particularly interested in product design, design systems, things for football fans, and internet-native experiences (coyg!)."* — including a **COYG Easter egg** ("Come On You Gunners" Arsenal chant; opaque to non-football-fans, instantly readable to Arsenal fans). **Final bio is 3 sentences:** personality opener + concrete interests with secret-handshake + qualifier-invite. Voice ends up service-pitch-with-personality-that-knows-its-people.
+
+**Two-button CTA pair (new feature):**
+- **Primary** = solid-accent `email me →` (mailto, unchanged shape). **Secondary** = outline `copy email ⧉` (text/border accent on transparent; hover fills to `bg-accent-fill`). Both share padding/radius/type so they read as a matched pair; only fill + border differ.
+- **`navigator.clipboard.writeText(EMAIL)` + `useState`/`useEffect`** for click feedback. Text swaps `copy email` → `copied!` for `COPIED_FLASH_MS = 4000` (4s; user bumped from 2). Failed clipboard write = silent no-op (mailto is the graceful fallback).
+- **Component flipped server → client** (`'use client'` directive added) for clipboard API + state. SEO-neutral — App Router still renders markup server-side.
+- **Copy icon:** 16x16 SVG, two overlapping rounded squares (standard duplicate glyph), matching the arrow's stroke conventions (1.75 width, currentColor, non-scaling-stroke).
+- **`aria-live="polite"`** on the copy button — screen readers announce the "copied!" state change.
+- **Email button hover — two iterations.** First `opacity-80 + motion-safe:hover:scale-[1.02]` (rejected — still "almost not there"). User asked for **width-stretch hover on the SVG arrow itself**: the SVG transitions `w-4` → `w-6` over 320ms, button widens to accommodate, arrow appears to "lean forward." Two SVG attributes make this work: `preserveAspectRatio="none"` (path stretches non-uniformly) + `vectorEffect="non-scaling-stroke"` (stroke stays crisp during stretch). **320ms matches `.view-enter`'s "scene change" timing** documented in DESIGN.md — accidental but coherent rhythm.
+
+**Layout decisions:**
+- **Container width A/B'd:** `max-w-2xl` (672px) → `max-w-xl` (576px) → `max-w-md` (448px) → `max-w-[30rem]` (480px) → **`max-w-lg`** (32rem / 512px, locked). Final matches the bio's natural reading measure — bio fills column edge-to-edge.
+- **Email button used as a visual ruler during column-width iteration.** `self-start` temporarily removed so the button stretched to full container width; user could see the column-width dial via the button's right edge. Restored `self-start` after locking. **This is how the flex-blockify bug surfaced** — see DESIGN.md sync above.
+- **Top spacing: `mt-[12vh]` → `mt-[8vh]` → viewport-fill flex on lg (path 4).** Initially trimmed for laptop-height fit, then implemented the parked path 4: `lg:min-h-[calc(100dvh-8rem)] lg:justify-center lg:mt-0` — column fills viewspace height (8rem = grid's `pt-8 + pb-24`), `justify-center` vertically centers content. Mobile stays the simple `mt-[8vh]` approach.
+- **Alignment evolved:**
+  - Started fully centered (`items-center text-center`).
+  - Pivoted to left-aligned (dropped centering) when bio's left-aligned text fought the centered hero/buttons/channels.
+  - User asked to center hero only (`text-center` first, then `self-center` per preference), then center buttons too, then center channels too. **Final: everything centered EXCEPT the bio paragraph** (centered prose past 2 lines hurts scanning). Coherent intentional pattern.
+- **Channels simplified.** Originally `github · farcaster` with a hairline dot separator. User dropped github ("not much in there tbh" — sparse github linked from a contact page reads worse than no link). Then dropped the dot. **Final: a closing sentence — *"on the internet you can mostly find me hanging out on farcaster."*** — with "farcaster" inlined as the link. Voice-coherent close instead of a bare text link.
+
+**TODO captured in code at the email button:** future copy-to-clipboard affordance directly on the email address (not just the email-me CTA), referenced to marijanapav.com prior-art.
+
+### Lessons logged this session
+
+1. **inline-flex children get blockified in flex/grid layouts.** Real bug: Contact email button stretched 140px → 576px when `items-center` came off the parent. Pattern logged in DESIGN.md.
+2. **Favicons don't track CSS tokens.** On-page logo's CSS-mask + `bg-accent` auto-tracks `--accent`. But favicons are flat rasters; browsers don't apply CSS. Convention logged: regenerate from `portfolio-logo.png` alpha + new hex when accent changes.
+3. **Two contact-page references with opposite arguments.** Boysen (substance) and Marijana (restraint) make the same point inverted: pages work when their tone matches what the work elsewhere demands. Don't copy the format — copy the *relationship* between page and surrounding work.
+4. **Site convention reconfirmed: all running copy is lowercase.** Reaffirmed multiple times as drafts came in capitalized. Sentence-start capitals and pronoun "I" both lowercased to match.
+5. **Apostrophe convention: `&apos;` HTML entities** (renders to straight `'`). Smart quotes (`'` U+2019) work in JSX but break file consistency.
+
+### Pre-launch Polish queue snapshot (post-S11)
+
+Active:
+- **Card-style review** ← next session starts here (user's call)
+- **Final navbar pass** (added S11)
+- **Mobile re-jig of nav panel**
+- **Blur placeholders for work covers**
+- **Final cover-image pass** *[Footy art direction, ideas padding bands, animated-cover flag]*
+- **Final frontmatter pass**
+- **Figure out videos** *[footy gif, bribe digital rain]* (consolidated from Cleanup → Pre-launch Polish this session)
+
+Closed this session:
+- Drift B (Contact ring-* → focus-ring)
+- Contact page styling
+- DESIGN.md syncs (S10 list + S8 caption system + favicon convention + flex-blockify gotcha)
+- Cleanup category (all 4 items)
+- Sync drift category (emptied)
+
+Big Content (deferred):
+- Energy / Yara / Kickoff case studies
+
+Launch queue (unchanged):
+- Push to Vercel · OG/sitemap/robots · Essays destination
+
+### Resume here — card-style review
+
+User picked card-style review as the next item (longest-deferred Pre-launch Polish item, flagged since S6). Cards are the homepage's primary content and most-seen surface; fresh eyes before launch.
