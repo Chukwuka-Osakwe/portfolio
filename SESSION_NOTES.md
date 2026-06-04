@@ -784,6 +784,6 @@ Pre-launch Polish (post-arc):
 - **Final frontmatter pass** (residual date/role cleanup)
 - **Figure out videos** (footy gif, bribe digital rain)
 
-Big Content: Energy / Yara / Kickoff still queued.
+Big Content: Energy / Yara / Kickoff, **essays destination** (moved 2026-06-04 from Launch → Big Content — essays is a content-pipeline decision, not a launch-checklist item; sits more naturally alongside the unwritten case studies).
 
-Launch queue: Vercel push, OG/sitemap/robots, essays destination.
+Launch queue: Vercel push, OG/sitemap/robots.
