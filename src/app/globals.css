@@ -5,11 +5,10 @@
   --background: #fae8db; /* faint warm cream-peach — page background (field) */
   --foreground: #120e11; /* black — all text */
   --accent: #fb370a; /* highlight / emphasis (e.g. heading word) */
-  --accent-fill: color-mix(in srgb, var(--accent) 16%, transparent); /* faint accent (marker + active menu row) */
-  /* Switcher thumb — its own accent-derived fill, decoupled from --accent-fill
-     so it can read stronger on the frosted track without deepening the marker /
-     active row. Still tracks --accent. The % is the legibility dial. */
-  --switcher-thumb: color-mix(in srgb, var(--accent) 40%, transparent);
+  /* Accent tint scale — stepped names instead of role-names so they describe
+     the color, not the use-case (a single tint can serve several places). */
+  --accent-100: color-mix(in srgb, var(--accent) 16%, transparent); /* faint accent — highlighter marker, Contact CTA hover wash */
+  --accent-200: color-mix(in srgb, var(--accent) 40%, transparent); /* mid accent — ViewSwitcher/ThemeToggle/CaseToc thumbs, NavMenu active fill, NavMenu bracket rules */
   /* Card frame ring — a soft halo a hair lighter than the field. Tracks
      --background (mixed toward the card surface) so it stays in-family whenever
      the field colour changes, instead of needing a manual retune. */
@@ -66,8 +65,8 @@
    (1) OS prefers dark AND user hasn't forced light via the ThemeToggle.
    (2) User has explicitly toggled dark (html[data-theme="dark"]).
    Both selectors re-point the four colour primitives to their --*-dark
-   siblings (defined in :root above). The auto-derived tokens (--accent-fill,
-   --switcher-thumb, --card-ring, --image-placeholder, --text-muted) cascade
+   siblings (defined in :root above). The auto-derived tokens (--accent-100,
+   --accent-200, --card-ring, --image-placeholder, --text-muted) cascade
    automatically because they're color-mix() of the primitives. Accent +
    danger unchanged (vivid orange-red reads on both fields). */
 @media (prefers-color-scheme: dark) {
@@ -136,8 +135,8 @@ html[data-detail-pending] .project-grid { visibility: hidden; }
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
-  --color-accent-fill: var(--accent-fill);
-  --color-switcher-thumb: var(--switcher-thumb);
+  --color-accent-100: var(--accent-100);
+  --color-accent-200: var(--accent-200);
   --color-card-ring: var(--card-ring);
   --color-image-placeholder: var(--image-placeholder);
   --color-text-muted: var(--text-muted);
@@ -328,7 +327,7 @@ html {
 
 /* Faint, uneven marker-style highlight behind inline text.
    Fill color defaults to the accent; override via --fill-color. */
-.accent-fill {
+.accent-marker {
   background-color: color-mix(in srgb, var(--fill-color, var(--accent)) 16%, transparent);
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;

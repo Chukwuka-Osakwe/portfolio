@@ -711,3 +711,79 @@ A long, three-arc session. Started with the deferred card-style review, turned i
 
 ### Resume here — final navbar pass
 S11 flagged "final navbar pass" as a queue item; would be cohesive with the design-polish thread we've been pulling (cards → CaseToc → navbar would close out the chrome surfaces). Alternative quick wins: blur placeholders for case-study covers (extend ideas `blurDataURL` pattern), final frontmatter pass (residual date/role cleanup), or jump to the bigger items (mobile re-jig of nav panel + CaseToc; cover-image pass; videos).
+
+### Session 12 (cont.) — 2026-06-04 — navbar pass arc · panel restructure · accent token scale · type rhythm
+
+A long second movement on the same date. After committing the card-review/CaseToc arc, walked through the final navbar pass. Architecturally invasive (panel restructured to a weighted grid; rules became cutouts), then surgically iterative (7 items on a checklist, each with eyeballing rounds).
+
+#### Panel structural rework
+- **Sticky wrapper switched from `lg:flex lg:flex-col` to `lg:grid lg:grid-rows-[7fr_auto_10fr_auto_3fr]`** — a five-row grid (3 content cells + 2 auto-height rules at boundaries). Each cell is `lg:flex lg:flex-col lg:justify-center` so its content vertical-centers within its allotted height. Ratios: **35% identity / 50% menu / 15% toggle.** Walked: 1fr/auto/1fr/auto/1fr (true thirds) → 1fr/auto/2fr/auto/1fr (25/50/25) → 3fr/5fr/2fr (30/50/20) → **7fr/10fr/3fr** (current). The user's intuition was thirds; rebalanced to weight menu cell as the densest content, toggle cell as the lightest (single ~40px segmented control needs little room). **The "concession" from S9 (toggle gets crushed on short viewports) is now structurally inverted** — content cells shrink proportionally rather than the lower block compressing.
+- **Accent bracket rules became `bg-background` cutouts (`h-1`).** Walked: started as 4px solid `bg-accent` (per S5 history) → tried 2px + bg-accent-200 (40%) → tried 2px + bg-accent-100 (16%) → bumped back to 4px + bg-accent-100 → **landed on 4px + `bg-background`**. As `bg-background`, the rules visually "cut through" the white nav panel revealing the page-field color behind. Reads as **structural gaps in the panel** rather than colored chrome. Bonus: they extend to the right viewport edge via `lg:-mx-8` and flow seamlessly into the viewspace's same `--background` field.
+
+#### Accent token scale (use-case names → strength scale)
+- **Renamed two derived tokens to step naming:** `--accent-fill` → `--accent-100` (16%, faint), `--switcher-thumb` → `--accent-200` (40%, mid). `--accent` (100%, base) kept unchanged. Tailwind classes: `bg-accent-100`, `bg-accent-200`, plus the unchanged `bg-accent` (and text-/border-/outline- variants).
+- **Why:** the use-case names had drifted from their original intent — `--switcher-thumb` was being used by the ViewSwitcher thumb, NavMenu active fill, NavMenu bracket rules (briefly), and CaseToc thumb. The name described the FIRST use, not the actual role (a 40%-accent token). Step naming describes WHAT it is (a strength), letting one token serve many uses without misleading anyone.
+- **Path B** (keep `--accent` as the unstepped base, step only the derived tints) chosen over Path A (full rename of `--accent` → `--accent-300`). Less churn (~10 callsites vs ~34), reads as "a brand color plus tints of it" rather than a Tailwind-style flat scale.
+- **Discussed but rejected for now:** stepping the `--text-muted` token to `--foreground-200`. It's the only foreground-derived tint AND its semantic name is genuinely useful ("this is for muted text"). YAGNI applied — keep stepped naming pragmatic; rename later if more foreground tints arrive.
+- **`.accent-fill` highlighter class renamed to `.accent-marker`** so it doesn't echo the (now-removed) `--accent-fill` token name. The class uses an inline `color-mix(... 16% ...)` rather than the renamed token because it supports a `--fill-color` override; intentional.
+- 13 callsites + comments migrated; type-check clean.
+
+#### Navbar pass — the 7-item checklist
+Initial fresh-eyes pass surfaced 7 items; closed each in order:
+
+1. **Focus-ring unified.** NavMenu buttons were the lone outlier using `outline-none focus-visible:border-accent` (border color shift); everything else uses the `focus-ring` utility (2px accent outline + 2px offset). Migrated.
+2. **Active-item / accent-rules competition.** Active item was `bg-accent-fill` (16%), rules were `bg-accent` (100%) — chrome out-shone the affordance. Walked: option B (rules 2px + active 40%) → user wanted "rules accent-200 too" → "make rules accent-100" → "bump to h-1" → "make rules bg-background" (cutout). Final: rules 4px `bg-background` (cutout), active item `bg-accent-200` (40%). Hierarchy now: affordance > chrome.
+3. **External link indicator.** Added a trailing 14px ↗ SVG glyph to externals (essays, newsletter). Color `text-text-muted` at rest, `group-hover:text-accent` so the icon follows the label's hover-warm. Layout: BASE switched to `flex items-center justify-between` to allow the icon at right edge — then later changed to `justify-center gap-2` (icon becomes a trailing glyph immediately after the label, the chip-with-arrow look the user preferred over right-pinned).
+4. **Hero size.** Initially bumped 14px → 16px ("medium" option) → felt crowded → tried 15px → walked **back to 14px** with the surroundings doing the work instead: `leading-relaxed`, `tracking-tight` dropped, identity cell sized to 7fr (35% of panel), section constrained then unconstrained (see hero rework below). Lesson: when type feels small in a constrained cell, the fix can be *making the cell more generous* rather than bumping the type.
+5. **"some things i do" label.** Was 18px Nico Moji foreground — bigger than the items it labels. Landed: **`text-base` (16px) Nico Moji `text-text-muted`**. Same size as items, but muted color + lighter weight + decorative font subordinate it visually.
+6. **`tracking-tight` on hero.** Already dropped during #4's iterations. Closed passively.
+7. **Hero source caps.** Was `Hello, I'm Chukwuka` (lowercased via CSS); per S11 convention all running copy is lowercase including pronoun "I." Source rewritten lowercase; dropped the now-unnecessary `lowercase` Tailwind class.
+
+#### Hero rework (Cell 1 anatomy)
+Multiple iterations, settled state:
+- **Single H1** with both sentences, body sans, **`text-sm font-medium leading-relaxed text-pretty`** (no `lowercase`, no `tracking-tight`).
+- **Section uses full cell width** (no `max-w-` constraint). Earlier constrained to 16rem + `mx-auto` for block-centering to match the centered logo above; abandoned when the user wanted "systems-oriented" to land at the end of line 1 (which mechanically needs the wider column).
+- **Non-breaking glyphs** to control wrap:
+  - **`&#160;`** (NBSP) between "a" and "systems‑oriented" → article doesn't orphan at line ends
+  - **`&#8209;`** (non-breaking hyphen) inside "systems‑oriented" → never breaks mid-word
+  - **explicit `<br/>`** after "systems‑oriented" → forces the desired wrap point
+- **Brand text** ("chukwuka's matrix") shifted from foreground → `text-text-muted`. Establishes the **rhythm motif** captured below.
+- **Logo / hero asymmetry concession:** with the constrained-block centering gone, the logo-row centers in cell while the hero left-aligns to the cell edge. Accepted; was the simplest way to fit the requested wrap.
+
+#### Rhythm motif — design principle that emerged
+Each panel section now follows the same recipe: **muted Nico Moji label + foreground-medium Nata Sans content**. Specifically:
+
+| Section | Label/quiet | Content/loud |
+|---|---|---|
+| Identity | brand: 16–18px Nico Moji **normal muted** | hero: 14px Nata Sans **medium foreground** |
+| Menu | "some things i do": 16px Nico Moji **normal muted** | items: 14px Nata Sans **medium foreground** |
+
+Same shape, repeated. No element exceeds `font-medium` (500) in the entire panel. Accent only appears as: logo color (`bg-accent` via mask), active-item background (`bg-accent-200`), hover transitions on items. Quiet brand, loud affordances; symmetric structure.
+
+#### NavMenu refit details
+- **Labels centered in buttons** (`justify-center gap-2`) — labels read centered, external arrow sits as a trailing glyph immediately right of the label rather than pinned to right edge.
+- **Font weight evolution:** semibold → normal (briefly) → semibold → **medium** to match the hero rework.
+- **Font size:** text-base (16px) → **text-sm (14px)** to align with hero size.
+
+#### DESIGN.md synced this session
+- Token table updates (renamed rows for `--accent-100`, `--accent-200`)
+- Navbar panel structure (thirds-grid, weighted ratios, cutout rules)
+- The `.accent-marker` class rename
+- The rhythm motif as a design principle
+- Hero non-breaking-glyph wrap pattern
+
+#### Status
+- `tsc --noEmit` clean throughout. No `npm run build` (dev :3000 live; S7 lesson).
+- 8 files modified past `8d7cc4e`. Single coherent commit pending.
+
+#### Resume here — open queue
+Pre-launch Polish (post-arc):
+- **Mobile re-jig of nav panel + CaseToc** — captures all the lg-only patterns we added (thirds-grid, CaseToc bar, etc.) in a mobile pass
+- **Blur placeholders for work covers** (extend ideas `blurDataURL` pattern)
+- **Final cover-image pass** (art direction)
+- **Final frontmatter pass** (residual date/role cleanup)
+- **Figure out videos** (footy gif, bribe digital rain)
+
+Big Content: Energy / Yara / Kickoff still queued.
+
+Launch queue: Vercel push, OG/sitemap/robots, essays destination.

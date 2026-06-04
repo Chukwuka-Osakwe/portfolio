@@ -182,16 +182,16 @@ export const mdxComponents: MDXComponents = {
   },
   /* eslint-enable @next/next/no-img-element */
 
-  // h2 wraps its text in an inline .accent-fill marker (the highlighter hugs
-  // the text rather than banding the full column). The rehype-slug `id` stays
-  // on the heading for anchor links. h3 is left as plain prose — it gets an
-  // auto-number via CSS counters instead (see .case-body rules in globals.css).
+  // h2 wraps its text in an inline .accent-marker highlighter (hugs the text
+  // rather than banding the full column). The rehype-slug `id` stays on the
+  // heading for anchor links. h3 is left as plain prose — it gets an auto-
+  // number via CSS counters instead (see .case-body rules in globals.css).
   // Note: the case-study TITLE at the top of the detail view is rendered as
   // <h1> in ProjectsExplorer; body section headings stay h2 so the hierarchy
   // is h1 (title) → h2 (sections) → h3 (subsections), no skipped levels.
   h2: ({ children, ...props }) => (
     <h2 {...props}>
-      <span className="accent-fill">{children}</span>
+      <span className="accent-marker">{children}</span>
     </h2>
   ),
 

@@ -23,20 +23,38 @@ const ITEMS: Item[] = [
 
 // Separated button stack: each item is its own full-width (equal), rounded,
 // flat outlined control with a gap between them. Left-aligned; hover fills the
-// row; active = accent-fill. (bg lives in the state constants, not BASE, to
-// avoid a Tailwind bg-* conflict between inactive white and active accent-fill.)
+// row; active = --accent-200 fill. (bg lives in the state constants, not
+// BASE, to avoid a Tailwind bg-* conflict between inactive white and the
+// active fill.)
+// `focus-ring` matches the site-wide focus pattern (cards, CaseToc, ViewSwitcher,
+// ThemeToggle) — a 2px accent outline at 2px offset on keyboard focus.
+// flex+justify-center centers the label in the button; external-link arrow
+// sits immediately to the right of the label (gap-2) as a trailing glyph
+// rather than pinned to the button's right edge. `group` is here so the
+// external-icon can group-hover with the label.
 const BASE =
-  "block w-full rounded-lg border px-4 py-3 text-left text-base font-semibold outline-none transition focus-visible:border-accent";
+  "group focus-ring flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium transition";
 const INACTIVE = "border-border bg-nav-fill hover:bg-foreground/5 hover:text-accent";
-const ACTIVE = "border-border bg-accent-fill text-foreground";
+// Active uses --accent-200 (40%) rather than --accent-100 (16%) so it out-
+// emphasises the (now-thinner) bracket rules instead of competing with them —
+// affordance > chrome.
+const ACTIVE = "border-border bg-accent-200 text-foreground";
 
 export function NavMenu() {
   const pathname = usePathname();
 
   return (
-    <div className="mt-12">
+    // mt-12 preserves the established 48px section rhythm on mobile (where the
+    // sticky thirds-grid in the parent doesn't activate). lg:mt-0 lets the
+    // parent's cell-centering do the positioning instead of stacking-margin.
+    <div className="mt-12 lg:mt-0">
+      {/* Label is text-base + text-text-muted: bigger than the menu items
+          but muted in color and lighter in weight (Nico Moji normal vs items'
+          medium sans). Subordinates via color (and a half-step in weight)
+          rather than size. Nico Moji preserved so it still echoes
+          "chukwuka's matrix" — the two Nico Moji lines bracket the hero. */}
       <p
-        className="text-lg text-foreground"
+        className="text-base text-text-muted"
         style={{ fontFamily: "var(--font-nico-moji)" }}
       >
         some things i do
@@ -52,7 +70,8 @@ export function NavMenu() {
                 rel="noopener noreferrer"
                 className={`${BASE} ${INACTIVE}`}
               >
-                {item.label}
+                <span>{item.label}</span>
+                <ExternalIcon />
               </a>
             );
           }
@@ -64,11 +83,34 @@ export function NavMenu() {
               aria-current={isActive ? "page" : undefined}
               className={`${BASE} ${isActive ? ACTIVE : INACTIVE}`}
             >
-              {item.label}
+              <span>{item.label}</span>
             </Link>
           );
         })}
       </div>
     </div>
+  );
+}
+
+// Arrow-up-right glyph trailing every external link — telegraphs "opens in a
+// new tab" before the click. Muted at rest (reads as metadata, not as part of
+// the affordance); on hover follows the label to accent via group-hover so
+// the whole row warms in sync.
+function ExternalIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className="shrink-0 text-text-muted transition-colors group-hover:text-accent"
+    >
+      <path d="M7 17L17 7M7 7h10v10" />
+    </svg>
   );
 }

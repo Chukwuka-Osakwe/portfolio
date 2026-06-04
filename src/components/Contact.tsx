@@ -104,7 +104,7 @@ export function Contact() {
           type="button"
           onClick={handleCopy}
           aria-live="polite"
-          className="focus-ring inline-flex items-center gap-2 rounded-lg border border-accent bg-transparent px-5 py-3 text-base font-semibold text-accent transition hover:bg-accent-fill"
+          className="focus-ring inline-flex items-center gap-2 rounded-lg border border-accent bg-transparent px-5 py-3 text-base font-semibold text-accent transition hover:bg-accent-100"
         >
           {copied ? "copied!" : "copy email"}
           <svg

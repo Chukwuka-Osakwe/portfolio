@@ -35,7 +35,7 @@ export function ViewSwitcher() {
       {/* Sliding thumb */}
       <span
         aria-hidden
-        className="absolute inset-y-1 left-1 w-[calc(50%_-_4px)] rounded-md bg-switcher-thumb motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out"
+        className="absolute inset-y-1 left-1 w-[calc(50%_-_4px)] rounded-md bg-accent-200 motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out"
         style={{ transform: `translateX(${activeIndex * 100}%)` }}
       />
 

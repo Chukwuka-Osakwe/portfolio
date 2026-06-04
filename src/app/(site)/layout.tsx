@@ -30,64 +30,82 @@ export default function SiteLayout({
             margins cancel the grid's pt-8/pb-24 so the white fills to the screen
             edges; the nav/hero pins via the inner sticky wrapper. */}
         <aside className="bg-nav-fill lg:col-start-2 lg:row-start-1 lg:-mb-24 lg:-mt-8 lg:pt-8">
-          <div className="text-center lg:sticky lg:top-8 lg:mx-auto lg:flex lg:h-[calc(100dvh-2rem)] lg:max-w-[28rem] lg:flex-col lg:px-8">
-            {/* Upper block — logo + hero + accent rules + menu. Takes natural
-                height at lg+; below lg this is a no-op and content flows
-                normally inside the parent. */}
-            <div>
-            {/* Nav */}
-            <div className="mt-4 flex items-center justify-center gap-4">
-              <span
-                role="img"
-                aria-label="chukwuka's matrix logo"
-                className="block h-5 w-6 shrink-0 bg-accent"
-                style={{
-                  maskImage: "url(/portfolio-logo.png)",
-                  WebkitMaskImage: "url(/portfolio-logo.png)",
-                  maskSize: "contain",
-                  WebkitMaskSize: "contain",
-                  maskRepeat: "no-repeat",
-                  WebkitMaskRepeat: "no-repeat",
-                  maskPosition: "center",
-                  WebkitMaskPosition: "center",
-                }}
-              />
-              <p
-                className="whitespace-nowrap text-[clamp(1rem,3vw,1.125rem)]"
-                style={{ fontFamily: "var(--font-nico-moji)" }}
-              >
-                chukwuka's matrix
-              </p>
+          {/* Weighted-cell grid (lg+): three vertical-centered content cells
+              separated by two auto-height accent rules. Ratios 7fr / 10fr / 3fr
+              = 35% identity · 50% menu · 15% toggle. Menu stays the densest
+              cell (it needs the most room); identity gets generous breathing
+              room around the 16px hero; toggle (a single ~40px segmented
+              control) fits comfortably even in 15% of the panel. Below lg
+              the grid doesn't activate — content flows naturally with the
+              existing mt-* spacing. */}
+          <div className="text-center lg:sticky lg:top-8 lg:mx-auto lg:grid lg:h-[calc(100dvh-2rem)] lg:max-w-[28rem] lg:grid-rows-[7fr_auto_10fr_auto_3fr] lg:px-8">
+
+            {/* CELL 1 — IDENTITY: logo + hero, centered in the upper cell. */}
+            <div className="lg:flex lg:flex-col lg:justify-center">
+              <div className="mt-4 flex items-center justify-center gap-4 lg:mt-0">
+                <span
+                  role="img"
+                  aria-label="chukwuka's matrix logo"
+                  className="block h-5 w-6 shrink-0 bg-accent"
+                  style={{
+                    maskImage: "url(/portfolio-logo.png)",
+                    WebkitMaskImage: "url(/portfolio-logo.png)",
+                    maskSize: "contain",
+                    WebkitMaskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskPosition: "center",
+                  }}
+                />
+                <p
+                  className="whitespace-nowrap text-[clamp(1rem,3vw,1.125rem)] text-text-muted"
+                  style={{ fontFamily: "var(--font-nico-moji)" }}
+                >
+                  chukwuka's matrix
+                </p>
+              </div>
+
+              {/* Hero — both sentences merged into one left-aligned 14px block.
+                  Quiet on purpose; presence comes from the surroundings, not
+                  the type size. Specifically:
+                  • leading-relaxed (1.625) gives line-internal breathing room
+                  • tracking-tight dropped — a headline treatment, pinches at
+                    body sizes
+                  • the cell itself is the largest slice (7fr — see grid above)
+                    so the small block sits in a generous frame
+                  • explicit <br/> after "systems-oriented" forces an intentional
+                    wrap point (the natural break landed orphans on the line
+                    before); the section uses the full cell width so the line
+                    is wide enough to fit "hello, i'm chukwuka, a systems-
+                    oriented" before breaking
+                  Mobile unconstrained. */}
+              <section className="mt-4 text-left">
+                <h1 className="text-sm font-medium leading-relaxed text-pretty">
+                  hello, i&apos;m chukwuka, a&#160;systems&#8209;oriented
+                  <br />
+                  designer building thoughtful interfaces for complex products.
+                  i design products end to end — and i write about the decisions
+                  behind them (sometimes).
+                </h1>
+              </section>
             </div>
 
-            {/* Hero — both sentences merged into one left-aligned 14px block */}
-            <section className="mt-4 text-left">
-              <h1 className="text-sm font-normal tracking-tight text-pretty lowercase">
-                Hello, I&apos;m Chukwuka, a systems-oriented{" "}
-                {/* DEMO: .accent-fill marker highlight (was text-accent). */}
-                <span className="accent-fill">designer</span> building thoughtful
-                interfaces for complex products. I design products end to end —
-                and I write about the decisions behind them (sometimes).
-              </h1>
-            </section>
+            {/* RULE 1 — boundary between identity and menu cells.
+                lg:-mx-8 cancels the wrapper's px-8 so the line spans the
+                navbar's full width while cell content stays inset 32px. */}
+            <div className="mt-12 h-1 bg-background lg:mt-0 lg:-mx-8" aria-hidden />
 
-            {/* 4px accent rule between the text and the menu. lg:-mx-8 cancels the
-                wrapper's px-8 so the line spans the navbar's full width while the
-                text and buttons stay inset 32px from its edges. */}
-            <div className="mt-12 h-1 bg-accent lg:-mx-8" aria-hidden />
-
-            {/* Things I do */}
-            <NavMenu />
-
-            {/* 4px accent rule 32px below the menu (mirrors the one above it). */}
-            <div className="mt-12 h-1 bg-accent lg:-mx-8" aria-hidden />
+            {/* CELL 2 — MENU, centered in the middle (10fr) cell. */}
+            <div className="lg:flex lg:flex-col lg:justify-center">
+              <NavMenu />
             </div>
 
-            {/* Lower block — at lg+ this is a flex-1 cell that fills the
-                remaining viewport tail and centers the ThemeToggle inside it.
-                Below lg it just stacks naturally with its own mt-12 (the
-                established 48px section gap). */}
-            <div className="mt-12 lg:mt-0 lg:flex lg:flex-1 lg:items-center lg:justify-center">
+            {/* RULE 2 — boundary between menu and toggle cells (mirror of #1). */}
+            <div className="mt-12 h-1 bg-background lg:mt-0 lg:-mx-8" aria-hidden />
+
+            {/* CELL 3 — THEME TOGGLE, centered in the lower cell. */}
+            <div className="mt-12 lg:mt-0 lg:flex lg:flex-col lg:justify-center">
               <ThemeToggle />
             </div>
           </div>
