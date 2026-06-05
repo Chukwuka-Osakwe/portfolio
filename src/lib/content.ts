@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+import { WORK_COVER_LQIPS } from "@/content/work-covers";
 
 export type Section = "work" | "writing";
 
@@ -19,11 +20,9 @@ export interface Frontmatter {
   blurb?: string;
   /** ISO date string, e.g. "2026-05-01". */
   date: string;
-  /** Work-only: the role you played on the project. */
-  role?: string;
   /** Work-only: the category of work this case study represents (e.g.
-   *  "PRODUCT DESIGN", "VISUAL DESIGN"). When set, takes precedence over
-   *  `role` in the card + detail-header slot. */
+   *  "PRODUCT DESIGN", "VISUAL DESIGN"). Renders as an eyebrow label on
+   *  the card + below the detail-header H1. */
   type?: string;
   /** Card cover image — a path under /public, e.g. "/work/footy/cover.png". */
   image?: string;
@@ -39,6 +38,11 @@ export interface Frontmatter {
 export interface ContentMeta extends Frontmatter {
   slug: string;
   section: Section;
+  /** Generated (not authored): base64 LQIP for `next/image` placeholder="blur".
+   *  Populated by `getEntry` from `src/content/work-covers.ts` based on `image`.
+   *  Sidecar to frontmatter so authors don't have to paste a noisy base64
+   *  string into MDX YAML. Undefined when no LQIP is registered for the path. */
+  blurDataURL?: string;
 }
 
 export interface Entry {
@@ -66,8 +70,12 @@ export function getEntry(section: Section, slug: string): Entry {
   const file = path.join(sectionDir(section), `${slug}.mdx`);
   const raw = fs.readFileSync(file, "utf8");
   const { data, content } = matter(raw);
+  const fm = data as Frontmatter;
+  // Attach LQIP if the cover path has one registered. Keyed by image path so a
+  // renamed/versioned cover carries its placeholder with it. See work-covers.ts.
+  const blurDataURL = fm.image ? WORK_COVER_LQIPS[fm.image] : undefined;
   return {
-    meta: { ...(data as Frontmatter), slug, section },
+    meta: { ...fm, slug, section, blurDataURL },
     body: content,
   };
 }

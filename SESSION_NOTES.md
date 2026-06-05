@@ -787,3 +787,137 @@ Pre-launch Polish (post-arc):
 Big Content: Energy / Yara / Kickoff, **essays destination** (moved 2026-06-04 from Launch → Big Content — essays is a content-pipeline decision, not a launch-checklist item; sits more naturally alongside the unwritten case studies).
 
 Launch queue: Vercel push, OG/sitemap/robots.
+
+---
+
+## Session 13 — 2026-06-04 (continued from S12 same day, post-/clear) — frontmatter deprecation closed · blur placeholders shipped · Grammarly noise silenced · cover audit (dissonance kept)
+
+A focused queue-knockout session. Four discrete movements: **(a)** finished the role → type migration started in S10 by removing the legacy field from schema and renderer; **(b)** shipped blur placeholders on work-card covers via a new sidecar pattern; **(c)** suppressed the Grammarly browser-extension hydration warning that Next dev was throwing on `<body>`; **(d)** audited all 8 covers (cases + ideas) as a set, corrected a stale diagnosis, and **closed the final-cover-image pass with intentional non-action** — the cross-cover dissonance is kept as a deliberate design choice.
+
+### Final frontmatter pass — role → type deprecation fully closed
+Background: S10 introduced `type?: string` alongside legacy `role?: string` with a renderer-side fallback ("renderer prefers `type` over `role` when set"). S10 + S11 migrated all three live case studies (Footy / Heyfood / Bribe) to `type`. The fallback became dead code; this session removed it.
+
+- **Pre-audit clean.** Grepped `*.mdx` for `^role:` and `# TODO` — both empty. Summary lengths Footy 132 / Heyfood 149 / Bribe 146 chars (all under Google's ~150 SERP cap). Sort order **Footy → Heyfood → Bribe** verified via featured-pin × date-desc.
+- **Schema (`src/lib/content.ts`):** `role?: string` dropped from `Frontmatter`; `type?` JSDoc rewritten to drop the "takes precedence over `role`" language.
+- **Renderer (`src/components/ProjectsExplorer.tsx`):** three `p.type ? ... : p.role ...` ternaries simplified to `p.type && ...` (card eyebrow line 189, detail-header line 125, hidden crawlable copy line 220). Removed three dead-code branches that were also styled inconsistently to each other (different font sizes on the unreachable `role` paths — would have rendered wrong if any case study had landed on `role` anyway).
+- **DESIGN.md** synced — three stale references updated: frontmatter schema note ("safe to remove" → "fully removed 2026-06-04"), `type`-label precedence claim collapsed to "when unset, the slot is empty," and the `--text-muted` example callsites refreshed (also dropped the orphan "read more" reference — S12 deleted that line).
+- `tsc --noEmit` clean; zero remaining `role` references in `src/` or MDX.
+
+### Blur placeholders for work covers — LQIP sidecar pattern
+Item from the queue since S7. Product-idea covers had `blurDataURL` LQIPs from the start (inline on the typed `Idea` record); work-card covers popped in cold because the storage shape didn't translate cleanly to MDX frontmatter (~150-char base64 strings in YAML = noisy).
+
+- **Storage decision: sidecar map.** New file `src/content/work-covers.ts` exports `WORK_COVER_LQIPS: Record<imagePath, blurDataURL>` keyed by image path (not slug — so a versioned cover swap, e.g. `cover-v1.webp → cover-v2.webp` per the S7 cache-trap workaround, carries its LQIP with it). Header comment includes the inline-sharp regen one-liner. Considered three alternatives: (1) embed base64 in MDX YAML — rejected for noise + escape risk on long strings, (2) sidecar `.blur.txt` files per cover — rejected for fs-read overhead + path-derivation logic, (3) merge into ideas-style typed map — rejected, work is MDX-authored, sidecar keeps the two storage shapes appropriate to their content models.
+- **Merge point (`lib/content.ts`):** `ContentMeta` extended with optional `blurDataURL?: string` (lives on the derived type, not `Frontmatter`, since it's generated not authored). `getEntry` looks up `fm.image` against the map and attaches at read-time — consumers see one shape.
+- **Wire (`ProjectsExplorer.tsx`):** card `<Image>` conditionally spreads `placeholder="blur"` + `blurDataURL` via object-spread (`{...(p.blurDataURL && { placeholder: "blur" as const, blurDataURL: p.blurDataURL })}`) — props absent when no LQIP exists, so no `placeholder="empty"` literal noise. Hidden crawlable copy unchanged (no images).
+- **LQIPs generated** via inline sharp (16px-wide WebP, q60): Footy `alt-cover.webp` 115 chars · Heyfood `heyfood-cover-v1.webp` 143 chars · Bribe `cover-v1.webp` 159 chars. Same order of magnitude as the ideas LQIPs (range 115–230 chars).
+- **DESIGN.md** new bullet under card-cover spec documenting the LQIP pattern + the sidecar-vs-`Idea`-inline asymmetry rationale.
+- `tsc --noEmit` clean.
+
+### Grammarly hydration warning silenced
+Mid-blur-placeholder, dev server surfaced a Next.js hydration error on `<body>`. Diff identified three Grammarly extension attributes (`data-new-gr-c-s-check-loaded`, `data-gr-ext-installed`, `data-new-gr-c-s-loaded`) — extension mutates DOM before React hydrates. Not from our code; the error message itself flags browser extensions as a cause.
+
+- **Fix:** added `suppressHydrationWarning` to `<body>` in `(app)/layout.tsx`. Same pattern S9 established on `<html>` for the theme pre-paint script (canonical Next.js pattern for "attributes change before hydration"). Scoped to body's own attribute checks; child mismatches still surface. Comment added inline explaining the Grammarly/LanguageTool browser-extension pattern.
+- **No tsc/build risk** — JSX prop, type-safe via React typings.
+
+### Final cover-image pass — audited, dissonance kept as intentional
+Read all 8 covers (3 case studies + 5 ideas) as a set. Diagnosis:
+
+**Case studies.** Three different registers across the grid:
+- Footy `alt-cover.webp` — UI-fragments composition on black (Score Square ticket + transaction confirmation moment). Asymmetric, deliberate-feeling. "What's it like in use?"
+- Heyfood `heyfood-cover-v1.webp` — Pure brand wordmark on white. No product. "What's it called?" Lowest-substance cover of the three.
+- Bribe `cover-v1.webp` — 3D angled iPhone mockup on gray studio backdrop. Most conventional portfolio register. "What does it look like on a phone?"
+
+Proposed three coherence paths (all-device-mockup / all-UI-composition / all-editorial-collage), pushed device-mockup. **User called the dissonance intentional** — each cover represents the project's actual visual register honestly; the three pieces of work aren't a coherent set and the covers reflect that. No rework.
+
+**Ideas — diagnosis correction.** S8 note flagged `grok-customisation` + `retro-chat-app` as the padding-band outliers. Looking now, that's stale: `grok-customisation` has been re-exported (busy collage, fills canvas). Current outliers are **`subscriptions-mini-app`** (small phone on lots of empty gray-purple field) and **`retro-chat-app`** (screen with top/bottom padding bands on flat purple field). Carousel jump is now between **slides 3↔4**, not 4↔5. **Also kept as-is** (covered by the same "dissonance intentional" call).
+
+**Animated-cover design flag.** Still abstract — no candidate cover going motion yet. Skip until "Figure out videos" surfaces a candidate.
+
+### Session 13 (cont.) — 2026-06-04 → 2026-06-05 — mobile rebuild from the ground up
+
+After the four cover-pass items above, this session pivoted into a substantive mobile architecture rebuild. The biggest arc of the session by far.
+
+#### Mobile-first process correction (memory saved)
+- Discovered four retrofit tasks (CaseToc hidden on mobile, hero glyph wrap, ~600px nav chrome stacked above work, hero alignment dissonance) that all should have been baked in when each desktop pattern landed. Concluded: the codebase syntax was mobile-first (unprefixed = mobile baseline) but the DESIGN THINKING was desktop-first. Process issue, not semantics.
+- New memory `[[mobile-first-design-process]]` captures: design at both viewports simultaneously (DevTools docked at 390px); sketch the 375px version first for new patterns; question "is the right mobile composition different from stacked-desktop?" rather than accepting fall-out.
+- Closed the four retrofit items (CaseToc bar visible on mobile + segments at text-xs px-2; hero `<br/>` gated to `lg:`; mt-12 → mt-8 across mobile section rhythms; hero text-center on mobile / lg:text-left desktop). Some became moot after the rebuild below (panel doesn't render on mobile anymore), kept as defensive code.
+
+#### Ground-up mobile architecture rebuild
+User picked "Top app-bar + drawer" pattern after a multi-architecture proposal (vs bottom-nav-primary, vs landing-hero). Then picked "bottom sheet" for the drawer style (pairs with existing ViewSwitcher/CaseToc bottom-pinned chrome).
+
+- **New components:**
+  - `HeroBlock.tsx` — extracted logo + brand row + hero text from inline layout markup. Reusable in desktop aside (cell 1) AND mobile sheet body. Brand row is a `<Link href="/">` (the brand is the home anchor).
+  - `MobileTopBar.tsx` — sticky top, h-14 (3.5rem). Layout: brand-link on the left, right-cluster with ThemeCycle + menu button (☰ → ✕). `lg:hidden`. Safe-area-inset-top padding for iOS notches. Receives `buttonRef` so the sheet can return focus on close.
+  - `MobileSheet.tsx` — fixed bottom-anchored slide-up sheet. Backdrop (z-40 fixed inset-0) + sheet (z-50 fixed inset-x-0 bottom-0) as separate siblings (earlier nested-in-fixed-inset-0 caused the layout viewport vs visual viewport mismatch on Chrome Android — only the sheet top was visible). Contains HeroBlock + NavMenu. Position-fixed scroll-lock pattern (capture scrollY, freeze body, restore on close) rather than plain `overflow: hidden` — the latter doesn't reliably block touch-scroll on Chrome Android. Close paths: backdrop click · ✕ · ESC · route change (pathname watch). Animation: `motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out`, motion-safe-gated so reduced-motion snaps.
+  - `ThemeCycle.tsx` — compact 44×44 circular button, cycles light → system → dark on tap. Imports SunIcon/MoonIcon/SystemIcon from ThemeToggle (exported for sharing). Mounted in MobileTopBar as a sibling to the menu button so the toggle is persistent without opening the sheet. ThemeToggle (segmented) still renders in desktop panel; never both at once.
+
+- **Layout (`(site)/layout.tsx`):** became a client component (needed `useState` for mobileSheetOpen + `useRef` for the menu-button trigger). Desktop `<aside>` is now `hidden lg:block` — fully gone on mobile. `<div inert={mobileSheetOpen}>` wraps page-grid + bottom bars so Tab focus stays in the sheet and backdrop taps don't leak. Topbar lives outside the inert wrapper (stays interactive so the menu icon ✕ can close).
+
+- **Mobile sheet polish:**
+  - **Grab handle dropped** — implied drag-to-dismiss which we don't support (false affordance). The X + backdrop + ESC give three close paths already.
+  - **X close button → circular chip** with `bg-foreground/5` + `hover:bg-foreground/10`, matching the menu button (they read as a paired open/close control type).
+  - **Theme cycle button → same circular chip language** as the X/menu — unified visual material across topbar controls.
+
+- **HeroBlock JSX whitespace gotcha** — initial render had "systems-orienteddesigner" smashed together on mobile. The `<br className="hidden lg:inline">` was working (display:none on mobile), but JSX strips whitespace between text and elements on different lines, so the natural-wrap join didn't have a space. Fix: explicit `{" "}` before the `<br/>`. On desktop the trailing space sits invisibly at line end; on mobile it becomes the joining space. Pattern logged in HeroBlock comments for future-me.
+
+- **Brand link sizing** — `inline-flex mx-auto` didn't center in either context (desktop's stretch default kills mx-auto on flex items; mobile sheet body is block where mx-auto needs block-level). Fix: `flex w-fit mx-auto` — block-level flex with content-width works in both contexts.
+
+#### `allowedDevOrigins` discovery (the multi-hour rabbit hole)
+The most painful debug arc of the session. Mobile sheet appeared to "not fire" on real device. Symptoms cascaded:
+1. Initial: sheet button tap visibly did nothing on real phone (Chrome Android).
+2. Cards on the home page also dead — confirmed total hydration failure, not menu-specific.
+3. Restructured the sheet positioning (was: outer `fixed inset-0` + inner `absolute bottom-0`; new: backdrop and sheet as separate `fixed` siblings) to fix Chrome Android's layout-vs-visual viewport mismatch where only the sheet's top peeked above the address bar. Useful fix but unrelated to hydration.
+4. Switched body scroll-lock from `overflow:hidden` to the position-fixed pattern (preserve scrollY, freeze body, restore on close) — more robust on mobile. Also kept.
+5. Added a visible hydration probe to the layout (renders ❌ NOT HYDRATED, flips to ✅ HYDRATED via useEffect, tap counter for handler-attached test) — confirmed React was never mounting on real device.
+6. USB debugging attempt failed — phone showed "Pending authentication" but no RSA dialog ever surfaced (multiple manufacturer-skin layers). Pivoted to cloudflared.
+7. Installed cloudflared via brew, opened quick-tunnel — still no hydration through the tunnel either.
+8. **The actual fix:** Next.js 15+ silently blocks RSC/HMR requests from non-localhost origins. Add `allowedDevOrigins: ['*.trycloudflare.com', '192.168.*.*', '172.20.*.*', '10.*.*.*', '172.20.117.32']` to `next.config.ts`, restart dev. Hydration immediately works.
+9. New memory: `[[next-dev-allowed-origins]]` — symptom (HTML+CSS loads but no interactivity, cards "behave like hovering on desktop" because CSS hover fires on touch but JS handlers don't attach) + fix + debugging-shortcut (add a visible hydration probe before going deep on component bugs).
+
+This whole arc was a process lesson too: **page renders on mobile but nothing's clickable = check `allowedDevOrigins` first**. Spent hours diagnosing component bugs that didn't exist.
+
+#### Various mobile polish (post-rebuild)
+- **NavMenu label** ("some things i do") was left-aligned on mobile because the sheet body has no `text-center` (desktop panel cell DOES). Added `text-center` directly to the `<p>` for self-sufficient centering in both contexts.
+- **Card grid gap** on mobile: `gap-16 → gap-8 sm:gap-16` — 32px between stacked cards on mobile (was 64px which felt sparse without horizontal breathing room from a 2-col layout).
+- **CaseToc bar full-width on mobile** — was inline-grid sized to content. Reclaimed inline BTT space: bar is now `w-full` mobile / `w-auto` desktop; BTT positions `absolute bottom-full right-0 mb-2` (above the bar's right edge) on mobile, slides up out of the bar when scrolled. Desktop unchanged (inline slide-out).
+- **Product Ideas mobile rebuild:** dropped the chevron-flanking-image arrangement on mobile; image alone gets full container width, chevrons move to a transport row below alongside the counter pill. `<Image>` element duplicated (one mobile-only, one desktop-only with `hidden lg:hidden` gates) — small DOM cost, no double-load (same `src`, browser dedupes). Caption widens to `max-w-full` on mobile (was anchored to image width).
+- **Product Ideas spacing redistribution:** parent `gap-2 → gap-6`, dropped now-redundant `mb-4` on hero. Uniform 24px vertical rhythm.
+- **Product Ideas vertical centering:** added `min-h-[calc(100dvh-11.5rem-env(safe-area-inset-top,0px))]` so the carousel content sits centered between topbar and ViewSwitcher with symmetric margin (no min-h on mobile previously → content piled at top).
+- **Hero text 16px on mobile** (clamp min from 1.125rem → 1rem); max bumped down from 1.5rem → 1.25rem (less aggressive scaling on big screens).
+- **Caption alignment:** centered everywhere, but width extended to `max-w-full` on mobile so multi-sentence captions get readable line length without bouncing.
+- **Flex-min-width-auto trap caught:** image as direct flex child wasn't respecting `max-w-full` because flex-item `min-width: auto` for replaced elements = intrinsic width (2000px). Fix: remove the flex wrapper, let image be direct flex-column child where cross-axis sizing works. Future-me note in the file.
+
+#### Contact mobile (vertical centering with no-ViewSwitcher math)
+- ViewSwitcher returns `null` on `/contact` (lines: `if (activeIndex < 0 || detail) return null` in ViewSwitcher.tsx). So `pb-24` on page-grid is empty padding, not chrome-reserved.
+- Applied Product Ideas' vertical-centering pattern initially, then realized it was wrong: subtracting the full 11.5rem (including `pb-24`'s 6rem) made the bottom gap >> top gap (96px vs 32px), asymmetric.
+- Fix: `-mt-8 -mb-24` escapes page-grid's vertical padding entirely; `min-h-[calc(100dvh-3.5rem-env(safe-area-inset-top,0px))]` spans Contact from topbar bottom directly to viewport bottom. Justify-center then produces symmetric gaps.
+- User wanted content shifted UP for optical centering (top-heavy content cluster). Used `-mt-8` on the hero `<p>` — negative top margin on the first child of a justify-center flex column shrinks the cluster by 8/2 = 4px from the centered position, lifting visible content up by ~16px. Easy dial knob.
+- LINK constant for Farcaster link: switched from `text-text-muted underline hover:text-accent` to `text-accent underline` at rest. Without a hover state on touch, inline text links need the link signal to live in the rest state; muted+hover-warm pattern made the link almost invisible on mobile.
+
+#### `overflow-x: clip` phantom-bug detour
+- User reported site-wide horizontal scroll on mobile after the Product Ideas changes. Added `overflow-x: clip` to body as defensive (different from `hidden` — clip doesn't create a scroll container, so sticky topbar still works).
+- Ran a `getBoundingClientRect` diagnostic snippet via DevTools on cloudflared URL: no elements actually overflow. Cloudflare had no scroll; LAN IP did. Diagnosis: **stale browser cache** on the LAN-IP session (cache survived across the restructure work).
+- After confirming both LAN-incognito and cloudflare were clean, commented out the `overflow-x: clip` (left as a known-good fallback in case overflow ever resurfaces).
+
+#### Status
+- `tsc --noEmit` clean throughout. No `npm run build` (dev :3000 live + cloudflared tunnel running; S7 lesson).
+- 18 files modified/new past `22be7d8`. Single coherent commit pending.
+- **2 new memories** saved: `[[mobile-first-design-process]]`, `[[next-dev-allowed-origins]]`.
+- **Cloudflared tunnel still running** (`pkill cloudflared` to stop).
+
+### Resume here — open queue (post-S13)
+
+Pre-launch Polish (mobile pass now CLOSED):
+- ~~Mobile re-jig of nav panel + CaseToc~~ ✅ done (architecture rebuild + all sub-areas)
+- **Figure out videos** (footy gif, bribe digital rain) — bundle the animated-cover flag in here when a candidate appears
+
+Closed this session:
+- ✅ Final frontmatter pass (role → type deprecation fully removed)
+- ✅ Blur placeholders for work covers (LQIP sidecar pattern shipped)
+- ✅ Final cover-image pass (kept as intentional non-action — dissonance per work-register honesty)
+- ✅ **Mobile rebuild from the ground up** (top app-bar + bottom sheet + ThemeCycle + all view-specific mobile passes)
+
+Big Content: Energy / Yara / Kickoff, essays destination.
+Launch queue: Vercel push, OG/sitemap/robots.
+Post-launch (deferred until after the site is live):
+- **Update github links** — added 2026-06-05 mid-S13 mobile-rebuild.

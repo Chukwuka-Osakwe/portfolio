@@ -109,9 +109,10 @@ function SegmentIcon({ value }: { value: Theme }) {
 }
 
 // Stroke icons — currentColor so they inherit text-* classes. Sized 16px to
-// sit nicely inside the segmented control's compressed cells.
+// sit nicely inside the segmented control's compressed cells. Exported so
+// the mobile ThemeCycle button can reuse them.
 
-function SunIcon() {
+export function SunIcon() {
   return (
     <svg
       width="16"
@@ -130,7 +131,7 @@ function SunIcon() {
   );
 }
 
-function MoonIcon() {
+export function MoonIcon() {
   return (
     <svg
       width="16"
@@ -148,7 +149,7 @@ function MoonIcon() {
   );
 }
 
-function SystemIcon() {
+export function SystemIcon() {
   return (
     <svg
       width="16"

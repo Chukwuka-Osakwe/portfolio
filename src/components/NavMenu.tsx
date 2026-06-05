@@ -44,17 +44,20 @@ export function NavMenu() {
   const pathname = usePathname();
 
   return (
-    // mt-12 preserves the established 48px section rhythm on mobile (where the
-    // sticky thirds-grid in the parent doesn't activate). lg:mt-0 lets the
-    // parent's cell-centering do the positioning instead of stacking-margin.
-    <div className="mt-12 lg:mt-0">
+    // mt-8 keeps a tightened 32px section rhythm on mobile (was 48px — too
+    // stretched on a single full-width column). lg:mt-0 lets the parent's
+    // sticky thirds-grid take over (cells handle vertical centering then).
+    <div className="mt-8 lg:mt-0">
       {/* Label is text-base + text-text-muted: bigger than the menu items
           but muted in color and lighter in weight (Nico Moji normal vs items'
           medium sans). Subordinates via color (and a half-step in weight)
           rather than size. Nico Moji preserved so it still echoes
-          "chukwuka's matrix" — the two Nico Moji lines bracket the hero. */}
+          "chukwuka's matrix" — the two Nico Moji lines bracket the hero.
+          text-center is self-contained: desktop panel already cascades it
+          from a text-center wrapper, mobile sheet body doesn't — this makes
+          NavMenu's label center in both contexts without coupling to parent. */}
       <p
-        className="text-base text-text-muted"
+        className="text-center text-base text-text-muted"
         style={{ fontFamily: "var(--font-nico-moji)" }}
       >
         some things i do

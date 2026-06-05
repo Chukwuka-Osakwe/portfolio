@@ -63,7 +63,12 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col">
+      {/* suppressHydrationWarning on <body> too: browser extensions (Grammarly,
+          LanguageTool, etc.) inject attributes on <body> before React hydrates
+          (e.g. data-new-gr-c-s-check-loaded, data-gr-ext-installed), tripping
+          the attribute-mismatch warning. Scoped to <body>'s own attributes —
+          child mismatches still surface. */}
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <main className="flex-1">{children}</main>
       </body>
     </html>

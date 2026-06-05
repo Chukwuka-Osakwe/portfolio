@@ -8,10 +8,12 @@ import { useEffect, useState } from "react";
 const EMAIL = "chukwuka0009@gmail.com";
 const FARCASTER = "https://farcaster.xyz/chukwukaosakwe";
 
-// Understated text link: muted at rest, warms to accent on hover/focus
-// (parity), mirroring the "read more" affordance on the idea cards.
+// Inline text link: accent + underlined at rest so it reads unambiguously
+// as a link on touch (no hover state to warm into). focus-ring brings the
+// site-wide keyboard focus outline; the link's color/underline don't
+// shift on hover since they're already at their maximum-emphasis state.
 const LINK =
-  "rounded text-base font-semibold text-text-muted outline-none transition hover:text-accent focus-visible:text-accent focus-visible:underline";
+  "focus-ring rounded text-base font-semibold text-accent underline";
 
 // "Copied!" feedback duration on the copy-email button.
 const COPIED_FLASH_MS = 4000;
@@ -38,13 +40,19 @@ export function Contact() {
   };
 
   return (
-    // On lg: the column fills the available viewspace (dvh minus the grid's
-    // pt-8/pb-24 = 8rem) and vertically centers its content via justify-center
-    // — content sits visually centered in the cards-column area regardless of
-    // viewport height. On mobile: column sizes to content + uses mt-[8vh] as
-    // a simple top-offset (no min-h fight on tiny screens).
-    <div className="mx-auto mt-[8vh] flex w-full max-w-lg flex-col lg:mt-0 lg:min-h-[calc(100dvh-8rem)] lg:justify-center">
-      <p className="self-center text-[clamp(1.5rem,5vw,2.5rem)] font-semibold tracking-tight text-balance text-accent underline">
+    // Fills the available viewspace and vertically centers its content.
+    // /contact has NO ViewSwitcher (returns null on this route), so the
+    // page-grid's pb-24 is empty padding — symmetric centering needs to
+    // escape both pt-8 AND pb-24 via negative margins. min-h then subtracts
+    // only the topbar (3.5rem + safe-area-top), so Contact spans from
+    // topbar-bottom to viewport-bottom. The mt-8/mb-24 page-grid math still
+    // resolves to a viewport-sized total (Contact's outer-box-with-margins
+    // = inner-box-without; the grid's pt-8 + pb-24 wrap it back).
+    // Desktop unchanged: lg:min-h-[calc(100dvh-8rem)] + no negative margins
+    // (Product Ideas / Footy / Heyfood share the desktop math because the
+    // panel-side handles its own breathing room).
+    <div className="mx-auto -mt-8 -mb-24 flex w-full max-w-lg flex-col justify-center min-h-[calc(100dvh-3.5rem-env(safe-area-inset-top,0px))] lg:mt-0 lg:mb-0 lg:min-h-[calc(100dvh-8rem)]">
+      <p className="-mt-8 self-center text-[clamp(1.5rem,5vw,2.5rem)] font-semibold tracking-tight text-balance text-accent underline">
         better call chuka!
       </p>
 

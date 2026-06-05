@@ -122,10 +122,16 @@ export function CaseToc() {
   };
 
   return (
-    <div className="pointer-events-auto hidden items-center lg:flex">
+    // Mobile: `relative w-full` so the BTT can position absolutely above the
+    // bar (which itself takes the full container width — reclaims the inline
+    // BTT slot for tighter section labels). Desktop: revert to inline flex
+    // so the BTT sits beside the bar like before.
+    <div className="pointer-events-auto relative w-full lg:flex lg:w-auto lg:items-center">
       <nav
         aria-label="Case-study sections"
-        className="frosted relative inline-grid grid-cols-5 rounded-lg p-1"
+        // w-full mobile, w-auto (content-sized) desktop. `inline-grid w-full`
+        // = inline-display element forced to fill its parent's width.
+        className="frosted relative inline-grid w-full grid-cols-5 rounded-lg p-1 lg:w-auto"
       >
         {/* Sliding thumb — matches ViewSwitcher pattern, generalised for 5
             segments. Width is `(100% - 8px) / 5` so it equals one segment's
@@ -144,7 +150,11 @@ export function CaseToc() {
               type="button"
               onClick={() => scrollToSection(s.id)}
               aria-current={isActive ? "true" : undefined}
-              className="focus-ring relative z-10 rounded-md px-3 py-1.5 text-center text-sm text-foreground"
+              // Mobile: text-xs px-2 py-2 — "Reflection" (10ch) at text-xs is
+              // the longest label and fits within ~62px segments on a 360px
+              // viewport once the parent wrapper drops to px-4. Desktop bumps
+              // back to text-sm px-3 py-1.5. Touch target ≥36px on mobile.
+              className="focus-ring relative z-10 rounded-md px-2 py-2 text-center text-xs text-foreground lg:px-3 lg:py-1.5 lg:text-sm"
             >
               {s.label}
             </button>
@@ -152,21 +162,23 @@ export function CaseToc() {
         })}
       </nav>
 
-      {/* BTT — overlaps the bar's right edge while hidden (-translate + opacity-0),
-          slides into its rest position once scrolled. Reduced-motion handled by
-          Tailwind's `motion-safe:` on the translate (opacity still fades quickly). */}
+      {/* BTT — slides into rest position once scrolled past threshold.
+          Mobile: absolutely positioned ABOVE the bar's right edge (bottom-full
+          + mb-2 = 8px gap above the bar). Hidden state translates DOWN by its
+          height + gap, putting it visually behind/inside the bar; on scroll it
+          slides UP into its above-bar rest position.
+          Desktop: inline beside the bar, slides in from the left as before.
+          Both share the same opacity fade.
+          Sized to match the bar's outer height at each breakpoint (h-11 mobile
+          / h-10 desktop) so they read as a paired pill. */}
       <button
         type="button"
         onClick={scrollToTop}
         aria-label="Back to top"
-        // Sized + shaped to match the bar — same `h-10` total height as
-        // [text-sm + py-1.5 + p-1] = 40px, same `rounded-lg` outer corner,
-        // same frosted material. Reads as a sibling pill that the bar
-        // "extends into" rather than a separate floating element.
-        className={`frosted focus-ring ml-2 flex h-10 w-10 items-center justify-center rounded-lg text-accent transition-all duration-300 ${
+        className={`frosted focus-ring absolute bottom-full right-0 mb-2 flex h-11 w-11 items-center justify-center rounded-lg text-accent transition-all duration-300 lg:static lg:ml-2 lg:mb-0 lg:h-10 lg:w-10 ${
           scrolled
-            ? "translate-x-0 opacity-100"
-            : "pointer-events-none -translate-x-12 opacity-0"
+            ? "translate-x-0 translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-[calc(100%+0.5rem)] opacity-0 lg:translate-y-0 lg:-translate-x-12"
         }`}
       >
         <svg

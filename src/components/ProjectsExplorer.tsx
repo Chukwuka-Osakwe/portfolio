@@ -122,12 +122,10 @@ export function ProjectsExplorer({ projects, panes }: Props) {
               {/* Metadata row below H1 — type label here today, room for action
                   pills (e.g. "view live →") alongside it later. Plain text now
                   so future chip-shaped CTAs visually distinguish themselves. */}
-              {p.type ? (
+              {p.type && (
                 <span className="mt-2 inline-block text-xs font-semibold tracking-wider text-text-muted">
                   {p.type}
                 </span>
-              ) : (
-                p.role && <p className="mt-2 font-semibold text-text-muted">{p.role}</p>
               )}
             </header>
             <div className="case-body prose max-w-none">{pane?.node}</div>
@@ -140,7 +138,7 @@ export function ProjectsExplorer({ projects, panes }: Props) {
   // --- Grid view: preview cards (+ a hidden, crawlable copy of every body). ---
   return (
     <>
-    <ul className="project-grid grid gap-16 sm:grid-cols-2">
+    <ul className="project-grid grid gap-8 sm:grid-cols-2 sm:gap-16">
       {projects.map((p) => {
         const pane = panes.find((x) => x.slug === p.slug);
         return (
@@ -166,7 +164,9 @@ export function ProjectsExplorer({ projects, panes }: Props) {
               }}
               className="project-card focus-ring group flex h-full w-full flex-col overflow-hidden rounded-lg bg-nav-fill text-left transition hover:outline-2 hover:outline-offset-2 hover:outline-accent motion-safe:hover:scale-[1.02]"
             >
-              {/* Card cover from `image:` frontmatter; field-tracking placeholder if unset. */}
+              {/* Card cover from `image:` frontmatter; field-tracking placeholder if unset.
+                  `blurDataURL` is the sidecar LQIP from work-covers.ts — when present,
+                  next/image renders a soft blurred preview before the full WebP loads. */}
               {p.image ? (
                 <div className="relative aspect-[31/20] w-full overflow-hidden bg-image-placeholder">
                   <Image
@@ -175,6 +175,10 @@ export function ProjectsExplorer({ projects, panes }: Props) {
                     fill
                     sizes="(min-width: 640px) 24rem, 100vw"
                     className="object-cover"
+                    {...(p.blurDataURL && {
+                      placeholder: "blur" as const,
+                      blurDataURL: p.blurDataURL,
+                    })}
                   />
                 </div>
               ) : (
@@ -186,12 +190,10 @@ export function ProjectsExplorer({ projects, panes }: Props) {
                     button-shaped element; a second one was double-buttoning).
                     Color committed to accent so it actually reads as a category
                     signal. */}
-                {p.type ? (
+                {p.type && (
                   <span className="text-xs font-semibold tracking-wider text-text-muted">
                     {p.type}
                   </span>
-                ) : (
-                  p.role && <p className="text-sm font-semibold text-text-muted">{p.role}</p>
                 )}
                 <h2 className="mt-2 text-xl font-semibold tracking-tight text-balance transition-colors group-hover:text-accent group-focus-visible:text-accent">
                   {p.title}
@@ -217,7 +219,7 @@ export function ProjectsExplorer({ projects, panes }: Props) {
         return (
           <article key={p.slug}>
             <h2>{p.title}</h2>
-            {(p.type ?? p.role) && <p>{p.type ?? p.role}</p>}
+            {p.type && <p>{p.type}</p>}
             {pane?.node}
           </article>
         );
