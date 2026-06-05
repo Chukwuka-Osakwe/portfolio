@@ -790,9 +790,9 @@ Launch queue: Vercel push, OG/sitemap/robots.
 
 ---
 
-## Session 13 — 2026-06-04 (continued from S12 same day, post-/clear) — frontmatter deprecation closed · blur placeholders shipped · Grammarly noise silenced · cover audit (dissonance kept)
+## Session 13 — 2026-06-04 (continued from S12 same day, post-/clear) — frontmatter deprecation closed · blur placeholders shipped · cover audit (dissonance kept)
 
-A focused queue-knockout session. Four discrete movements: **(a)** finished the role → type migration started in S10 by removing the legacy field from schema and renderer; **(b)** shipped blur placeholders on work-card covers via a new sidecar pattern; **(c)** suppressed the Grammarly browser-extension hydration warning that Next dev was throwing on `<body>`; **(d)** audited all 8 covers (cases + ideas) as a set, corrected a stale diagnosis, and **closed the final-cover-image pass with intentional non-action** — the cross-cover dissonance is kept as a deliberate design choice.
+A focused queue-knockout session. Three discrete movements: **(a)** finished the role → type migration started in S10 by removing the legacy field from schema and renderer; **(b)** shipped blur placeholders on work-card covers via a new sidecar pattern; **(c)** audited all 8 covers (cases + ideas) as a set, corrected a stale diagnosis, and **closed the final-cover-image pass with intentional non-action** — the cross-cover dissonance is kept as a deliberate design choice.
 
 ### Final frontmatter pass — role → type deprecation fully closed
 Background: S10 introduced `type?: string` alongside legacy `role?: string` with a renderer-side fallback ("renderer prefers `type` over `role` when set"). S10 + S11 migrated all three live case studies (Footy / Heyfood / Bribe) to `type`. The fallback became dead code; this session removed it.
@@ -812,12 +812,6 @@ Item from the queue since S7. Product-idea covers had `blurDataURL` LQIPs from t
 - **LQIPs generated** via inline sharp (16px-wide WebP, q60): Footy `alt-cover.webp` 115 chars · Heyfood `heyfood-cover-v1.webp` 143 chars · Bribe `cover-v1.webp` 159 chars. Same order of magnitude as the ideas LQIPs (range 115–230 chars).
 - **DESIGN.md** new bullet under card-cover spec documenting the LQIP pattern + the sidecar-vs-`Idea`-inline asymmetry rationale.
 - `tsc --noEmit` clean.
-
-### Grammarly hydration warning silenced
-Mid-blur-placeholder, dev server surfaced a Next.js hydration error on `<body>`. Diff identified three Grammarly extension attributes (`data-new-gr-c-s-check-loaded`, `data-gr-ext-installed`, `data-new-gr-c-s-loaded`) — extension mutates DOM before React hydrates. Not from our code; the error message itself flags browser extensions as a cause.
-
-- **Fix:** added `suppressHydrationWarning` to `<body>` in `(app)/layout.tsx`. Same pattern S9 established on `<html>` for the theme pre-paint script (canonical Next.js pattern for "attributes change before hydration"). Scoped to body's own attribute checks; child mismatches still surface. Comment added inline explaining the Grammarly/LanguageTool browser-extension pattern.
-- **No tsc/build risk** — JSX prop, type-safe via React typings.
 
 ### Final cover-image pass — audited, dissonance kept as intentional
 Read all 8 covers (3 case studies + 5 ideas) as a set. Diagnosis:
