@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import { Nata_Sans, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_TAGLINE,
+  SITE_DESCRIPTION,
+} from "@/lib/site";
 import "./globals.css";
 
 const nataSans = Nata_Sans({
@@ -20,12 +26,39 @@ const nicoMoji = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Portfolio",
-    template: "%s · Portfolio",
+    default: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    template: `%s · ${SITE_NAME}`,
   },
-  description:
-    "Selected work and writing on design, craft, and problem-solving.",
+  description: SITE_DESCRIPTION,
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  applicationName: SITE_NAME,
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    locale: "en_US",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: `${SITE_NAME} — ${SITE_TAGLINE}`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    images: ["/og.png"],
+  },
+  alternates: { canonical: "/" },
+  icons: { icon: "/icon.png" },
 };
 
 export default function RootLayout({
