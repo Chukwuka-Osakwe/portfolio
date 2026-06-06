@@ -913,8 +913,7 @@ Closed this session:
 
 Big Content: Energy / Yara / Kickoff, essays destination.
 Launch queue: Vercel push, OG/sitemap/robots.
-Post-launch (deferred until after the site is live):
-- **Update github links** — added 2026-06-05 mid-S13 mobile-rebuild.
+Post-launch: nothing currently queued.
 
 ---
 
@@ -985,7 +984,6 @@ Launch queue (next):
 - **OG / sitemap / robots**
 
 Big Content (still deferred): Energy / Yara / Kickoff, essays destination.
-Post-launch: update github links.
 
 ### Session 14 (cont.) — 2026-06-06 → 2026-06-07 — 🚀 LAUNCH (live at chukwukaosakwe.com)
 
@@ -1034,7 +1032,6 @@ Social platforms aggressively cache OG images per URL: **Twitter/X** ([cards-dev
 - ✅ Vercel auto-deploys from `main` on push (verified across 3 commits this session)
 
 #### Open / parked after launch
-- **Update github links** (S13 note, post-launch) — now meaningfully substantive since the source repo exists publicly. User said "easy, let me do it now" mid-launch but nothing landed. To confirm.
 - **Footy walkthrough video** — still needs re-export with consistent prototype-frame sizing.
 - **Bribe matrix video** — still needs master produced.
 - **Big Content** — Energy / Yara / Kickoff case studies + essays destination, all deferred.
@@ -1045,6 +1042,5 @@ Social platforms aggressively cache OG images per URL: **Twitter/X** ([cards-dev
 
 Pre-launch Polish (active): videos pass (Footy + Bribe).
 Big Content: Energy / Yara / Kickoff + essays.
-Post-launch: github links (to confirm).
 
 Notable that the site is now in a state where iteration is **publicly visible** — Vercel auto-deploys mean every push to `main` is live within ~90s. Loop now includes: validate locally → commit → push → check production. Skip `npm run build` per S7 (still applies — dev server is live, prod build still corrupts `.next/`).
