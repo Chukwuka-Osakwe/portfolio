@@ -1,6 +1,7 @@
 import type { MDXComponents } from "mdx/types";
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
+import CaseVideo from "./CaseVideo";
 
 /**
  * Custom element + component overrides for MDX bodies.
@@ -229,6 +230,13 @@ export const mdxComponents: MDXComponents = {
       grid
     );
   },
+
+  // Case-study body video. Client component (needs IntersectionObserver +
+  // matchMedia); mirrors <Figure>'s caption API so the same `.case-body figure`
+  // CSS rules cover it. Playback: muted autoplay-on-scroll, one-shot, replay
+  // button overlay on end. Reduced-motion: skip autoplay, show play overlay.
+  // e.g. <CaseVideo src="/work/heyfood/heyfood.mp4" poster="/work/heyfood/heyfood-poster.webp" caption="…" />
+  CaseVideo,
 
   a: ({ href = "", children, ...props }) => {
     // Body / attribution links render in the brand accent (overrides prose's

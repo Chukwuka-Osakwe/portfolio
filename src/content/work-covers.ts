@@ -25,8 +25,8 @@
 export const WORK_COVER_LQIPS: Record<string, string> = {
   "/work/footy/alt-cover.webp":
     "data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAACwAQCdASoQAAoAAoBCJZwAAudjjvdAAP776o/SxuhZwTlgaXKYJ9weDAkXSiXgAAA=",
-  "/work/heyfood/heyfood-cover-v1.webp":
-    "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAABQAgCdASoQAAoAAoBCJYwCdH8GJ/gegTgdigAA/vx5Nw1uKr/mi+Zf0mMpgGsaynuxE7YYljPMWegR7B26wjUGNxwAAA==",
+  "/work/heyfood/heyfood-cover-v2.webp":
+    "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAAAQAgCdASoQAAoAAoBCJZQC7AEVz1hp/ywAAP73D9/TPkLTH0eb0x8Q/0tZ/n1pYP0tCA5eTJ0vgQ/BVn0/WgAA",
   "/work/bribe/cover-v1.webp":
     "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAAAQAgCdASoQAAwAAoBCJZwAAuzVo7TJxtgAAP7UUouf2iDP9lZ/W5/YzxJ0J2m+PUPyzqhZ7Q8thyI1/E7JU9JpKY2wrMhYW3W30rLe14AAAA==",
 };

@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 import type { ContentMeta } from "@/lib/content";
 import { useView } from "@/components/ViewContext";
+import CaseImageViewer from "@/components/CaseImageViewer";
 
 interface Pane {
   slug: string;
@@ -128,7 +129,9 @@ export function ProjectsExplorer({ projects, panes }: Props) {
                 </span>
               )}
             </header>
-            <div className="case-body prose max-w-none">{pane?.node}</div>
+            <CaseImageViewer>
+              <div className="case-body prose max-w-none">{pane?.node}</div>
+            </CaseImageViewer>
           </article>
         </div>
       );

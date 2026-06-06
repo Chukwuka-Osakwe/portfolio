@@ -296,7 +296,8 @@ html {
 }
 .case-body figure > img,
 .case-body figure > div,
-.case-body figure > picture {
+.case-body figure > picture,
+.case-body figure > video {
   margin-block: 0;
 }
 /* Zero img's block margins anywhere inside a figure — prose applies a global
@@ -333,6 +334,28 @@ html {
 .view-enter { animation: view-in 320ms var(--ease-house) both; }
 @media (prefers-reduced-motion: reduce) {
   .view-enter { animation: none; }
+}
+
+/* Case-study body images are clickable (see CaseImageViewer). The `zoom-in`
+   cursor telegraphs the affordance on hover; no visible chrome at rest. */
+.case-body img { cursor: zoom-in; }
+.case-body figure > video,
+.case-body [data-no-zoom] img { cursor: default; }
+
+/* Lightbox dialog — see CaseImageViewer. Sits centered; backdrop styled via
+   tailwind utility classes on the dialog (backdrop:bg-foreground/60 etc.). Add
+   a brief fade-in so the open isn't jarring; reduced-motion snaps in. */
+dialog.image-viewer[open] { animation: view-in 200ms var(--ease-house) both; }
+@media (prefers-reduced-motion: reduce) {
+  dialog.image-viewer[open] { animation: none; }
+}
+/* On lg+, cap the image's max-width to the viewspace width (NOT 95vw, which
+   would scale with the full viewport and feel oversized). Dialog centers
+   across the full viewport, so wide images visually extend over the dimmed
+   navbar area at their right edge. Smaller-than-viewspace images stay at
+   native size. */
+@media (min-width: 1024px) {
+  dialog.image-viewer img { max-width: calc(100vw - var(--nav-w)); }
 }
 
 /* Faint, uneven marker-style highlight behind inline text.

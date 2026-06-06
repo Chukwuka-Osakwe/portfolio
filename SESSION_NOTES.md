@@ -915,3 +915,74 @@ Big Content: Energy / Yara / Kickoff, essays destination.
 Launch queue: Vercel push, OG/sitemap/robots.
 Post-launch (deferred until after the site is live):
 - **Update github links** — added 2026-06-05 mid-S13 mobile-rebuild.
+
+---
+
+## Session 14 — 2026-06-05 → 2026-06-06 — videos started · lightbox shipped · pivot to launch
+
+A multi-arc session that began as the "Figure out videos" pass and ended pivoting to launch after the user concluded the video work would take more than the initially-budgeted attention. Three substantive arcs: **(a)** Heyfood mp4 landed end-to-end (cover v2 + new `<CaseVideo>` component + clip crop + clean poster); **(b)** Defifa spinner gif processed then dropped (user's "do we really need this gif... we don't"); **(c)** clickable image lightbox shipped (new `<CaseImageViewer>` with caption support). Footy walkthrough flagged-and-parked after a fresh master surfaced a device-frame size-jump.
+
+### Heyfood — cover v2 + walkthrough mp4
+
+- **Cover v2 swap.** New 8000×5172 PNG (same brand-board 1.547 ratio as v1) → master `sources/work/heyfood/heyfood-cover-v2.png` → derivative `public/work/heyfood/heyfood-cover-v2.webp` (**33KB** at q80; v1 was 20KB). Versioned `-v2` per the S10 cache-trap workaround. LQIP regenerated and swapped in `work-covers.ts`; `heyfood.mdx` frontmatter repointed; `.next/cache/images` cleared.
+- **New `<CaseVideo>` component (`src/components/CaseVideo.tsx`).** Client component — needs `useRef` + IntersectionObserver + `matchMedia`. Mirrors `<Figure>`'s caption API (`caption` / `captionBefore` / `captionAfter`) so `.case-body figure > figcaption` CSS handles it. `<video muted playsinline preload="metadata">` — no native controls. **IntersectionObserver @ 0.5 threshold fires `play()` once, then disconnects** (one-shot autoplay-on-scroll, never loops). On `ended` → replay button overlay. **`prefers-reduced-motion`** → no autoplay; play-button overlay from the start (triangle glyph). Overlay is always-mounted with opacity + `pointer-events` gated by state, so both the appear AND disappear animate. Overlay is `aria-hidden` + `tabIndex={-1}` when invisible. **Frosted accent material** (`frosted` utility + `text-accent`), **320ms fade** matching `.view-enter`'s scene-change rhythm.
+- **`> video` added to `.case-body figure` margin-zero rule** so video sits flush like img/div/picture inside a figure.
+- **mp4 pipeline.** Source `the-notion/.../heyfood.mp4` (4.0 MB, 444×928, 18.5s, H.264) → master in `/sources` → ffmpeg `-c:v libx264 -crf 23 -preset slow -an -movflags +faststart -pix_fmt yuv420p`. First encode 321KB. Then **discovered the canvas had 19px top + 20px bottom black bands** (precise scan via sharp raw RGB sampling). Re-encoded with `-vf crop=444:888:0:19` for a tight phone-edge canvas. Final: **317KB**, 444×888.
+- **Poster pass.** Frame 0 had a tap-ripple overlay; sampled 7 candidate timestamps; **t=18s** was the only fully clean frame — bonus: it matches the clip's start frame, so the poster→first-frame transition is seamless when autoplay fires. Re-extracted poster from cropped video at t=18 → `public/work/heyfood/heyfood-poster.webp` (42KB).
+- **Border-and-caption gap iteration.** Initially wrapped the video in a `border border-border` div — user flagged that the outline was visible (and pushed the caption 1px further from the phone than the `<Screens>` block above it). Diagnosis: `<Screens>`'s child imgs have no border (only `<Figure>` does), so adjacent media read inconsistent. Dropped the border on `CaseVideo`'s wrapper; both issues resolved (8px caption gap now matches Screens). Dark mode concession flagged: the phone bezel may blend into the dark coffee bg without a border — user confirmed acceptable after eyeballing.
+- **Placement.** Inside `## The Outcome`, after the static `<Screens>` block, at `width="18rem"` matching `current-checkout` (the other single-phone Figure in the case study).
+
+### Defifa spinner gif — processed then dropped
+
+- **Sharp animated-WebP path.** Master `sources/work/footy/defifa-spinner.gif` (1.79 MB, 459×360, 63 frames @ 20fps) → derivative q80 native size: **670KB** (63% reduction, not S7's optimistic 5-8× because the halftone pulse is expensive — lossless ballooned to 1.47 MB, fps reduction backfired after palette re-derivation).
+- **Placed at the top of Footy** above `## The Overview` via `<Figure width="16rem">`, no caption (brand-context beat).
+- **User reconsidered:** "man, do we really need this gif? i'm thinking about it now and... frankly, we don't." MDX revert, derivative deleted, master in `/sources` initially kept-then-deleted in this session's cleanup.
+
+### KMac link in footy.mdx
+
+- Quick fix mid-session: "KMac" wasn't linked. Wrapped as `[KMac](https://farcaster.xyz/kmacb.eth)` in the Overview's first sentence — routes through the `a` override in `mdx-components.tsx` for accent text + underline + new-tab.
+
+### New `<CaseImageViewer>` (image lightbox)
+
+User flagged: "we can't click into any of the images on the site." Built a delegated-click lightbox.
+
+- **`src/components/CaseImageViewer.tsx`** — client component, wraps the case-body content with a single `onClick` handler. Any `<img>` click inside the subtree opens a native `<dialog>`. Walks `target.closest("figure")?.querySelector("figcaption")` to grab the caption HTML so multi-paragraph captions preserve structure. Opt-out via `[data-no-zoom]` on any ancestor. Excludes non-img elements automatically (so `<video>` inside `CaseVideo` doesn't trigger).
+- **Dialog UX.** Native `<dialog>` opened via `showModal()` — focus trap + Esc-to-close + inert background come free. Image at `max-h-[80vh]` and `max-w-[95vw]`, `object-contain`. Backdrop = `bg-foreground/60` + 8px blur. Close paths: ✕ button (frosted chip, top-right of image), backdrop click (`e.target === dialogRef.current`), Esc. Focus restored to the originating `<img>` on close. **200ms fade-in** via `var(--ease-house)`; reduced-motion snaps.
+- **Centering iteration.** Initially Tailwind's Preflight `margin: 0` reset killed the UA `margin: auto` that centers native dialogs. Fixed with explicit `m-auto` + `max-h/w` on the dialog itself. Then user asked: "could we center them only in the viewspace?" Added `dialog.image-viewer { right: var(--nav-w) }` on `lg+` so the centering box runs `(0 to viewport-nav)`. Then: "now leave it at that width but center across the entire viewport again." Dropped the `right` constraint, kept image's `max-width: calc(100vw - var(--nav-w))` so the image is capped at viewspace width but centered in the full viewport (visually extends over the dimmed navbar on its right side).
+- **Caption support.** Below image, on a **frosted card** (`frosted rounded-md px-4 py-2 text-foreground`), capped at `--caption-measure` (36rem), `[&>p]:m-0` to stack multi-`<p>` captions tight. Image max-h locked at consistent 80vh whether captioned or not — shape feels the same across every image.
+- **CSS hooks (globals.css).** `.case-body img { cursor: zoom-in }` + `.case-body figure > video, .case-body [data-no-zoom] img { cursor: default }`. Plus `dialog.image-viewer[open] { animation: view-in 200ms var(--ease-house) both }`.
+- **Wired into `ProjectsExplorer`** by wrapping the case-body div with `<CaseImageViewer>` only in the live detail view — the hidden SEO crawlable copy stays unwrapped (display:none, no clicks possible).
+
+### Footy walkthrough — fresh master flagged, parked
+
+User re-recorded the walkthrough (select game → buy squares, ~26.6s, 788×1592, SDR/bt709 — per our pre-record discussion).
+
+- **Substantial improvements over the original 49.6s recording:** 3× the pixel count, much cleaner cropping (4px top + 7px bottom black bands vs Heyfood's 19+20), bt709 SDR as specified.
+- **Issue diagnosed: the iPhone frame size jumps between scenes.** Compared frames at t=0 (large), t=1/3/8 (smaller, padded), t=14/20 (large again). The Figma prototype's frames were authored at different sizes; the device chrome wraps each individually, so the visible iPhone appears to zoom in/out between transitions. Reads as jittery. Re-export needed.
+- **Tap ripples still visible** on most interactions (same as Heyfood — we shipped Heyfood with them, but if frame-jump gets fixed, worth disabling "Show Touches" while at it).
+- User concluded the video pass would take more sessions than originally budgeted: **pivot to launch.**
+
+### Cleanup-and-pivot
+
+User said "nuke session loose ends, let's tackle launch." Cleared:
+- **Deleted** `Screen Recording 2026-06-05 at 15.08.08.mov` (Footy walkthrough master with the frame-jump issue; can re-acquire from a clean re-export later)
+- **Deleted** `sources/work/footy/defifa-spinner.gif` (parked gif master; original still in `/the-notion` if decision ever reverses)
+- **Committing** the legitimate session work (cover v2 + Heyfood video + lightbox + KMac link + DESIGN.md + this entry).
+
+### ⚠️ Open / parked / next
+
+- **Footy walkthrough video** — needs re-export with consistent prototype-frame sizing AND (ideally) disabled touch indicator. When dropped, the existing `<CaseVideo>` pipeline handles the rest.
+- **Bribe matrix** — still needs master produced; resurrect S5 `DigitalRain.tsx` from git history (`git show 38fc24d:src/components/DigitalRain.tsx`) and screen-record or use `MediaRecorder`, OR find/produce a stock Matrix-rain loop. Pre-rendered video is the path — collapses into the same `<CaseVideo>` workflow.
+- **Loose lightbox eyeball items** carried forward as in-flight visual polish (close button placement, backdrop dim weight, caption frosted card visibility, etc.) — eyeball in production once launched.
+
+### Resume here — launch
+
+Pre-launch Polish queue:
+- ⏸️ Figure out videos (Heyfood done, Footy + Bribe parked for re-export / production)
+
+Launch queue (next):
+- **Push to Vercel**
+- **OG / sitemap / robots**
+
+Big Content (still deferred): Energy / Yara / Kickoff, essays destination.
+Post-launch: update github links.
