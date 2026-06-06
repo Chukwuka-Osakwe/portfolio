@@ -199,6 +199,23 @@ The desktop pattern is "persistent identity panel on the right, viewspace on the
 - **Cache note:** browsers cache favicons hard. After regeneration: `rm -rf .next/cache && npm run dev`, then hard-refresh the tab (Cmd+Shift+R) or close + reopen it. Production deploys cache-bust via Next's build hash on the icon route.
 - **Why not auto-generate on build?** Possible (e.g. a `prebuild` script reading `--accent` from `globals.css`), but the accent doesn't change often and the script is short — manual regen is fine until it isn't.
 
+### OG image — regenerate on accent / copy / logo change (2026-06-06 convention)
+- **The site OG image (`public/og.png`, 1200×630) also doesn't auto-track tokens** — same asymmetry as the favicon. Lives on the same regen pattern.
+- **Generator: `scripts/generate-og.mjs`.** Composites: peach `--background` rect → recoloured `public/portfolio-logo.png` (alpha → solid accent RGB → joined RGBA) → name text via SVG (system sans, `-apple-system, BlinkMacSystemFont, 'Segoe UI'`). The logo and name pair are vertically centred. Re-run:
+  ```bash
+  node scripts/generate-og.mjs
+  ```
+- **Knobs in the script** (top of file): `BG` (background), `ACCENT` (logo colour), `FG` (text colour), `NAME` (visible card text — currently lowercase to match brand voice). Update + rerun on accent / copy / logo changes.
+- **Scope of the lowercase decision (2026-06-07).** The OG image's *visible* text uses lowercase (`chukwuka osakwe`) to match the site's brand voice (hero + wordmark are all lowercase). The HTML `<title>` tag and `og:title` metadata strings stay **title-cased** (`Chukwuka Osakwe — chukwuka's matrix`) — different surface, different rules: SERP listings and browser tabs benefit from title case for proper-noun parsing, OG cards are visual brand surfaces that live next to other lowercase brand content.
+- **Linkshare cache caveat.** After regenerating + redeploying, social platforms (Twitter/X, LinkedIn, Facebook, etc.) keep the old image cached per URL until forced to recrawl. Validators: [Twitter Card Validator](https://cards-dev.twitter.com/validator) · [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) · [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/). Discord / Slack / iMessage cache without a public debugger — old shares stay stuck; new shares pick up the new image. URLs that haven't been shared yet have no cache to invalidate.
+
+### Site URL token + SEO metadata (2026-06-06)
+- **`src/lib/site.ts`** holds the single source of truth for the canonical URL + brand strings (`SITE_URL`, `SITE_NAME`, `SITE_TAGLINE`, `SITE_DESCRIPTION`). Consumed by `metadataBase` in the root layout, by `sitemap.ts` and `robots.ts`, and by per-page `openGraph.url`. **Domain swaps live here exactly once.**
+- **`NEXT_PUBLIC_SITE_URL` env var wins if set** — lets staging / preview deploys point at a different URL without a code change. Falls back to the hardcoded canonical for local dev and production. Trailing slash is stripped in the consumer.
+- **Sitemap (`src/app/sitemap.ts`)** lists only the **3 real routes** (`/`, `/product-ideas`, `/contact`). Case studies live as hash deep-links on `/` (e.g. `/#footy`) per the in-place detail pattern — they're crawlable via the hidden static block but not separate URLs. Sitemaps want URLs that respond independently, so they're omitted.
+- **Robots (`src/app/robots.ts`)**: allow all, point at sitemap + host. No private routes to gate.
+- **Apex canonical convention.** `chukwukaosakwe.com` is the canonical (matches `SITE_URL`); `www.chukwukaosakwe.com` permanently redirects (308) on Vercel. Caught + corrected at launch when Vercel had initially set the direction reversed (apex redirecting to www) — would have created a mismatch with the metadata and confused crawlers. **When future domains are wired, set apex primary + `www` redirect to apex** (Vercel → Settings → Domains).
+
 ## Spacing
 - **All spacing follows an 8px grid** — margins, padding, *and* gaps use 8 / 16 / 24 / 32 … (Tailwind `-2` / `-4` / `-6` / `-8`), **not** in-between values like 12px (`-3`), 20px (`-5`), 4px (`-1`), or 2px (`-0.5`) — unless there's a specific reason. Keeps rhythm consistent across the UI.
 - **Nav panel section rhythm = 48px (`mt-12`), decided 2026-05-23.** The standard gap **between navbar sections** (identity block → accent rule → menu → accent rule → readout, and top-of-column → logo) is **48px**. **Exception:** the logo + hero text are **one** "identity" section, so they're only **16px** (`mt-4`) apart internally. (48px is still a multiple of 8, so the 8px grid holds.)

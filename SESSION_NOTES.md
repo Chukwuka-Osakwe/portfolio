@@ -986,3 +986,65 @@ Launch queue (next):
 
 Big Content (still deferred): Energy / Yara / Kickoff, essays destination.
 Post-launch: update github links.
+
+### Session 14 (cont.) — 2026-06-06 → 2026-06-07 — 🚀 LAUNCH (live at chukwukaosakwe.com)
+
+Pivoted from the videos pass into launch. Whole launch arc landed in one continuous push: SEO foundation → GitHub repo → Vercel deploy → custom domain → redirect-direction correction → OG image iterations. **Site is live at https://chukwukaosakwe.com.**
+
+#### SEO foundation (commit `a472890`)
+- **`src/lib/site.ts`** — single source of truth for canonical URL + brand strings (`SITE_URL`, `SITE_NAME`, `SITE_TAGLINE`, `SITE_DESCRIPTION`). `process.env.NEXT_PUBLIC_SITE_URL` wins if set (lets staging deploys point at a different URL without a code change); falls back to the hardcoded value. Trailing-slash stripped via regex on the env value.
+- **`scripts/generate-og.mjs`** — reproducible OG image generator. Pattern mirrors the S11 favicon regen convention: read `public/portfolio-logo.png` alpha, build RGB layer at accent (`#FB370A`), stitch back to RGBA, composite on warm-peach (`#FAE8DB`) background. Text via SVG using system sans (`-apple-system, BlinkMacSystemFont, 'Segoe UI'`) — good enough for v1; could swap to embedded Nata Sans later. Re-run on accent / copy / logo changes.
+- **`public/og.png`** (1200×630, ~32KB) — site default OG card. Looks like a screenshot of the site identity, so it reads as "of the site" in linkshares.
+- **Root `metadata` expansion in `src/app/layout.tsx`** — full `Metadata` API: `metadataBase`, `title { default, template }`, `description`, `authors`, `creator`, `applicationName`, `openGraph { type, siteName, title, description, url, locale, images: [{ url, width, height, alt }] }`, `twitter { card: "summary_large_image", title, description, images }`, `alternates: { canonical: "/" }`, `icons: { icon: "/icon.png" }`.
+- **`src/app/sitemap.ts`** — `MetadataRoute.Sitemap` export, 3 routes (`/`, `/product-ideas`, `/contact`) with `lastModified`/`changeFrequency`/`priority`. Case studies omitted: they live as hash deep-links on `/`, not separate routes (sitemaps want URLs that respond independently). Their content stays crawlable via the hidden static block from S6.
+- **`src/app/robots.ts`** — `MetadataRoute.Robots` export. Allow all, sitemap + host pointer.
+- **Per-page metadata** on `/`, `/contact`, `/product-ideas` — title + description + openGraph + twitter + alternates.canonical. Title template `%s · Chukwuka Osakwe` makes child pages read `Contact · Chukwuka Osakwe` in tabs/SERPs.
+
+#### Branch hygiene + GitHub (commit `424199c`)
+- **Branch reshuffle.** Working trunk was `in-place-detail-and-palette` (a feature-branch name that became the de-facto trunk). `main` was stuck at S5 (`fb33273`, 14 commits behind). Fast-forwarded `main` to current HEAD, deleted `in-place-detail-and-palette`. Single-branch `main`-only repo.
+- **README polish.** Replaced the create-next-app boilerplate with a portfolio overview (live URL, stack, routes, doc pointers, image pipeline note).
+- **GitHub repo created via `gh repo create`** — public at **https://github.com/Chukwuka-Osakwe/portfolio**. `gh` was already authenticated as `Chukwuka-Osakwe`.
+
+#### Vercel deploy (no commit — happened via the GitHub push)
+- Imported via Vercel dashboard. Auto-detected Next.js. **Build succeeded first try** (Next.js 16 prod build is stricter than dev — we'd avoided running it locally per the S7 cache-trap lesson, so this was the validation moment; clean).
+- First deploy URL: `https://portfolio-gilt-pi-36.vercel.app/`. Sanity-checked all 7 endpoints (200), sitemap content, robots content, OG metadata in HTML head — all healthy.
+
+#### Domain swap → `chukwukaosakwe.com` (commit `9f8bca5`)
+- User has Namecheap domain at `chukwukaosakwe.com`. Removed the `TODO(domain)` placeholder, committed, push triggered Vercel redeploy with correct canonical metadata.
+- Walked through Namecheap Advanced DNS: A record `@` → `76.76.21.21`, CNAME `www` → `cname.vercel-dns.com.`. Vercel auto-provisioned Let's Encrypt SSL.
+
+#### Apex/www redirect direction — caught + corrected
+- After SSL went live, spot-checked the canonical: apex was returning **308 → www** (Vercel had configured `www` as primary). Our metadata (`SITE_URL`, sitemap, robots, all `og:url`, canonical link tags) all pointed at the apex. Mismatch — search engines following our sitemap would hit apex, get redirected to www, then see a canonical tag saying apex is canonical. Contradictory.
+- Flipped in Vercel UI: apex primary, `www` redirects to apex (308). Verified: apex 200, www 308 → apex. State of metadata, code, and Vercel routing all in agreement.
+
+#### OG image iterations
+- **v1 (initial, in `a472890`):** logo + "Chukwuka Osakwe" name + "Systems-oriented designer" tagline. Centered composition.
+- **v2 (`6e97e3b`):** dropped tagline per user request. Recentered the remaining logo+name pair; logo bumped 280→320px wide, name bumped 72→80px to fill the canvas. Same peach + accent palette.
+- **v3 (`ba5ac40`):** lowercased name (`Chukwuka Osakwe` → `chukwuka osakwe`) to match the brand voice. **Scope decision documented:** OG image visual = lowercase (matches hero + wordmark); HTML `<title>` tag + `og:title` metadata text = stays title-cased (browser tabs / SERP listings benefit from title case for proper-noun parsing). Different surfaces, different rules.
+
+#### Linkshare cache caveat (logged for future-me)
+Social platforms aggressively cache OG images per URL: **Twitter/X** ([cards-dev.twitter.com/validator](https://cards-dev.twitter.com/validator)), **LinkedIn** ([linkedin.com/post-inspector](https://www.linkedin.com/post-inspector/)), **Facebook/Meta** ([developers.facebook.com/tools/debug](https://developers.facebook.com/tools/debug/)) have public validators that force a recrawl. **Discord/Slack/iMessage** cache without a debugger interface — old shares stay stuck for hours-to-days; new shares pick up the new image. If you haven't shared yet, none of this matters — caches only exist for URLs platforms have already fetched.
+
+#### Launch checklist — closed
+- ✅ Site live at **https://chukwukaosakwe.com**
+- ✅ Apex canonical, `www` permanently redirects (308)
+- ✅ HTTPS (Let's Encrypt cert provisioned via Vercel)
+- ✅ Sitemap, robots, OG image, per-page metadata all serving correctly on canonical
+- ✅ Source public at **https://github.com/Chukwuka-Osakwe/portfolio**
+- ✅ Vercel auto-deploys from `main` on push (verified across 3 commits this session)
+
+#### Open / parked after launch
+- **Update github links** (S13 note, post-launch) — now meaningfully substantive since the source repo exists publicly. User said "easy, let me do it now" mid-launch but nothing landed. To confirm.
+- **Footy walkthrough video** — still needs re-export with consistent prototype-frame sizing.
+- **Bribe matrix video** — still needs master produced.
+- **Big Content** — Energy / Yara / Kickoff case studies + essays destination, all deferred.
+- **Vercel env var (optional)** — `NEXT_PUBLIC_SITE_URL=https://chukwukaosakwe.com` for future-proofing against domain changes. Works either way today.
+- **`scripts/generate-og.mjs` regen convention** added to DESIGN.md alongside the favicon regen pattern.
+
+### Resume here — site is live; iterate from production now
+
+Pre-launch Polish (active): videos pass (Footy + Bribe).
+Big Content: Energy / Yara / Kickoff + essays.
+Post-launch: github links (to confirm).
+
+Notable that the site is now in a state where iteration is **publicly visible** — Vercel auto-deploys mean every push to `main` is live within ~90s. Loop now includes: validate locally → commit → push → check production. Skip `npm run build` per S7 (still applies — dev server is live, prod build still corrupts `.next/`).
