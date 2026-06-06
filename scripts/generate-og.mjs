@@ -27,7 +27,10 @@ const BG = "#FAE8DB"; // --background
 const ACCENT = "#FB370A"; // --accent
 const FG = "#120E11"; // --foreground
 
-const NAME = "Chukwuka Osakwe";
+// Lowercase on the OG image to match the site's brand voice (hero + wordmark
+// are all lowercase). HTML <title> + og:title metadata stay title-cased — they
+// surface in browser tabs / SERPs where title case reads more authoritatively.
+const NAME = "chukwuka osakwe";
 
 const LOGO_SRC = path.join(root, "public", "portfolio-logo.png");
 const OUT = path.join(root, "public", "og.png");
