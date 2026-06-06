@@ -26,10 +26,8 @@ const H = 630;
 const BG = "#FAE8DB"; // --background
 const ACCENT = "#FB370A"; // --accent
 const FG = "#120E11"; // --foreground
-const MUTED = "#878286"; // approx --text-muted at default opacity
 
 const NAME = "Chukwuka Osakwe";
-const TAGLINE = "Systems-oriented designer";
 
 const LOGO_SRC = path.join(root, "public", "portfolio-logo.png");
 const OUT = path.join(root, "public", "og.png");
@@ -58,35 +56,36 @@ const OUT = path.join(root, "public", "og.png");
     .png()
     .toBuffer();
 
-  // 2) Resize the recoloured logo to the OG target size (~280px wide).
-  const TARGET_LOGO_W = 280;
+  // 2) Resize the recoloured logo. Slightly larger now that the tagline is
+  // gone — gives the brand mark more presence in the canvas.
+  const TARGET_LOGO_W = 320;
   const sizedLogo = await sharp(recoloured)
     .resize({ width: TARGET_LOGO_W })
     .toBuffer();
   const { width: sw = TARGET_LOGO_W, height: sh = Math.round(TARGET_LOGO_W * (lh / lw)) } =
     await sharp(sizedLogo).metadata();
 
-  // 3) Background + text via SVG. Logo composites as a separate layer.
+  // 3) Vertically centre the logo + name pair in the canvas.
+  const NAME_SIZE = 80;
+  const GAP = 56; // logo-bottom → name-top
+  const compositionH = sh + GAP + NAME_SIZE;
+  const compositionTop = Math.round((H - compositionH) / 2);
+  const logoY = compositionTop;
+  // SVG <text> y is the baseline — sit it ~0.8 of font-size below the gap line
+  // so the visible text feels vertically centred in its slot.
+  const nameY = compositionTop + sh + GAP + Math.round(NAME_SIZE * 0.8);
+
   // System sans (-apple-system on macOS, sans-serif fallback elsewhere) — good
   // enough for a v1; can swap to embedded Nata Sans later for pixel-perfect.
-  const logoY = 120;
-  const nameY = logoY + sh + 96; // baseline-ish, eyeballed
-  const taglineY = nameY + 56;
   const svg = `
 <svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
   <rect width="${W}" height="${H}" fill="${BG}"/>
   <text
     x="${W / 2}" y="${nameY}"
     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-    font-size="72" font-weight="500" letter-spacing="-0.5"
+    font-size="${NAME_SIZE}" font-weight="500" letter-spacing="-0.5"
     fill="${FG}" text-anchor="middle"
   >${NAME}</text>
-  <text
-    x="${W / 2}" y="${taglineY}"
-    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-    font-size="34" font-weight="400"
-    fill="${MUTED}" text-anchor="middle"
-  >${TAGLINE}</text>
 </svg>`;
 
   const logoX = Math.round((W - sw) / 2);
