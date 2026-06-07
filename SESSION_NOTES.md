@@ -1044,3 +1044,13 @@ Pre-launch Polish (active): videos pass (Footy + Bribe).
 Big Content: Energy / Yara / Kickoff + essays.
 
 Notable that the site is now in a state where iteration is **publicly visible** — Vercel auto-deploys mean every push to `main` is live within ~90s. Loop now includes: validate locally → commit → push → check production. Skip `npm run build` per S7 (still applies — dev server is live, prod build still corrupts `.next/`).
+
+### Session 14 (cont.) — post-launch GitHub profile cleanup (2026-06-07)
+Short housekeeping pass after the launch arc closed:
+
+- **`Update github links` task removed** (commit `44a1afc`). The S13-noted post-launch item was originally "add github links back on Contact now that the repo has substance." User decided it wasn't worth doing — Contact's current closing sentence (`"on the internet you can mostly find me hanging out on farcaster."`) is voice-coherent and adding github would dilute it. Five references to the task culled across SESSION_NOTES; the S11 historical-decision context at line 617 preserved.
+
+- **GitHub profile reviewed + cleaned (user-side config, not code).** Pre-state: 0 pinned repos, 5 public repos (`portfolio` + `footy-prototype` with no description + 3 Frontend Mentor / "newbie" learning repos). Visitor flow from the portfolio → GitHub painted a tone-mismatched picture: "systems-oriented designer building thoughtful interfaces" → scroll → "newbie-python-projects." User applied the recommendations: pinned `portfolio` only, made the learning repos + `footy-prototype` non-public, created a profile README repo (`Chukwuka-Osakwe`) with description `"this is me."` Post-state: 2 public repos (`portfolio` + `Chukwuka-Osakwe`), 1 pin, batman-themed avatar confirms the bio's `"clearly i like batman a lot"` lands as intentional charm, not non-sequitur. Tone matches portfolio end-to-end now.
+
+### Session 14 — final closed ✅
+Started "we back" → ended at a coherent surface across portfolio + GitHub. **Site is live at chukwukaosakwe.com**, source public at github.com/Chukwuka-Osakwe/portfolio, profile cleaned. Resume from production whenever the next session opens.
