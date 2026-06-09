@@ -26,12 +26,21 @@ function makeExcerpt(body: string, sentences = 2): string {
   return parts.slice(0, sentences).join(" ").trim();
 }
 
+interface Props {
+  /** When set, the explorer renders the detail view for this slug instead of
+   *  the grid. Driven by the route: `/` passes nothing (grid), `/design/<slug>`
+   *  passes the slug (detail). Same component, route-derived initial state —
+   *  replaces the old `location.hash` model so every case study has a real,
+   *  crawlable URL (per-route OG image, sitemap entry, no JS required). */
+  initialSlug?: string;
+}
+
 /**
  * Server component: loads all work projects, pre-renders each MDX body, and
  * hands the metadata + rendered panes (+ a plain-text excerpt) to the client
  * explorer.
  */
-export function ProjectsSection() {
+export function ProjectsSection({ initialSlug }: Props = {}) {
   const projects = getAllMeta("work");
   const panes = projects.map((p) => {
     const { body } = getEntry("work", p.slug);
@@ -44,5 +53,11 @@ export function ProjectsSection() {
       node: <Mdx source={body} />,
     };
   });
-  return <ProjectsExplorer projects={projects} panes={panes} />;
+  return (
+    <ProjectsExplorer
+      projects={projects}
+      panes={panes}
+      initialSlug={initialSlug}
+    />
+  );
 }

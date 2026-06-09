@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { ContentMeta } from "@/lib/content";
 import { useView } from "@/components/ViewContext";
 import CaseImageViewer from "@/components/CaseImageViewer";
@@ -15,106 +17,68 @@ interface Pane {
 interface Props {
   projects: ContentMeta[];
   panes: Pane[];
+  /** When set, render the detail view for this slug; otherwise show the grid.
+   *  Provided by the `/design/[slug]` route's page; `/` doesn't pass it. */
+  initialSlug?: string;
 }
 
 /**
- * Projects as a grid of preview cards. Clicking a card opens its full case study
- * IN PLACE: the cards grid is swapped for the detail view within the same
- * viewspace column, so the nav panel stays put. A "back to work" control and Esc
- * return to the grid (restoring focus to the card you came from).
+ * Projects as a grid of preview cards. Clicking a card navigates to
+ * `/design/<slug>`, a real route whose page server-renders the case-study
+ * detail in this same viewspace (the shared site layout keeps the nav panel
+ * mounted across the navigation, so it reads as in-place even though the
+ * URL changes).
  *
- * The open project lives in ViewContext (`detail`) so the bottom ViewSwitcher
- * can hide while a detail is showing, and is mirrored to the URL hash (#slug)
- * for shareable, back/forward-able deep-links. The grid→detail enter motion is
- * the `.view-enter` CSS (reduced-motion-safe).
+ * Why a real route, not a hash:
+ *   - Per-case-study OG previews when shared (crawlers can't see fragments).
+ *   - Each case study indexable with its own title / description / canonical.
+ *   - Native browser back / forward / middle-click / cmd-click — anchors
+ *     handle them, no manual history hacks.
+ *   - The hidden SSR static block that backfilled crawlability under the old
+ *     hash model is no longer needed (deleted).
+ *
+ * `initialSlug` drives which view renders — the slug route hands it in, the
+ * home route doesn't. ViewContext.detail mirrors it so the bottom
+ * ViewSwitcher can hide while a detail is showing.
  */
-export function ProjectsExplorer({ projects, panes }: Props) {
-  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
-  // The open detail slug lives in ViewContext so the ViewSwitcher can hide while
-  // a detail is open.
-  const { detail, setDetail } = useView();
+export function ProjectsExplorer({ projects, panes, initialSlug }: Props) {
+  const router = useRouter();
+  const { setDetail } = useView();
 
-  // Drive the open detail from the URL hash (#slug). The INITIAL read uses
-  // useLayoutEffect so the detail commits BEFORE the browser paints — paired
-  // with the pre-paint `data-detail-pending` mask (see layout.tsx + globals.css),
-  // this eliminates the /#slug-reload grid flicker: setState in useLayoutEffect
-  // forces a synchronous re-render, after which we delete the mask attribute,
-  // and only then does the browser paint (showing the detail, not the grid).
-  // Subsequent hash changes (popstate / hashchange) run async via useEffect
-  // — the mask is already gone by then.
-  useLayoutEffect(() => {
-    const slug = decodeURIComponent(window.location.hash.replace(/^#/, ""));
-    setDetail(slug && projects.some((p) => p.slug === slug) ? slug : null);
-    delete document.documentElement.dataset.detailPending;
-  }, [projects, setDetail]);
-
+  // Sync detail flag with ViewContext for the ViewSwitcher hide rule. Clear
+  // on unmount so other views don't inherit it.
   useEffect(() => {
-    const fromHash = () => {
-      const slug = decodeURIComponent(window.location.hash.replace(/^#/, ""));
-      setDetail(slug && projects.some((p) => p.slug === slug) ? slug : null);
-    };
-    window.addEventListener("popstate", fromHash);
-    window.addEventListener("hashchange", fromHash);
-    return () => {
-      window.removeEventListener("popstate", fromHash);
-      window.removeEventListener("hashchange", fromHash);
-      // Leaving the projects route: clear any open detail so it can't keep the
-      // ViewSwitcher hidden on another view (the flag lives in the shared shell).
-      setDetail(null);
-    };
-  }, [projects, setDetail]);
+    setDetail(initialSlug ?? null);
+    return () => setDetail(null);
+  }, [initialSlug, setDetail]);
 
-  const openDetail = (slug: string) => {
-    setDetail(slug);
-    history.pushState(null, "", `#${slug}`);
-    window.scrollTo({ top: 0 });
-  };
-
-  const closeDetail = () => {
-    const slug = detail;
-    setDetail(null);
-    if (window.location.hash) {
-      history.replaceState(
-        null,
-        "",
-        window.location.pathname + window.location.search,
-      );
-    }
-    window.scrollTo({ top: 0 });
-    // Restore focus to the card we came from once the grid remounts.
-    requestAnimationFrame(() => {
-      if (slug) cardRefs.current.get(slug)?.focus();
-    });
-  };
-
-  // Esc returns from the detail to the grid.
+  // Esc on a detail page returns to the grid. Native browser back works too,
+  // since this is a real route — this is just the keyboard shortcut.
   useEffect(() => {
-    if (!detail) return;
+    if (!initialSlug) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeDetail();
+      if (e.key === "Escape") router.push("/");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [detail]);
+  }, [initialSlug, router]);
 
-  // --- Detail view: the cards column becomes the full case study. ---
-  if (detail) {
-    const p = projects.find((x) => x.slug === detail);
-    const pane = panes.find((x) => x.slug === detail);
+  // --- Detail view: rendered when the route passes a slug. ---
+  if (initialSlug) {
+    const p = projects.find((x) => x.slug === initialSlug);
+    const pane = panes.find((x) => x.slug === initialSlug);
     if (p) {
       return (
         <div className="view-enter">
-          <button
-            type="button"
-            onClick={closeDetail}
+          <Link
+            href="/"
             className="group inline-flex items-center gap-2 text-sm font-semibold text-text-muted transition-colors hover:text-accent focus-visible:text-accent focus-visible:outline-none"
           >
             <span aria-hidden className="transition-transform group-hover:-translate-x-0.5">
               ←
             </span>
             back to work
-          </button>
+          </Link>
           <article className="mx-auto mt-8 max-w-[var(--reading-measure)]">
             <header className="mb-8 border-b-4 border-accent pb-4">
               <h1 className="text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-balance">
@@ -138,33 +102,19 @@ export function ProjectsExplorer({ projects, panes }: Props) {
     }
   }
 
-  // --- Grid view: preview cards (+ a hidden, crawlable copy of every body). ---
+  // --- Grid view: preview cards link to /design/<slug>. ---
+  // Each card is a <Link> (not <div role="button">) — semantically a navigation
+  // to a real URL, gets native Enter / middle-click / cmd-click for free, no
+  // manual keyboard handling needed. Anchors are valid containers for block
+  // children (h2 + p) per HTML5.
   return (
-    <>
-    <ul className="project-grid grid gap-8 sm:grid-cols-2 sm:gap-16">
+    <ul className="grid gap-8 sm:grid-cols-2 sm:gap-16">
       {projects.map((p) => {
         const pane = panes.find((x) => x.slug === p.slug);
         return (
           <li key={p.slug}>
-            {/* Card is a div+role=button rather than a native <button> so it
-                can legally contain block-level children like <h2> and <p>
-                (button only permits phrasing content per the HTML spec).
-                Click + keyboard handlers replicate native button behavior. */}
-            <div
-              role="button"
-              tabIndex={0}
-              ref={(el) => {
-                const refs = cardRefs.current;
-                if (el) refs.set(p.slug, el);
-                else refs.delete(p.slug);
-              }}
-              onClick={() => openDetail(p.slug)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  openDetail(p.slug);
-                }
-              }}
+            <Link
+              href={`/design/${p.slug}`}
               className="project-card focus-ring group flex h-full w-full flex-col overflow-hidden rounded-lg bg-nav-fill text-left transition hover:outline-2 hover:outline-offset-2 hover:outline-accent motion-safe:hover:scale-[1.02]"
             >
               {/* Card cover from `image:` frontmatter; field-tracking placeholder if unset.
@@ -205,29 +155,10 @@ export function ProjectsExplorer({ projects, panes }: Props) {
                   <p className="mt-2 line-clamp-3 text-text-muted">{pane.excerpt}</p>
                 )}
               </div>
-            </div>
+            </Link>
           </li>
         );
       })}
     </ul>
-
-    {/* Crawlable copy: every case-study body in the static HTML, hidden. The
-        interactive view shows one at a time (hash-opened, client-side); this
-        keeps all bodies present in the SSR output for search/indexing the way
-        the old per-project modals did. Only rendered on the grid (detail is
-        null here) so heading IDs don't duplicate when a detail is open. */}
-    <div hidden>
-      {projects.map((p) => {
-        const pane = panes.find((x) => x.slug === p.slug);
-        return (
-          <article key={p.slug}>
-            <h2>{p.title}</h2>
-            {p.type && <p>{p.type}</p>}
-            {pane?.node}
-          </article>
-        );
-      })}
-    </div>
-    </>
   );
 }

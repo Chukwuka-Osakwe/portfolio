@@ -1,18 +1,29 @@
 import type { MetadataRoute } from "next";
+import { getAllMeta } from "@/lib/content";
 import { SITE_URL } from "@/lib/site";
 
 /**
- * Static sitemap — only the three real routes (home, contact, product-ideas).
+ * Static sitemap — home, the two list routes, and one entry per case study.
  *
- * Case studies live as hash deep-links on `/` (e.g. `/#footy`) per the
- * in-place detail pattern, not as separate routes. Sitemaps want URLs that
- * respond independently, so we don't list them here — their content is still
- * crawlable via the hidden static block rendered alongside the grid.
+ * Case studies live at `/design/<slug>` (real routes, generated statically
+ * from `src/content/work/`) so each one gets its own URL, per-route OG
+ * metadata, and indexable presence. The old hash deep-links (`/#footy`) are
+ * gone — fragments aren't sent to servers, so they could never be indexed
+ * independently.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
+  const projects = getAllMeta("work");
   return [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "monthly", priority: 1 },
+    ...projects.map((p) => ({
+      url: `${SITE_URL}/design/${p.slug}`,
+      // lastModified ideally tracks the MDX's mtime; using the frontmatter
+      // date is close enough and avoids a file-stat round-trip.
+      lastModified: new Date(p.date),
+      changeFrequency: "yearly" as const,
+      priority: 0.8,
+    })),
     { url: `${SITE_URL}/product-ideas`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
   ];

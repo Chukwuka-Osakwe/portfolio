@@ -123,14 +123,6 @@
 html[data-theme="light"] .theme-thumb { transform: translateX(0); }
 html[data-theme="dark"]  .theme-thumb { transform: translateX(200%); }
 
-/* Detail-reload mask — hide the projects grid while the JS-load window is
-   pending on a /#slug reload. Pre-paint script in layout.tsx sets the
-   attribute when location.hash is non-empty; ProjectsExplorer clears it
-   synchronously inside a useLayoutEffect after committing the detail, so
-   the grid never actually paints. visibility (not display) keeps layout
-   stable, so the swap-in doesn't reflow the page. */
-html[data-detail-pending] .project-grid { visibility: hidden; }
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

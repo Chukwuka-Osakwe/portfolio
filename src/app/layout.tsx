@@ -83,18 +83,6 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark'){document.documentElement.dataset.theme=t}}catch(e){}})()`,
           }}
         />
-        {/* Pre-paint detail-reload mask. SSR doesn't have access to
-            location.hash, so /#slug reloads render the grid by default and
-            flash it before JS hydrates and swaps to the detail. This sets
-            html[data-detail-pending] when a hash is present so CSS can hide
-            the grid through the JS-load window; ProjectsExplorer clears the
-            attribute synchronously inside useLayoutEffect after it commits
-            the detail (so the grid never actually paints). */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{if(location.hash.length>1)document.documentElement.dataset.detailPending='1'}catch(e){}})()`,
-          }}
-        />
       </head>
       {/* suppressHydrationWarning on <body> too: browser extensions (Grammarly,
           LanguageTool, etc.) inject attributes on <body> before React hydrates
