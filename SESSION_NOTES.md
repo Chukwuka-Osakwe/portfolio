@@ -1054,3 +1054,33 @@ Short housekeeping pass after the launch arc closed:
 
 ### Session 14 — final closed ✅
 Started "we back" → ended at a coherent surface across portfolio + GitHub. **Site is live at chukwukaosakwe.com**, source public at github.com/Chukwuka-Osakwe/portfolio, profile cleaned. Resume from production whenever the next session opens.
+
+---
+
+## Session 15 — 2026-06-12 — ProductIdeas carousel: next/image → plain `<img>` + cover preloading
+
+Short, focused session. Opened with the working tree already carrying an in-progress refactor of `ProductIdeas.tsx` (uncommitted at session start; the prior `094014e` "case studies → real routes + per-slug OG images" commit was the last logged HEAD).
+
+#### The carousel refactor (commit `a78c05c`)
+The product-ideas carousel was rebuilt to fix a **Chrome-only layout glitch**: stacked `<Image fill>` covers (`position: absolute; inset: 0`) shrank on loop-back when navigating prev/next past the array boundary — Firefox was unaffected, and no combination of viewport units / wrapper sizing pinned it down.
+
+Fix, three parts:
+- **`next/image` → plain `<img>`.** A single `<img>` whose `src` swaps on navigation — standard image-element behavior, identical across browsers. Covers are already pre-optimized WebPs (~45KB each at 2000×1293), so losing srcset/format-negotiation is not a meaningful cost. (`@next/next/no-img-element` disabled inline at the two `<img>` sites.)
+- **Aspect ratio via `padding-bottom: H/W%`** on the wrapper (the classic pre-`aspect-ratio` technique) instead of the CSS `aspect-ratio` property — which glitches in Chrome when the wrapper has only `position:absolute` children. Computed once from `IDEAS[0]` dims (`COVER_PAD_BOTTOM`), since every cover exports at the same 2000×1293 (≈1.547:1) Figma brand-board frame.
+- **Eager preloading.** Five `<link rel="preload" as="image">` tags (one per cover, hoisted to `<head>` by Next) warm the HTTP cache on first paint, so prev/next swaps read as instant — no caption-ahead-of-image flash.
+- Also flipped one desktop `min-h` from `100dvh` → `100vh`.
+
+#### Loop followed: validate → commit → push → verify prod
+- `tsc --noEmit` clean (exit 0). Skipped `npm run build` per S7 cache trap (dev server was live).
+- Eyeballed at `localhost:3000/product-ideas` — user confirmed "looks good" (loop-back no longer shrinks, swaps instant).
+- Committed `a78c05c`, pushed to `main`, Vercel auto-deployed.
+- **Production verified** at `chukwukaosakwe.com/product-ideas`: 200, all 5 preload tags in `<head>`, raw `<img>` serving direct `.webp` src (no `/_next/image`).
+
+#### Noted, not fixed
+- The **current/first cover (`store-3-v3.webp`) preloads twice** in the prod HTML — once from the `IDEAS.map` loop, once as the LCP image. Harmless (browser dedupes the fetch by URL); could skip-preload the current index if we want it pristine. Parked.
+
+#### Still parked (unchanged from S14)
+Footy walkthrough video re-export · Bribe matrix video master · Big Content (Energy / Yara / Kickoff + essays).
+
+### Session 15 — closed ✅
+Carousel refactor live on production. Resume from production.
