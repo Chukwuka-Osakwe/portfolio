@@ -5,8 +5,9 @@ import { usePathname } from "next/navigation";
 
 // `href` → destination. `external` items open in a new tab; internal items are
 // real routes. `activeFor` lists the pathnames the item should highlight on
-// (defaults to [href]). "design" covers both projects (/) and product-ideas, so
-// it stays active across both.
+// (defaults to [href]). Matching is exact for "/" and sub-route-prefix for the
+// rest (see isActiveFor) — so "design" stays active across projects (/),
+// product-ideas, AND the per-case-study routes (/design/<slug>).
 type Item = {
   label: string;
   href: string;
@@ -15,11 +16,21 @@ type Item = {
 };
 
 const ITEMS: Item[] = [
-  { label: "design", href: "/", activeFor: ["/", "/product-ideas"] },
+  { label: "design", href: "/", activeFor: ["/", "/product-ideas", "/design"] },
   { label: "essays", href: "https://thechukwukaosakwe.wordpress.com/", external: true },
   { label: "newsletter", href: "https://chukwukaosakwe.substack.com/", external: true },
   { label: "contact", href: "/contact" },
 ];
+
+// An item is active when the current pathname exactly equals one of its
+// `activeFor` paths, OR sits underneath one as a sub-route (/design matches
+// /design/<slug>). "/" is matched exactly only — prefix-matching it would
+// highlight every route.
+function isActiveFor(paths: string[], pathname: string): boolean {
+  return paths.some(
+    (p) => pathname === p || (p !== "/" && pathname.startsWith(p + "/")),
+  );
+}
 
 // Separated button stack: each item is its own full-width (equal), rounded,
 // flat outlined control with a gap between them. Left-aligned; hover fills the
@@ -78,7 +89,7 @@ export function NavMenu() {
               </a>
             );
           }
-          const isActive = (item.activeFor ?? [item.href]).includes(pathname);
+          const isActive = isActiveFor(item.activeFor ?? [item.href], pathname);
           return (
             <Link
               key={item.label}
