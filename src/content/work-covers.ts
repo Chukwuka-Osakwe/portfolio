@@ -29,4 +29,6 @@ export const WORK_COVER_LQIPS: Record<string, string> = {
     "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAAAQAgCdASoQAAoAAoBCJZQC7AEVz1hp/ywAAP73D9/TPkLTH0eb0x8Q/0tZ/n1pYP0tCA5eTJ0vgQ/BVn0/WgAA",
   "/work/bribe/cover-v1.webp":
     "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAAAQAgCdASoQAAwAAoBCJZwAAuzVo7TJxtgAAP7UUouf2iDP9lZ/W5/YzxJ0J2m+PUPyzqhZ7Q8thyI1/E7JU9JpKY2wrMhYW3W30rLe14AAAA==",
+  "/work/energy/energy-cover.webp":
+    "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQAgCdASoQAAoAAoBCJQBOgCPaRaKPw7ZAAP7OB6O8nKBu1zgGuSpKHavtqMw9fMa1bF5Gei8gLmHc/xti3u2mY4OpFpG6LxNRo/MbW4WE8u+lUVu47xFdxiK5bdeTXWeAwAAA",
 };
