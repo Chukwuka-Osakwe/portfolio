@@ -1084,3 +1084,61 @@ Footy walkthrough video re-export · Bribe matrix video master · Big Content (E
 
 ### Session 15 — closed ✅
 Carousel refactor live on production. Resume from production.
+
+---
+
+## Session 16 — 2026-06-12 → 2026-06-14 — Big Content: Energy + Yara case studies · CaseVideo controls rework · nav + mobile-a11y fixes
+
+A long "Big Content" session: shipped **two new case studies (Energy, Yara)** end-to-end, reworked **`<CaseVideo>`** from autoplay-on-scroll to user-initiated native controls, and fixed three correctness bugs found along the way (nav active-state on case-study routes, two mobile-sheet keyboard-focus leaks). The portfolio now has **all five case studies live** (Footy, Heyfood, Bribe, Energy, Yara). Everything below is committed + pushed; production verified each time.
+
+### Working pattern (reaffirmed)
+- For each new case study: **propose the reorg mapping + flag the judgment calls FIRST, then build** (the Energy flow). Mid-session I broke this on Yara — bulldozed the whole build before surfacing the gaps — and got pulled back ("you've lost the thread"). Lesson re-logged: surface the plan and the holes before charging into a full build, even when the doc looks ready.
+
+### Energy case study (commits `4e34488` + `4d62189`)
+- **Reorg, no rewrite.** Took the Notion `energy.md` (jewellery retail brand, Chukwuka's *first solo project*) and mapped its prose into our five-section spine without rewriting: intro → **Overview**; Project Objectives + taskflow → **Problem**; Research (moodboard + 3 takeaways) **opens** the **Design System** then flows via the doc's own "With sufficient information gathered…" bridge into the design-direction template + brand guidelines + name + logo; UI Screens (4 pages) → **Outcome**; walkthrough → **Outcome** (was a YouTube link, later replaced by a real video — see below). **Reflection** was absent in the source → shipped as a commented-out heading first, then Chukwuka wrote it.
+  - **Judgment calls** walked via AskUserQuestion before building: Research placement (chose "open the Design System"), Reflection handling (TODO stub → later filled). Decided to **comment out** the empty `## The Reflection` heading rather than ship a dangling accent heading to the live site; uncommented once copy landed.
+  - **Typo fixes** (light, like the prose-preservation rule allows): kept "B2B SaaS" properly capitalised per Chukwuka — *"everything in case studies can break with the site's wider lowercase convention."* Good convention note: **case-study body copy is exempt from the site's lowercase brand voice.**
+- **Images:** masters → `sources/work/energy/` (gitignored), 9 WebP derivatives → `public/work/energy/`. Cover iterated: first used the design-direction board, then Chukwuka **re-exported `energy-cover.png`** (the tablet mockup) at the 31:20 frame; that's the live cover. `type: "VISUAL DESIGN"`.
+- **Walkthrough video:** the YouTube Short had no local master; Chukwuka dropped the original screen recording (81s, 696×1402, bt709). Re-encoded via the pipeline (downscaled 540w, crf 26, audio stripped, faststart → **2.9MB**) + poster from the first frame. **Flagged 81s as long** for the no-controls component — which seeded the controls rework.
+- **`date`:** real date unknown; set to an **intentional earliest-floor (`2023-01-01`, sort-only/never displayed)** so it always sorts last as the first project. Documented in the frontmatter comment.
+
+### Yara case study (commit `b613bb8`)
+- **Farcaster mini-app for crypto→Naira conversion.** Source doc (`yara.md`) was **already** in the five-section spine but a rougher draft. Normalised the heading names to convention (**"Designing The System" → "The Design System"**, **"The Reflections" → "The Reflection"**), fixed typos ("Base,r" → "Base,", unclosed paren, escaped `—\>` arrows → `→`).
+- **Two real holes flagged, not papered over:** (a) the Reflection trailed off mid-word ("Making") — shipped commented-out, Chukwuka later wrote it; (b) the original USD-first screen image was missing from the drop — left a `{/* TODO(image) */}`, Chukwuka dropped `yara-first-screen.png`, then wired it. Chukwuka also added a closing Outcome paragraph describing the redesigned screen's interactions.
+- **Images:** 4 screens/diagrams (original first-screen 18rem phone → flowchart → three-stage categories diagram → consolidated Fund Details redesign). **Cover:** first tried the 4:3 fund-details hero (cropped in the 31:20 card — Chukwuka rejected the crop), then he re-exported `yara-cover.png` at 1.55:1 (the two-phone composition, no crop) — that's live.
+- **`date`:** provisional `2026-03-01` (real date unknown), sorts Yara between Bribe and Energy. Sort-only. **Still flagged to confirm.**
+
+### `<CaseVideo>` — autoplay-on-scroll → user-initiated native controls (commit `1403ce3`)
+- Chukwuka's call: **"add controls to the videos instead of autoplay every time, anticipating longer videos."** Right call — autoplay-with-no-seek doesn't scale to longer clips.
+- Chose (via AskUserQuestion) the **hybrid model**: on-brand frosted poster + play button at rest → **native controls** (`controls={started}`) once the reader presses play. Best of both — branded resting state, real scrubber.
+- **Removed:** the IntersectionObserver autoplay, the `prefers-reduced-motion` branch (nothing moves until opt-in now), the custom replay overlay (native controls handle replay). Added `controlsList="nodownload"`. Shared component, so **Heyfood's video changed too**; updated the stale "autoplay-on-scroll" comments in both `heyfood.mdx` and `energy.mdx`. **DESIGN.md `<CaseVideo>` entry updated** to the new model.
+
+### Bug fixes
+- **NavMenu active-state on case-study routes (commit `1797ee4`).** The `094014e` real-routes migration moved case studies to `/design/<slug>`, but NavMenu's active check was exact-match against `["/", "/product-ideas"]`, so opening any case study left **no** nav item highlighted. Added `/design` to design's `activeFor` + an `isActiveFor()` helper that matches **"/" exactly but other paths as sub-route prefixes** (so `/design/<slug>` highlights "design" without "/" over-matching everything). General — future sub-routes just work. **Affected all case studies, not just the new ones.**
+- **Mobile-sheet keyboard focus leaks (commit `542017b`).** Surfaced while investigating Chukwuka's tab-order report (see below). Two related a11y defects, both fixed with **`inert`** (the correct tool — `aria-hidden` removes from the a11y tree but *not* the tab order):
+  - **Closed sheet was tabbable:** `MobileSheet` had `aria-hidden={!open}` only, so its Close button + duplicate nav stayed in the tab order — you could Tab into a closed menu. → `inert={!open}` on the sheet.
+  - **Open-sheet focus trap leaked:** the top bar sits *outside* the layout's inert wrapper (so the menu button can double as the ✕), but that left the logo + `ThemeCycle` tabbable while the sheet was open. → `inert={open}` on the logo `<Link>` and on a `contents`-wrapper around `ThemeCycle` (no layout box); the menu/close button stays live.
+
+### Tab-order investigation (CDP, no library)
+- Chukwuka reported: tabbing navbar → TOC "selects overview then outcome before the toc items." **Drove headless Chrome via CDP** (Node 25 has global `WebSocket`; `/json/new` needs PUT) to dump focusable order + simulate real Tab presses across widths/heights. **The desktop tab *order* is provably correct** (back-to-work → Overview → Problem → Design → Outcome → Reflection → BTT) and the active-thumb stayed stable (the TOC is `fixed`, so focusing it doesn't scroll). **Could not reproduce** the overview→outcome jump — but the dumps surfaced the *real* mobile-sheet bugs above. **Still open:** asked Chukwuka for repro details (window width; focus-ring vs. the highlighted thumb; browser) — unanswered, parked.
+- **Reusable tooling:** CDP-over-built-in-WebSocket is a viable way to inspect real client-rendered tab order / focus behavior without installing puppeteer/playwright. Chrome is at `/Applications/Google Chrome.app/...`; launch `--headless=new --remote-debugging-port=9222`.
+
+### Process gotcha (logged — bit us once)
+- **Adding a case study needs `node scripts/generate-case-og.mjs <slug>`** to mint the per-slug OG card (`/og/<slug>.png`). Easy to forget — Energy shipped first without it and `/og/energy.png` 404'd in prod (caught in verification). Now part of the per-case-study checklist. Energy + Yara both have OG cards live.
+- **CDN lag on fresh static assets:** after a push, a brand-new `/og/<slug>.png` can 404 for ~30s at the edge even after the route + other `public/` assets are 200. Re-poll before concluding it's broken.
+
+### Production state
+All five case studies live: Footy → Heyfood → Bribe → Yara → Energy. Each route 200, covers + body images + per-slug OG all serving; mobile-menu keyboard traps fixed; CaseVideo controls live (Energy + Heyfood). Vercel auto-deployed across all commits this session.
+
+### Resume here — still open / parked
+- **Yara `date`** — provisional `2026-03-01`; confirm the real one (sort-only).
+- **Energy 81s walkthrough** — optional trim to a ~20–30s highlight; parked.
+- **"overview → outcome" tab report** — unreproduced; waiting on Chukwuka's repro details (window width / focus-ring vs thumb / browser).
+- **Yara TOC** shows a "Reflection" segment that now resolves (reflection written); was dead while commented out — no longer an issue.
+- **Kickoff** case study — no source dropped yet (Big Content remainder).
+- **Bribe matrix video** — master is local (`the-notion/.../Video_2025-11-21_12-56-38.mp4`, 1080×1350, 6.5s, the Bribe app over Matrix rain); unblocked whenever, drops into the `<CaseVideo>` pipeline.
+- **Footy walkthrough video** — still needs re-export (prototype frame-size jump).
+- **essays destination** — still the WordPress external link.
+
+### Session 16 — closed ✅
+Two case studies (Energy, Yara) + CaseVideo controls rework + nav/mobile-a11y fixes, all live. Resume from production.
