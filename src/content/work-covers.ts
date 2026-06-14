@@ -31,4 +31,6 @@ export const WORK_COVER_LQIPS: Record<string, string> = {
     "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAAAQAgCdASoQAAwAAoBCJZwAAuzVo7TJxtgAAP7UUouf2iDP9lZ/W5/YzxJ0J2m+PUPyzqhZ7Q8thyI1/E7JU9JpKY2wrMhYW3W30rLe14AAAA==",
   "/work/energy/energy-cover.webp":
     "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQAgCdASoQAAoAAoBCJQBOgCPaRaKPw7ZAAP7OB6O8nKBu1zgGuSpKHavtqMw9fMa1bF5Gei8gLmHc/xti3u2mY4OpFpG6LxNRo/MbW4WE8u+lUVu47xFdxiK5bdeTXWeAwAAA",
+  "/work/yara/yara-cover.webp":
+    "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAABQAgCdASoQAAoAAoBCJZACdAfwBrhjKiXsXAAA/upe+yAc17+Z9PIgclOFl5JE0LzQ+eV8H+hI7fr+DLLJixd2fptotH9UoxwNQAbi90+8AA+hJGByqpW29V0I11FheCPDuJZFF/OLYpfE/kAAAA==",
 };
