@@ -37,8 +37,14 @@ export function MobileTopBar({
             bar (left-aligned, smaller gap). The Link is the flex container so
             the whole brand row is one tap target. focus-ring carries the site-
             wide keyboard outline; cursor:pointer is implicit via <a>. */}
+        {/* Logo + theme toggle go `inert` while the sheet is open so the
+            open-sheet focus trap is sealed — the menu button (below) is the
+            one top-bar control that stays live, since it doubles as the ✕
+            that closes the sheet. (The rest of the page is inert via the
+            wrapper in the layout; the top bar sits outside it.) */}
         <Link
           href="/"
+          inert={open}
           aria-label="chukwuka's matrix — home"
           className="focus-ring -ml-1 flex items-center gap-3 rounded-md px-1 py-1"
         >
@@ -69,7 +75,11 @@ export function MobileTopBar({
             this cluster to the right. gap-1 is tight (8px) since both children
             are already 44px circular chips with their own visual separation. */}
         <div className="-mr-2 flex items-center gap-1">
-        <ThemeCycle />
+        {/* contents wrapper = no layout box, just carries `inert` onto the
+            toggle when the sheet is open (the menu button beside it stays live). */}
+        <div className="contents" inert={open}>
+          <ThemeCycle />
+        </div>
         {/* Menu button — 44×44 touch target (h-11 w-11). Icon swaps ☰ → ✕
             on open. aria-expanded + aria-controls wire it to the sheet for
             assistive tech; aria-label gives a verbal version that changes

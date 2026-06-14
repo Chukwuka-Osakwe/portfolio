@@ -124,6 +124,11 @@ export function MobileSheet({
         aria-modal="true"
         aria-labelledby={`${id}-title`}
         aria-hidden={!open}
+        // `inert` (not just aria-hidden) when closed: aria-hidden removes the
+        // sheet from the a11y tree but leaves its Close button + NavMenu links
+        // in the tab order, so keyboard users could Tab into a closed menu.
+        // inert removes descendants from focus/pointer/a11y entirely.
+        inert={!open}
         id={id}
         className={`fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] overflow-y-auto overscroll-contain rounded-t-2xl bg-nav-fill pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] shadow-2xl motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out lg:hidden ${
           open ? "pointer-events-auto translate-y-0" : "pointer-events-none translate-y-full"
