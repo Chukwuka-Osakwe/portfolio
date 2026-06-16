@@ -1131,8 +1131,8 @@ A long "Big Content" session: shipped **two new case studies (Energy, Yara)** en
 All five case studies live: Footy → Heyfood → Bribe → Yara → Energy. Each route 200, covers + body images + per-slug OG all serving; mobile-menu keyboard traps fixed; CaseVideo controls live (Energy + Heyfood). Vercel auto-deployed across all commits this session.
 
 ### Resume here — still open / parked
-- **Yara `date`** — provisional `2026-03-01`; confirm the real one (sort-only).
-- **Energy 81s walkthrough** — optional trim to a ~20–30s highlight; parked.
+- ~~**Yara `date`** — provisional `2026-03-01`; confirm the real one (sort-only).~~ **Closed S17:** real date unfindable; accepting `2026-03-01` as-is (sort-only, never displayed).
+- ~~**Energy 81s walkthrough** — optional trim to a ~20–30s highlight; parked.~~ **Closed S17:** leaving as-is.
 - **"overview → outcome" tab report** — unreproduced; waiting on Chukwuka's repro details (window width / focus-ring vs thumb / browser).
 - **Yara TOC** shows a "Reflection" segment that now resolves (reflection written); was dead while commented out — no longer an issue.
 - **Kickoff** case study — no source dropped yet (Big Content remainder).

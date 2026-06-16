@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 // Real contact channels.
 const EMAIL = "chukwuka0009@gmail.com";
 const FARCASTER = "https://farcaster.xyz/chukwukaosakwe";
+const GITHUB = "https://github.com/Chukwuka-Osakwe";
+const LINKEDIN = "https://www.linkedin.com/in/chukwuka-osakwe-a059a5414";
 
 // Inline text link: accent + underlined at rest so it reads unambiguously
 // as a link on touch (no hover state to warm into). focus-ring brings the
@@ -154,6 +156,48 @@ export function Contact() {
         </a>
         .
       </p>
+
+      {/* Social icons — secondary profiles (github, linkedin) as icon-only
+          links, centered below the closing line. Accent at rest (no hover shift)
+          for the same reason as LINK above: touch has no hover to warm into, so
+          they read as live links from the start. aria-label carries the name
+          since there's no visible text. */}
+      <div className="mt-8 flex items-center justify-center gap-8">
+        <a
+          href={GITHUB}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub"
+          className="focus-ring rounded text-accent"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+          </svg>
+        </a>
+        <a
+          href={LINKEDIN}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="LinkedIn"
+          className="focus-ring rounded text-accent"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M13.63 0H2.37A2.34 2.34 0 0 0 0 2.31v11.38A2.34 2.34 0 0 0 2.37 16h11.26A2.34 2.34 0 0 0 16 13.69V2.31A2.34 2.34 0 0 0 13.63 0ZM4.86 13.12H2.89V6.78h1.97v6.34ZM3.87 5.91a1.14 1.14 0 1 1 0-2.29 1.14 1.14 0 0 1 0 2.29Zm9.25 7.21h-1.97V9.86c0-.74-.01-1.69-1.03-1.69-1.03 0-1.19.8-1.19 1.63v3.32H6.97V6.78h1.89v.87h.03c.26-.5.91-1.03 1.86-1.03 1.99 0 2.36 1.31 2.36 3.02v3.48Z" />
+          </svg>
+        </a>
+      </div>
     </div>
   );
 }
