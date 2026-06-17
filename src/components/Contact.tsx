@@ -158,17 +158,18 @@ export function Contact() {
       </p>
 
       {/* Social icons — secondary profiles (github, linkedin) as icon-only
-          links, centered below the closing line. Accent at rest (no hover shift)
-          for the same reason as LINK above: touch has no hover to warm into, so
-          they read as live links from the start. aria-label carries the name
-          since there's no visible text. */}
+          links, centered below the closing line. aria-label carries the name
+          since there's no visible text. Resting color is hover-aware: base is
+          accent so touch devices (no hover to warm into) read them as live
+          links from the start, but on hover-capable pointers we mute at rest
+          and warm to accent on hover for the usual desktop affordance. */}
       <div className="mt-8 flex items-center justify-center gap-8">
         <a
           href={GITHUB}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="GitHub"
-          className="focus-ring rounded text-accent"
+          className="focus-ring rounded text-accent transition-colors [@media(hover:hover)]:text-text-muted [@media(hover:hover)]:hover:text-accent"
         >
           <svg
             width="22"
@@ -185,7 +186,7 @@ export function Contact() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="LinkedIn"
-          className="focus-ring rounded text-accent"
+          className="focus-ring rounded text-accent transition-colors [@media(hover:hover)]:text-text-muted [@media(hover:hover)]:hover:text-accent"
         >
           <svg
             width="22"
