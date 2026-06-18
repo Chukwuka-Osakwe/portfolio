@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllMeta } from "@/lib/content";
+import { formatDateShort } from "@/lib/date";
 
 // The WordPress back-catalogue — kept reachable via a footer link while essays
 // migrate in-house. Mirrors the URL that "essays" used to point at in NavMenu.
@@ -57,8 +58,14 @@ export function EssaysList() {
               href={`/essays/${e.slug}`}
               className="focus-ring group block rounded py-3"
             >
-              <h2 className="text-base font-semibold tracking-tight text-balance transition-colors group-hover/list:text-text-muted group-hover:!text-accent group-focus-visible:!text-accent">
-                {e.title}
+              <h2 className="flex items-baseline gap-8 text-base font-semibold tracking-tight transition-colors group-hover/list:text-text-muted group-hover:!text-accent group-focus-visible:!text-accent">
+                <time
+                  dateTime={e.date}
+                  className="shrink-0 text-sm font-normal tabular-nums text-text-muted"
+                >
+                  {formatDateShort(e.date)}
+                </time>
+                <span className="text-balance">{e.title}</span>
               </h2>
             </Link>
           </li>

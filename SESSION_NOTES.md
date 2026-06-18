@@ -1191,3 +1191,13 @@ James Will Only Spend A Few Seconds On This Button (`.md` drop) · Modals In Min
 
 ### Session 17 — closed ✅
 Native essays section + 11 migrated essays (`<YouTube>`/`<Tweet>` components, Arweave→ProseMirror workflow, essay OG cards) shipped in `a935808`; contact icons + Bribe video earlier. All live. Resume from production.
+
+---
+
+## Session 18 — 2026-06-18
+
+### Essays listing — inline dates before titles (`EssaysList.tsx`)
+- Reversed the earlier "title-only previews" call: each row now leads with its **date inline before the title**. Iterated live: date-above-title → inline with `·` dot → dot dropped for a flex layout.
+- **Layout:** `<h2>` is `flex items-baseline gap-8` (32px gap). Date is a `<time shrink-0 text-sm font-normal tabular-nums text-text-muted>`; title in a `<span text-balance>`. **`tabular-nums` + fixed `dd/mm/yy` width guarantees every title shares the same left edge** (no per-row drift). `gap-8` matches the page's 32px grid rhythm.
+- Date format: **`dd/mm/yy`** via new **`formatDateShort`** in `lib/date.ts` (en-GB, 2-digit, UTC-safe — same UTC parse as `formatDate`). The long-form `formatDate` is untouched (still used by the essay detail header).
+- Hover behavior unchanged: title warms to accent, date stays muted.
