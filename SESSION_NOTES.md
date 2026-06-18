@@ -1201,3 +1201,11 @@ Native essays section + 11 migrated essays (`<YouTube>`/`<Tweet>` components, Ar
 - **Layout:** `<h2>` is `flex items-baseline gap-8` (32px gap). Date is a `<time shrink-0 text-sm font-normal tabular-nums text-text-muted>`; title in a `<span text-balance>`. **`tabular-nums` + fixed `dd/mm/yy` width guarantees every title shares the same left edge** (no per-row drift). `gap-8` matches the page's 32px grid rhythm.
 - Date format: **`dd/mm/yy`** via new **`formatDateShort`** in `lib/date.ts` (en-GB, 2-digit, UTC-safe — same UTC parse as `formatDate`). The long-form `formatDate` is untouched (still used by the essay detail header).
 - Hover behavior unchanged: title warms to accent, date stays muted.
+- Shipped in `e0c8f24` (pushed).
+
+### Background colour — experiment, reverted
+- Briefly swapped `--background` `#fae8db` → `#faf5f2` (cooler off-white) to eyeball, then **reverted to `#fae8db`** (the original warm cream-peach). No net change.
+- Note: the live page-background "white" is **`#fae8db`** — the old `#FDF6FB` from S1 history is stale.
+
+### Session 18 — closed ✅
+Inline `dd/mm/yy` dates on the essays listing shipped (`e0c8f24`); background-colour experiment reverted. Tree clean.
