@@ -170,6 +170,20 @@ html {
   background: var(--background);
 }
 
+/* Text-selection highlight — the brand accent (vivid orange-red) instead of the
+   browser-default blue. Selected text uses the warm-cream --foreground-dark so
+   it reads on the orange; both stay constant across light/dark (accent doesn't
+   flip). Both selectors needed: ::selection isn't inherited, so it must be set
+   on the element and the (Firefox) ::-moz variant. */
+::selection {
+  background-color: var(--accent);
+  color: var(--foreground-dark);
+}
+::-moz-selection {
+  background-color: var(--accent);
+  color: var(--foreground-dark);
+}
+
 /* Scrollbars hidden site-wide — scrolling still works (wheel / trackpad /
    keyboard); we just drop the visible bar so it never sits on the nav panel.
    No scrollbar-gutter needed since there's no bar to reserve space for. */
