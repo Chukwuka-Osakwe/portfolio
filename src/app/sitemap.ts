@@ -14,6 +14,7 @@ import { SITE_URL } from "@/lib/site";
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   const projects = getAllMeta("work");
+  const essays = getAllMeta("writing");
   return [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "monthly", priority: 1 },
     ...projects.map((p) => ({
@@ -23,6 +24,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(p.date),
       changeFrequency: "yearly" as const,
       priority: 0.8,
+    })),
+    { url: `${SITE_URL}/essays`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    ...essays.map((e) => ({
+      url: `${SITE_URL}/essays/${e.slug}`,
+      lastModified: new Date(e.date),
+      changeFrequency: "yearly" as const,
+      priority: 0.6,
     })),
     { url: `${SITE_URL}/product-ideas`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },

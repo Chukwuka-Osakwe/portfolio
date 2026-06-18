@@ -17,7 +17,7 @@ type Item = {
 
 const ITEMS: Item[] = [
   { label: "design", href: "/", activeFor: ["/", "/product-ideas", "/design"] },
-  { label: "essays", href: "https://thechukwukaosakwe.wordpress.com/", external: true },
+  { label: "essays", href: "/essays", activeFor: ["/essays"] },
   { label: "newsletter", href: "https://chukwukaosakwe.substack.com/", external: true },
   { label: "contact", href: "/contact" },
 ];

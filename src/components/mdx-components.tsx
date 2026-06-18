@@ -2,6 +2,8 @@ import type { MDXComponents } from "mdx/types";
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import CaseVideo from "./CaseVideo";
+import YouTube from "./YouTube";
+import Tweet from "./Tweet";
 
 /**
  * Custom element + component overrides for MDX bodies.
@@ -237,6 +239,16 @@ export const mdxComponents: MDXComponents = {
   // button overlay on end. Reduced-motion: skip autoplay, show play overlay.
   // e.g. <CaseVideo src="/work/heyfood/heyfood.mp4" poster="/work/heyfood/heyfood-poster.webp" caption="…" />
   CaseVideo,
+
+  // Responsive YouTube embed (privacy-friendly, lazy iframe) for hosted clips
+  // an essay/case body references rather than self-hosts.
+  // e.g. <YouTube id="NV3sBlRgzTI" title="Elon Musk on first-principles thinking" />
+  YouTube,
+
+  // Static tweet card, reconstructed from a Paragraph `twitter` embed's data
+  // (no live Twitter widget). Tweet text passed as MDX children.
+  // e.g. <Tweet name="…" handle="…" avatar="/writing/<slug>/x.webp" href="…">…</Tweet>
+  Tweet,
 
   a: ({ href = "", children, ...props }) => {
     // Body / attribution links render in the brand accent (overrides prose's

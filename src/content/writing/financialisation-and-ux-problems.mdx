@@ -1,0 +1,101 @@
+---
+title: "Financialisation And UX Problems"
+summary: "How financialisation can hide UX problems."
+date: "2024-11-07"
+---
+
+## The Aesthetic-Usability Effect
+
+There is a principle in design known as the aesthetic-usability effect.
+
+In a nutshell, this effect posits a strong correlation in a user's mind between how aesthetically pleasing a product is perceived to be and its functionality. When users encounter a product, they are likely to consider the more aesthetically pleasing products as more functional and easier/better to use. This perception exists regardless of how easy using the product is.
+
+For those who work in Design, there are, broadly speaking, two takeaways from this effect when building products.
+
+Firstly, when testing products it is useful to keep in mind that the user might be giving feedback about your product based on its aesthetics and not its usability. You want to eliminate this. When you're testing, you want to surface possible issues with the product. If the users are more focused on the colour scheme than the user experience, then that interferes with their ability to give you meaningful feedback about what using the product is like.
+
+<Figure
+  src="/writing/financialisation-and-ux-problems/image1.webp"
+  alt="An excerpt from a usability study: a participant rated the FitBit site's ease of use very highly because of its colours ('It's the colors they used. Looks like the ocean, it's calm.'), even after struggling with the navigation — the positive emotional response to its aesthetics masked its usability issues."
+  width="100%"
+/>
+
+In this instance, for example, the designers would be wrong to think that everything is okay with the website because the participant complimented the colour scheme. When testing products, you want to ask questions that make the user think about their experience and not necessarily about the aesthetics. This is important, because, it is often easier for users to give feedback about the visual design than about their experience as visuals are easier to evaluate. To avoid this, you can do things like structure your questions to elicit an answer about the experience. *For example, instead of asking general questions like, "how did you find using the website?" Ask something more specific like, "did you find the information you wanted to find easily?"*
+
+Secondly, when you roll out the product, you want to make it as aesthetically pleasing as possible. Once a product is in the wild, it needs one thing more than anything else: user retention. If there is anything that can make the user more likely to keep using the product, do it. And as we all know intuitively, humans are drawn to visually pleasing things, and websites are no exception.
+
+*My favourite example of this effect is probably SoundCloud. I will keep using the SoundCloud app no matter how bad it gets because I love its aesthetic. I can't listen to lots of the songs I love on SoundCloud because they aren't available in my region. And over time, the vibrant community of underground musicians who I mainly used the app to keep in touch with have either gone mainstream and moved on from the platform or stopped making music altogether. But, I think SoundCloud is pretty, so I keep it around and now and then I open it and give it a spin.*
+
+So, there you have it — the aesthetic-usability effect.
+
+But, this essay is not about this design principle, at least not directly. It's about a similar effect that I have noticed in web3. An effect I could not fully articulate until I started reading about the aesthetic-usability effect. It's something I'd like to call: the financialisation-usability effect.
+
+## But First, A Word About Web3 UX
+
+Anyone who has been in web3 for any length of time knows that the user experience of products in this industry is not good. Or, at least, it's not yet as good as the user experience of web2 products. If you're familiar with web3, then you're probably thinking about one of those experiences right now, a specific experience with some dApp, maybe an NFT platform, or possibly a web3 game. As Samantha Marin wrote in [this essay](https://medium.com/bankless-dao/we-made-the-internet-hard-again-e2e473607421) for Bankless DAO, "*we've made the internet hard again*".
+
+When I first got into this industry a few years ago, I remember being very interested in DeFi and trying to use a couple of the DeFi services at the time. And the user experience was so bad I eventually abandoned DeFi altogether. My web2 brain (at the time) could not believe the amount of complexity I had to handle to, say, become a liquidity provider for the average DeFi project.
+
+<Figure
+  src="/writing/financialisation-and-ux-problems/image2.webp"
+  alt="A bare, minimal DeFi swap interface: a dark page offering little more than two token fields and a 'Connect Wallet' button, with no explanation of what to do or why."
+  width="100%"
+/>
+
+This is a screenshot of the typical DeFi landing page I landed on while trying to understand the inner workings of DeFi. Picture being a total newbie to the space and landing on a page like this. What are you supposed to understand by looking at this page? Okay so I need to swap some tokens, why? Which tokens? What comes next?
+
+*Everything about that page assumes that I know something about the way tokens work before I arrive there. That is an awful user experience, your homepage is literally supposed to hold the hands of your visitors and walk them through your product.*
+
+<Figure
+  src="/writing/financialisation-and-ux-problems/image3.webp"
+  alt="The AirSwap OTC trading landing page: a clear, friendly 'Start a Trade' screen with explicit 'You'll send' and 'You'll receive' fields, making its single purpose obvious."
+  width="100%"
+/>
+
+In contrast to that, look at the landing page for the AirSwap OTC trading service. Immediately you land on this page you know it's for one purpose only: trading tokens. All the information you need to successfully execute a trade is spelt out clearly on the page
+
+Even something as basic as setting up a wallet, without which you cannot function in web3, is a tedious experience for newbies.
+
+And even for those who have been in this industry for a while, we discover new user experience inefficiencies every other day. For example, I don't use Metamask for [Hypersub](https://www.hypersub.xyz/) subscriptions. Why? Because when you subscribe to a Hypersub, you get an NFT that represents that subscription (basically a receipt in NFT form). This ensures that when the owner of the Hypersub adds new items (drops) to their collection, they automatically show up in the wallet of subscribers. But, as I came to realise, Metamask is bad at surfacing NFTs. You have to manually "import NFTs" to view them in Metamask, never mind that these are NFTs that you already own! So, if I subscribe for a Hypersub, and the owner sends out five NFTs this week, I have to go to my Metamask wallet and manually import these NFTs by filling in some info before they can show up in my wallet. Insane.
+
+And, yes, I know no one should be using Metamask anymore, but [Blockworks reported](https://blockworks.co/news/metamask-monthly-active-users-blockaid) that Metamask had about 30 million monthly active users in January 2024. That's a pretty significant number for such a bad wallet.
+
+But, all is not doom and gloom, at least not in my opinion.
+
+I think that we have come a long way in trying to solve these UX problems since I first joined web3. For example, I now use Rainbow for Hypersubs and Rainbow arranges my NFTs neatly for my consuming pleasure. (Overall Rainbow is a better wallet experience than Metamask and it's not close).
+
+However, the fact remains that using the average web3 product is much more challenging than using its web2 counterpart (if one exists). It's far easier to set up a new Twitter or Reddit account than to set up one on Farcaster for example. (These days I can get a new Reddit account up and running in less than five clicks).
+
+## The Financialisation-Usability Effect
+
+Now, with the bad state of web3 UX in mind, we can attempt to try and understand what the financialisation-usability effect is. To explain it, I would like to restate the aesthetic-usability effect more crudely as follows: *to a certain extent, users tend to overlook the functionality issues a product has if they find it aesthetically appealing.*
+
+In the same vein, the financialisation-usability effect can be defined like this: *to a certain extent, users tend to overlook the functionality issues a product has if they find it financially rewarding enough.*
+
+In the same way that people overlook UX problems if they find the website pretty enough, users in this industry can (and do) overlook whatever issues may exist with the product if the promise of financial reward is high enough. A very good place to see this in action is to lurk in the Discord servers of new projects, especially when the market is in a bull run and there is capital sloshing around. Without fail, most of the people who start using a product and become active on Discord tend to be people who are positioning themselves to benefit from the product eventually by being an early adopter. Whenever I was on one of those channels, I frequently found myself asking: *how can these people tell who their users really are? Are they doing interviews with this play-for-pay crowd? And if yes, how can they trust the insights from this crowd?*
+
+Or, consider the business model behind NFTs. Why did people pay insane money for pfp NFTs at some point? Was it because a new digital art revolution that would undo the chokehold of physical art on the art market had come into its own? Or was it because people realised that they could easily make money buying and selling these pictures? Your guess is as good as mine.
+
+I remember reading statements by founders of pfp NFT projects promising that they would find a way to create "value" for NFT holders. The value? Well, Moonbirds sent some branded merch to people who held on to their NFT for certain lengths of time. Other NFT projects sent their holders free NFTs when they launched a new collection and so on. Very little value for the amount of money spent on these NFTs all things considered. The only value the holders cared about was making bank when they sold them at much higher prices than they bought them. End of story.
+
+The same questions arise: *if the people in the NFT industry are mostly in it to make profits and go home, why should they care about the experience if they can make money despite that? If everyone is so focused on making money, aren't they going to ignore whatever problems exist as long as they are making money?*
+
+During the NFT mania, I read several essays detailing existing problems with NFTs like [this one](https://www.kooslooijesteijn.net/blog/web3) by Koos Looijesteijn and [this one](https://moxie.org/2022/01/07/web3-first-impressions.html) by Moxie (ironic I know, there's a coin named Moxie on Farcaster now). Both of them raised serious technical issues with NFTs as they existed then like:
+
+> Instead of storing the data on-chain, NFTs instead contain a URL that points to the data. What surprised me about the standards was that there's no hash commitment for the data located at the URL. Looking at many of the NFTs on popular marketplaces being sold for tens, hundreds, or millions of dollars, that URL often just points to some VPS running Apache somewhere. Anyone with access to that machine, anyone who buys that domain name in the future, or anyone who compromises that machine can change the image, title, description, etc for the NFT to whatever they'd like at any time (regardless of whether or not they "own" the token). There's nothing in the NFT spec that tells you what the image "should" be, or even allows you to confirm whether something is the "correct" image.
+
+Or:
+
+> NFTs (as they've been popularized) don't even have any data in them about the object they're referring to. Used in the context of artwork sales, they only contain an URL to the artwork, but not even a hash of the original file. The owner of the server that the URL points to can change the file behind that URL at any time. If the domain owner decides to doing something else with their site, the NFT just contains a link to something else than at the time of sale, which, in time will be a 404 page at best.
+
+But did anyone care about these concerns as long as they could make money from NFTs? Of course not.
+
+I think the problem is this: because web3 is built on the foundation of financialising just about everything (hello Friendtech), it can be harder to see the gravity of the UX problems that exist with any odd project since the odds are that a good chunk of your users are only there for financial gain. When you build a product people can make money from by just using it, they're probably not going to be too interested in whether the product meets whatever standard as long as they get paid. Accessibility is a big deal when building on the web these days. But if I built the least accessible site in the world and I promised users say $15 per hour for being on it, I'm pretty sure there'd be minimal complaints about the accessibility problems and more focus on getting the money.
+
+Take Farcaster for example. Farcaster does not have a token nor does it explicitly promise rewards to anyone for using the platform. And yet, how many people do you think are on Farcaster hoping to be early to the next memecoin from the [Farcaster Scenius](https://adrienneshulman.medium.com/the-power-of-scenius-farcaster-and-the-collective-genius-of-communities-244f018a8767) that makes holders very rich suddenly? My guess is a lot.
+
+Since Degen took off earlier this year, a lot of people who have joined have joined in hopes of getting rich, not necessarily because they believe in and buy into what Farcaster represents. When these people offer their opinions on the direction Farcaster is heading at any given time, are they likely to care more about directions that they think help them make more money or those that are really healthy and helpful for the platform overall? I don't know, you decide.
+
+---
+
+Many thanks to [Tyler Hilker](https://warpcast.com/trh) for reading this and giving me very useful feedback.
