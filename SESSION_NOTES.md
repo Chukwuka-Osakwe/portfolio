@@ -1147,7 +1147,7 @@ Two case studies (Energy, Yara) + CaseVideo controls rework + nav/mobile-a11y fi
 
 ## Session 17 — 2026-06-16 → 2026-06-18 — Native essays section + Paragraph→Arweave migration (11 essays) · `<YouTube>`/`<Tweet>` components · contact social icons · Bribe video
 
-A big session. Opened with small touches (contact social icons, Bribe matrix video — both committed early), then built the **native essays section** end-to-end and **migrated 11 essays** off Paragraph/WordPress into it. **Everything from the essays section onward is uncommitted at session end** (Chukwuka asked to hold all commits while iterating); contact icons (`a18c04f`, `f45bfb1`) and the Bribe video (`1fb3273`) are the only S17 commits so far.
+A big session. Opened with small touches (contact social icons, Bribe matrix video), then built the **native essays section** end-to-end and **migrated 11 essays** off Paragraph/WordPress into it. Commits held while iterating, then shipped at the end: contact icons (`a18c04f`, `f45bfb1`), Bribe video (`1fb3273`), and the whole essays section as one atomic commit **`a935808`** — production build clean (25 pages, all 11 essay routes SSG), **pushed + Vercel-deployed**.
 
 ### Contact — GitHub + LinkedIn social icons (committed `a18c04f`, hover fix `f45bfb1`)
 - Centered icon-only links below the Farcaster line (`mt-8`, `gap-8`). `aria-label` each; `target=_blank`/`rel`.
@@ -1156,7 +1156,7 @@ A big session. Opened with small touches (contact social icons, Bribe matrix vid
 ### Bribe — Matrix-rain walkthrough video (committed `1fb3273`)
 - Dropped the local master (phone over hand-made Matrix rain) into the `<CaseVideo>` pipeline: 540w/crf23/no-audio/faststart (129KB) + first-frame webp poster. Full-width at the end of The Outcome (the rain is a composition, not a bare phone screen).
 
-### Native essays section (UNCOMMITTED)
+### Native essays section
 - **Data layer already existed:** `lib/content.ts` had a `"writing"` Section + `getFeatured()` merging work+writing (anticipatory). Built the missing **routes + listing UI + nav wiring**.
 - **Routes:** `/essays` (listing) + `/essays/[slug]` (reading page), parallel to `/` + `/design/[slug]`. `generateStaticParams` from `getAllMeta("writing")`.
 - **`EssaysList`** — prose-first **text listing** (no covers, unlike the case-study card grid). Header mirrors the case-study detail header (title + lead-in + tight `border-b-4 border-accent` rule). Rows are **title-only** (date/summary dropped from previews after eyeball), `py-3`, `text-base`, `divide-y` dividers. **Hover dims siblings to `--text-muted`** (token-based, not raw `opacity-40` — the codebase only uses opacity for show/hide; muting is a color-token job) while the hovered title warms to accent (`!text-accent` to beat the same-specificity list-hover rule). WordPress back-catalogue link sits **at the top**: "some of my older essays are on wordpress →". Lead-in: "thinking out loud about life, design, (onchain) products, and the internet."
@@ -1170,21 +1170,24 @@ A big session. Opened with small touches (contact social icons, Bribe matrix vid
 - **Caption-link limitation:** Paragraph `figcaption`s can carry inline links; MDX string-form props can't render them ([[mdx-jsx-expression-props-dropped]]) → captions are plain text, caption links dropped (in-prose links survive).
 - **`.md`-drop workflow** (pre-Arweave, still valid for non-Paragraph drops): date sits at the top of the file → lift to frontmatter, don't render ([[essay-date-in-source]]).
 
-### New components (UNCOMMITTED)
+### New components
 - **`<YouTube id title width caption>`** — privacy-friendly (`youtube-nocookie`) lazy iframe in a 16:9 bordered box, wrapped in `<figure>` for `.case-body figure` spacing. Server component. (First used: Elon first-principles clip in *Design From First Principles*.)
 - **`<Tweet name handle avatar href>` + MDX children** — static tweet card (avatar + name + @handle + X glyph + text), the whole card linked to the tweet. Reconstructed from a `twitter` node's data (no live widget). Tweet text passed as **children** (not a prop — JSX-expression props get dropped). 32rem cap to match inline tweet screenshots. (First used: David Perell otium tweet in *Sometimes, Standing Still…*. Chukwuka chose the card over a blockquote.)
 - **`lib/date.ts`** — UTC-safe `formatDate("2024-03-20") → "March 20, 2024"`.
 
-### Essay OG cards — `scripts/generate-essay-og.mjs` (UNCOMMITTED)
+### Essay OG cards — `scripts/generate-essay-og.mjs`
 - Essays have **no cover**, so OG is a generated **text card** (sharp + SVG, like `generate-og.mjs`): peach field + accent "essays" eyebrow & rule + **title (left-aligned, word-wrapped, auto-fit 64→42px)** + name. Output **`public/og/essays/<slug>.png`** — namespaced under `og/essays/` so essay slugs can't collide with case-study OGs at `og/<slug>.png`. The essay `generateMetadata` existence-checks it (site-default fallback if missing — same pattern as case studies). **Run `node scripts/generate-essay-og.mjs [slug]` per new essay** (logged in the migration checklist).
 
-### The 11 essays (newest→oldest, all UNCOMMITTED)
+### The 11 essays (newest→oldest, all in `a935808`)
 James Will Only Spend A Few Seconds On This Button (`.md` drop) · Modals In Mini-Apps (Arweave; 10 imgs + YouTube explainer) · Design From First Principles (`.md`; YouTube) · Do Something (`.md`; 1 img) · Financialisation And UX Problems (`.md`; 3 imgs, re-exported crisp) · Obsession And Taste (`.md`) · Self Conscious Running (`.md`) · The Internet Is Dead. Long Live The Internet. (Arweave; Thanos meme, links de-bolded) · Some Ramblings On AI And Creative Work (Arweave) · Sometimes, Standing Still Is Moving Forward (Arweave; 2 tweet screenshots + `<Tweet>` card) · Stablecoin User Narratives (Arweave; cast-card embed + Money Heist meme).
 - **Placeholders nuked** (interfaces-are-arguments, the-cost-of-a-default, and the original stated-problem) so previews eyeball clean. **11 real essays, no filler.**
 
 ### Open / parked — resume here (S17)
-- **HOLDING ALL COMMITS** — the entire essays section (routes, `EssaysList`, `<YouTube>`, `<Tweet>`, `lib/date.ts`, `generate-essay-og.mjs`, 11 essays + derivatives + 11 OG cards, nav + sitemap edits, `stated-problem.mdx` deletion) is uncommitted in the working tree. tsc + eslint clean, all routes 200, OG served. A real `next build` not yet run (dev server live — cache rule).
+- **Shipped:** essays section committed (`a935808`) + pushed; production build clean (25 pages, 11 essay routes SSG); Vercel auto-deployed. Verify the live `/og/essays/<slug>.png` cards (CDN can 404 fresh static assets ~30s post-deploy — re-poll).
 - **Cross-links to repoint when targets migrate** ([[essays-migration-crosslinks]]): obsession-and-taste → "Good Obsession" (WP); sometimes-standing-still → "When In Doubt, Move Forward" (WP); some-ramblings → "writing" (`paragraph.xyz/@cryptonao`).
-- **More Paragraph essays** to migrate (back-catalogue) — drop Arweave links.
+- **More Paragraph essays** to migrate (back-catalogue) — drop Arweave links; drop the "older essays on WordPress →" listing link once done.
 - **Optional `<Figure>` caption-link support** — would let migrated caption links survive (currently dropped).
 - Older parked items still open: "overview → outcome" tab report (unreproduced), Kickoff case study, Footy walkthrough re-export.
+
+### Session 17 — closed ✅
+Native essays section + 11 migrated essays (`<YouTube>`/`<Tweet>` components, Arweave→ProseMirror workflow, essay OG cards) shipped in `a935808`; contact icons + Bribe video earlier. All live. Resume from production.
