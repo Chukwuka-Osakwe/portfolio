@@ -1,0 +1,65 @@
+---
+title: "On The Importance Of Naming Things Properly"
+summary: "Redesigning the navbar for Kickoff, a browser football manager, taught me a lesson I keep coming back to: until I could name what was wrong — nav links styled as action buttons instead of state selectors — I couldn't fix it."
+date: "2026-06-23"
+---
+
+Navbars. That's something I spent an incredible amount of time thinking about a few weeks ago. I hopped on a project with my friend [Alexander Karlsson](https://farcaster.xyz/acgk.eth) a few weeks ago to redesign a football manager for the browser he'd vibecoded called Kickoff.
+
+Why football managers have (mostly) disappeared from browsers and whether the time is right to bring them back in is probably an entirely different post, but I digress.
+
+Back to Kickoff. As I began tinkering with the existing design of the game and trying to understand what direction the new visual language should take, I kept running into a problem: the navbar.
+
+You see, Kickoff is supposed to be a minimal, low-effort game to play (on pretty much the opposite end of the effort spectrum from games like Football Manager). One decision that precipitated out of that design vision was an always-persistent navbar. We want all the navigation options to always be available to the user at a glance, no dropdowns or any other hidden selection patterns.
+
+Fair enough.
+
+And yet, as I played around in Figma, something about the navbar kept nagging at me. I would argue now that a few things were wrong with the original navbar design, but the one that bugged me until I changed the whole thing was that the navbar links were styled like buttons.
+
+In many ways, this styling was a result of my early design explorations, trying to stay as close as possible to the original design of Kickoff, as you can see below.
+
+<Screens cols="2" width="100%">
+  <img
+    src="/writing/on-the-importance-of-naming-things-properly/navbars1.webp"
+    alt="Kickoff's original Squad page — an orange wordmark with Club, Squad, Activity and Leagues links, the active 'Squad' link enclosed in a bordered box like a button, above a row of boxed Formation/All/Available/Training tabs."
+  />
+  <img
+    src="/writing/on-the-importance-of-naming-things-properly/navbars2.webp"
+    alt="An early recoloured redesign of the same page — 'Squad' and the 'All' tab now rendered as solid blue buttons, but practically identical in structure to the original."
+  />
+</Screens>
+
+The "redesign" on the right, if you can even call it that, is practically the same as the one on the left but with different colours.
+
+Nevertheless, you could tell that this was bugging me as I iterated and kept trying to find ways to make the navbar's links look less like buttons (see picture below).
+
+<Figure
+  src="/writing/on-the-importance-of-naming-things-properly/navbars3.webp"
+  alt="A later iteration where the active nav link and the tabs become fully rounded orange pills, an attempt to make them read less like buttons."
+  width="100%"
+  caption="let's make it more rounded so it doesn't compete visually with buttons!"
+/>
+
+Eventually, I did what I should have done from the beginning: I completely ignored Kickoff's initial design and rebuilt the entire experience from the ground up, and we've ended up with the navbar looking like this.
+
+<Figure
+  src="/writing/on-the-importance-of-naming-things-properly/navbars4.webp"
+  alt="The ground-up rebuild — a magenta wordmark with two stacked navbars, every link an underlined state-selector with no button styling at all."
+  width="100%"
+/>
+
+A marked departure from everything that came before it, and a navbar (two navbars actually) without any link styled like a button. I quite like this direction.
+
+And yet, even after the solution to the problem arrived in pixels, I kept trying to put into words (because that is what I do), and eventually I realised that the reason I took so long to discard the original Kickoff design pattern was that I couldn't name what was wrong properly. And what was wrong was that the original design pattern I was trying to copy treated navbar links as action buttons instead of state selectors.
+
+Roughly, the difference is that state selectors change the display state of the canvas while buttons fire when clicked/tapped and trigger an action.
+
+One handle I'm finding useful when thinking about this distinction at the moment is that state selectors typically occur in groups, and you can only select one at a time, with the others remaining deselected while one is selected. Buttons don't behave like that. You find a button where you need it. If it is designed well, it is labelled properly to tell you what action you're about to carry out (delete, send, copy, etc). And once you hit that button — barring any other blockers — the action is executed, and typically the button returns to its original state. So buttons, unlike state selectors, don't remain selected once you click/tap on them until you select something else to deselect them.
+
+Okay, enough design jargon for now, back to the essay.
+
+In retrospect, it's somewhat amusing because I ended up going in the right direction, but perhaps for the wrong reason (I don't want too many buttons on the screen vs this is a state selector, not a button and should be styled as such).
+
+Nevertheless, an important lesson arose out of this exercise, and it's one I hope to carry with me throughout the rest of my life and career: it is very important to name things correctly.
+
+Names are how we are able to understand the distinction between things and order them appropriately. So, it is important to ask: what kind of thing is this design element? If I had asked that question early on, I would probably have wasted no time at all discarding the original Kickoff and redoing it from the ground up.

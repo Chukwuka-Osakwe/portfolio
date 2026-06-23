@@ -1188,6 +1188,7 @@ James Will Only Spend A Few Seconds On This Button (`.md` drop) · Modals In Min
 - **More Paragraph essays** to migrate (back-catalogue) — drop Arweave links; drop the "older essays on WordPress →" listing link once done.
 - **Optional `<Figure>` caption-link support** — would let migrated caption links survive (currently dropped).
 - Older parked items still open: "overview → outcome" tab report (unreproduced), Kickoff case study, Footy walkthrough re-export.
+- **Figure out art style for the future** — settle a visual/art direction for the site going forward.
 
 ### Session 17 — closed ✅
 Native essays section + 11 migrated essays (`<YouTube>`/`<Tweet>` components, Arweave→ProseMirror workflow, essay OG cards) shipped in `a935808`; contact icons + Bribe video earlier. All live. Resume from production.
@@ -1209,3 +1210,24 @@ Native essays section + 11 migrated essays (`<YouTube>`/`<Tweet>` components, Ar
 
 ### Session 18 — closed ✅
 Inline `dd/mm/yy` dates on the essays listing shipped (`e0c8f24`); background-colour experiment reverted. Tree clean.
+
+---
+
+## Session 19 — 2026-06-23 — Essay #12: "On The Importance Of Naming Things Properly"
+
+### New essay migrated (`.md` drop)
+- Chukwuka dropped `On The Importance Of Naming Things Properly.md` in root + four full-page screenshots (`navbars1–4.png`, 6048×3928 retina) — a short essay on the Kickoff navbar redesign and the lesson that you can't fix a design problem until you can **name** it (the original nav links were styled as **action buttons** when they should have been **state selectors**). Slug: `on-the-importance-of-naming-things-properly`. **Newest essay → sorts to the top.**
+- **`date`:** none in the source file → set to **`2026-06-23`** (publish date; the prose only says "a few weeks ago"). Sort-only/displayed as `23/06/26` in the listing.
+- **Images — full screenshots (after a crop detour).** First tried tightly cropping each to just the navbar chrome (focus the subject); cropped to ~7:1 strips they were too small/illegible side-by-side in the 42rem essay column (essay images have **no click-to-zoom** — `/essays/[slug]` renders `<Mdx>` directly, no `CaseImageViewer` wrapper). Chukwuka eyeballed it and **preferred the full page screenshots** instead. Final derivatives: full images → 1600w, WebP q85, ~41–51KB. Masters → gitignored `sources/writing/<slug>/`; derivatives → `public/writing/<slug>/`.
+- **navbars1 trimmed + padded to match navbars2's dimensions.** navbars1 was a full-screen capture (macOS menu bar + Chrome bookmarks bar) while navbars2–4 are clean browser windows. **Spliced out** the macOS menu bar (crop above the Chrome tab bar, ~orig y150) **and** the bookmarks bar (removed orig y≈500–655, joining the address bar straight onto the black app navbar) → looks like the others structurally. That left it 6048×3621 (shorter); to match navbars2 exactly, **padded the bottom +307px with the page bg `#0a0a0e`** → 6048×3928, derivative 1600×1039 (identical to navbars2 → equal-height side-by-side). The spliced+padded composite is saved as `sources/.../navbars1-trimmed.png` (original `navbars1.png` master untouched). Residual: navbars1's Chrome is a **light/pink theme** vs the others' dark — baked into the shot, doesn't bother Chukwuka, only fixable by re-shooting.
+- **navbars1 + navbars2 side by side (Chukwuka's call).** Kept literally side-by-side with the prose's "left/right" language intact, via `<Screens cols="2" width="100%">`. navbars3 + navbars4 are full-width `<Figure>` (legible at 672px). navbars3 carries the source's caption ("let's make it more rounded so it doesn't compete visually with buttons!").
+- **Body:** dropped the duplicate `## title` line (title comes from frontmatter → h1), prose preserved verbatim, three `[insert …]` placeholders replaced. Wrote `summary` (SEO/OG) + descriptive `alt` on all four.
+- **OG card:** `node scripts/generate-essay-og.mjs <slug>` → `public/og/essays/<slug>.png` (per the checklist).
+
+### Verified
+- `tsc --noEmit` clean; **`npm run build` clean — 26 routes** (was 25), the new essay route prerendered first in the SSG list (newest). SSR HTML contains all four `navbars*.webp` paths, the `screen-grid` side-by-side, the navbars3 caption, the Alexander Karlsson link, and the "state selectors" prose. Listing shows the title + `23/06/26`. (No dev server was live, so the build was safe.)
+
+### Not committed / parked
+- **Uncommitted** — new MDX + derivatives + OG card + this notes entry all sit on `main` (Chukwuka hasn't asked to commit/push yet). Prior `cff9066` (::selection styling) is committed but never got a notes entry.
+- Cross-ref: this essay is about **Kickoff**, which is also a parked **case-study** candidate (no source dropped yet).
+- All prior parked items unchanged (more Paragraph essays, "overview → outcome" tab report, Footy walkthrough re-export, `<Figure>` caption-link support, art-direction pass).
