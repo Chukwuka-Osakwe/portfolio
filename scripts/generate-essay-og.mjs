@@ -1,9 +1,9 @@
 // Generate per-essay OG images (1200×630) for the native essays section.
 //
 // Essays have NO cover image (unlike case studies), so this is a TEXT card:
-// the site's warm-peach field + an accent "essays" eyebrow & rule + the essay
-// title (left-aligned, word-wrapped, size auto-fit) + the name. Mirrors the
-// visual language of generate-og.mjs (sharp + an SVG composite, system sans).
+// the site's DARK-mode coffee field + ONLY the essay title (left-aligned,
+// word-wrapped, size auto-fit, vertically centred). No "essays" eyebrow, no
+// name footer — just the heading. Mirrors generate-og.mjs's dark fill.
 //
 // Run: `node scripts/generate-essay-og.mjs`            (all essays)
 //      `node scripts/generate-essay-og.mjs do-something` (subset by slug)
@@ -26,14 +26,13 @@ const W = 1200;
 const H = 630;
 const MARGIN = 90;
 
-// Tokens — mirror globals.css :root. If these change, rerun.
-const BG = "#FAE8DB"; // --background
-const ACCENT = "#FB370A"; // --accent
-const FG = "#120E11"; // --foreground
+// Tokens — mirror globals.css DARK palette (OG cards use the dark theme).
+// If these change, rerun.
+const BG = "#181311"; // --background-dark (coffee field)
+const ACCENT = "#FB370A"; // --accent — the title colour
 
 const FONT =
   "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
-const NAME = "chukwuka osakwe"; // lowercase, matching the site's brand voice
 
 const escapeXml = (s) =>
   s.replace(/[&<>"']/g, (c) =>
@@ -59,14 +58,16 @@ function wrap(text, fontSize, maxWidth) {
   return lines;
 }
 
-/** Pick the largest size (from a descending ladder) that keeps the title ≤ 3 lines. */
+/** Pick the largest size (from a descending ladder) that keeps the title ≤ 4 lines.
+ *  Bigger ladder than before — the title is now the card's sole element, so it
+ *  gets the whole canvas. */
 function fitTitle(title, maxWidth) {
-  for (const size of [64, 56, 48, 42]) {
+  for (const size of [76, 66, 58, 50]) {
     const lines = wrap(title, size, maxWidth);
-    if (lines.length <= 3) return { size, lines };
+    if (lines.length <= 4) return { size, lines };
   }
-  const size = 42;
-  return { size, lines: wrap(title, size, maxWidth).slice(0, 3) };
+  const size = 50;
+  return { size, lines: wrap(title, size, maxWidth).slice(0, 4) };
 }
 
 function buildSvg(title) {
@@ -74,25 +75,21 @@ function buildSvg(title) {
   const { size, lines } = fitTitle(title, maxWidth);
   const lineH = Math.round(size * 1.16);
 
-  // Title block vertically centred in the region between the eyebrow rule
-  // (~y 215) and the name footer (~y 520); center ≈ 360.
+  // Title-only card: vertically centre the whole title block in the canvas.
   const blockH = lines.length * lineH;
-  const firstBaseline = Math.round(360 - blockH / 2 + size * 0.8);
+  const firstBaseline = Math.round(H / 2 - blockH / 2 + size * 0.8);
 
   const titleTspans = lines
     .map(
       (ln, i) =>
-        `<text x="${MARGIN}" y="${firstBaseline + i * lineH}" font-family="${FONT}" font-size="${size}" font-weight="600" letter-spacing="-1" fill="${FG}">${escapeXml(ln)}</text>`,
+        `<text x="${MARGIN}" y="${firstBaseline + i * lineH}" font-family="${FONT}" font-size="${size}" font-weight="600" letter-spacing="-1" fill="${ACCENT}">${escapeXml(ln)}</text>`,
     )
     .join("\n  ");
 
   return `
 <svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
   <rect width="${W}" height="${H}" fill="${BG}"/>
-  <text x="${MARGIN}" y="160" font-family="${FONT}" font-size="34" font-weight="600" letter-spacing="0.5" fill="${ACCENT}">essays</text>
-  <rect x="${MARGIN}" y="184" width="132" height="6" fill="${ACCENT}"/>
   ${titleTspans}
-  <text x="${MARGIN}" y="556" font-family="${FONT}" font-size="30" font-weight="500" fill="${FG}" fill-opacity="0.55">${escapeXml(NAME)}</text>
 </svg>`;
 }
 

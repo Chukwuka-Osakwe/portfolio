@@ -1224,10 +1224,18 @@ Inline `dd/mm/yy` dates on the essays listing shipped (`e0c8f24`); background-co
 - **Body:** dropped the duplicate `## title` line (title comes from frontmatter → h1), prose preserved verbatim, three `[insert …]` placeholders replaced. Wrote `summary` (SEO/OG) + descriptive `alt` on all four.
 - **OG card:** `node scripts/generate-essay-og.mjs <slug>` → `public/og/essays/<slug>.png` (per the checklist).
 
-### Verified
-- `tsc --noEmit` clean; **`npm run build` clean — 26 routes** (was 25), the new essay route prerendered first in the SSG list (newest). SSR HTML contains all four `navbars*.webp` paths, the `screen-grid` side-by-side, the navbars3 caption, the Alexander Karlsson link, and the "state selectors" prose. Listing shows the title + `23/06/26`. (No dev server was live, so the build was safe.)
+### Verified + shipped (`edf4127`, pushed)
+- `tsc --noEmit` clean; **`npm run build` clean — 26 routes** (was 25), the new essay route prerendered first in the SSG list (newest). SSR HTML contains all four `navbars*.webp` paths, the `screen-grid` side-by-side, the navbars3 caption, the Alexander Karlsson link, and the "state selectors" prose. Listing shows the title + `23/06/26`.
+- Committed as `edf4127` + pushed; **live-verified on production** (chukwukaosakwe.com): page 200, all 4 navbar webps 200, OG card 200, `/essays` listing shows it. The raw `.md` drop was moved into gitignored `sources/.../source.md` (not committed); masters there too.
 
-### Not committed / parked
-- **Uncommitted** — new MDX + derivatives + OG card + this notes entry all sit on `main` (Chukwuka hasn't asked to commit/push yet). Prior `cff9066` (::selection styling) is committed but never got a notes entry.
-- Cross-ref: this essay is about **Kickoff**, which is also a parked **case-study** candidate (no source dropped yet).
-- All prior parked items unchanged (more Paragraph essays, "overview → outcome" tab report, Footy walkthrough re-export, `<Figure>` caption-link support, art-direction pass).
+### OG image redesign — dark fill + accent title-only essays (committed this session)
+- Chukwuka changed the OG art direction. **All text-based OG cards now use the DARK (coffee) palette**, not the light peach field — `--background-dark #181311` fill. The hardcoded token constants in the scripts were swapped (comments updated to point at the dark palette; rerun-on-change note kept).
+  - **`generate-essay-og.mjs`** — essay cards are now **heading-only**: dropped the "essays" eyebrow + rule **and** the "chukwuka osakwe" name footer. Just the title, **in accent orange `#FB370A`** (Chukwuka's pick over cream), left-aligned, vertically centred in the canvas. Bumped the auto-fit ladder (`76→50`) + max 4 lines since the title owns the whole card now.
+  - **`generate-og.mjs`** (site default `og.png`) — flipped to the same dark fill: coffee bg + accent logo + **cream `#F4EAD8`** name. Chukwuka confirmed keep it dark (so a homepage linkshare matches the essay cards).
+  - **`generate-case-og.mjs`** — **untouched.** Case-study OGs pad from each cover's own sampled edge colour (no palette fill), so the dark-fill change doesn't apply. (Open option if Chukwuka later wants those "darker" too.)
+- Regenerated all **12 essay OG cards** + `og.png`. (Case-study OGs not re-run.)
+
+### Parked
+- Cross-ref: this essay is about **Kickoff**, also a parked **case-study** candidate (no source dropped yet).
+- Prior `cff9066` (::selection styling) is committed but never got a notes entry.
+- All prior parked items unchanged (more Paragraph essays, "overview → outcome" tab report, Footy walkthrough re-export, `<Figure>` caption-link support, broader art-direction pass).

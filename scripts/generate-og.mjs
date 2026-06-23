@@ -3,9 +3,9 @@
 // Run: `node scripts/generate-og.mjs`
 // Output: `public/og.png` (committed; replaces previous if any).
 //
-// Composition: warm-peach background (the site --background) → centered logo
-// recoloured to accent → name + tagline beneath in a system sans. Mirrors the
-// site's visual identity so the OG card reads as "of the site" in linkshares.
+// Composition: DARK coffee background (the site's dark-mode --background) →
+// centered logo recoloured to accent → name beneath in a system sans. Mirrors
+// the site's dark identity so the OG card reads as "of the site" in linkshares.
 //
 // Re-run on:
 //   - accent change (same asymmetry as the favicon — see DESIGN.md / S11)
@@ -22,10 +22,11 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const W = 1200;
 const H = 630;
 
-// Tokens — mirror globals.css :root values. If these change, rerun.
-const BG = "#FAE8DB"; // --background
+// Tokens — mirror globals.css DARK palette (OG cards use the dark theme).
+// If these change, rerun.
+const BG = "#181311"; // --background-dark (coffee field)
 const ACCENT = "#FB370A"; // --accent
-const FG = "#120E11"; // --foreground
+const FG = "#F4EAD8"; // --foreground-dark (warm cream)
 
 // Lowercase on the OG image to match the site's brand voice (hero + wordmark
 // are all lowercase). HTML <title> + og:title metadata stay title-cased — they
