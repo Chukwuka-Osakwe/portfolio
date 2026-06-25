@@ -1239,3 +1239,18 @@ Inline `dd/mm/yy` dates on the essays listing shipped (`e0c8f24`); background-co
 - Cross-ref: this essay is about **Kickoff**, also a parked **case-study** candidate (no source dropped yet).
 - Prior `cff9066` (::selection styling) is committed but never got a notes entry.
 - All prior parked items unchanged (more Paragraph essays, "overview → outcome" tab report, Footy walkthrough re-export, `<Figure>` caption-link support, broader art-direction pass).
+
+---
+
+## Session 20 — 2026-06-25 — short maintenance sesh
+
+### Installed UI-polish skill
+- `npx skills add jakubkrehel/make-interfaces-feel-better` → dropped `.agents/skills/make-interfaces-feel-better/` (SKILL.md + typography/surfaces/animations/performance) + `skills-lock.json` into the repo root. It's a design-engineering audit checklist (concentric radius, optical alignment, shadows-over-borders, staggered enter / subtle exit anims, tabular-nums, text-balance, image outlines, scale-on-press, no `transition: all`, 40×40 hit areas). Much of it already matches the site (card box-shadow, listing tabular-nums, text-balance titles, eased reduced-motion modal). **Net-new candidates if/when we audit:** image outlines on essay/cover imgs, scale-on-press on cards/buttons, root font-smoothing, stray-`transition: all` sweep.
+- **`.gitignore`'d both `/.agents` and `/skills-lock.json`** (local tooling, not shipped) — commit `9cd0453`.
+- **Audit NOT run** — Chukwuka said hold off. Parked for a future session.
+
+### Essay edit — Stablecoin User Narratives, narrative #2
+- Expanded the Jane/Tokyo payroll narrative: added the two Nigerian freelancers, the parallel-rates/weak-currency/finance-integration pain, and the USDT-to-wallet resolution ("Simple, fast, efficient."). Fixed a slip ("create out content" → "create content"). `src/content/writing/stablecoin-user-narratives.mdx`. Content-only. Commit `467b61b`.
+
+### Shipped + closed ✅
+- Both commits pushed to `main` (`9cd0453`, `467b61b`); tree clean, up to date with origin. Vercel auto-deploys. No build risk (gitignore + MDX prose only).
