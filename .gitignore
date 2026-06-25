@@ -47,3 +47,7 @@ next-env.d.ts
 # image masters (full-res PNG originals). Shipped assets in /public/work are
 # downscaled WebP derivatives regenerated from these. Heavy; not committed.
 /sources
+
+# installed agent skills (local tooling, not part of the shipped site)
+/.agents
+/skills-lock.json
