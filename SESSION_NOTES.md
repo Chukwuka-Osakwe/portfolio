@@ -1254,3 +1254,23 @@ Inline `dd/mm/yy` dates on the essays listing shipped (`e0c8f24`); background-co
 
 ### Shipped + closed ✅
 - Both commits pushed to `main` (`9cd0453`, `467b61b`); tree clean, up to date with origin. Vercel auto-deploys. No build risk (gitignore + MDX prose only).
+
+---
+
+## Session 21 — 2026-06-26 — epigraph on the naming essay (+ two real bugfixes)
+
+### Goal
+- Add a centered Confucius epigraph at the top of the **"On The Importance Of Naming Things Properly"** body: *"The beginning of wisdom is to call things by their proper name." ― Confucius*.
+
+### What looked like a one-line edit hid two stacked bugs
+Initial drop was `<p className="text-center italic leading-snug text-text-muted">…<br />…</p>`. It rendered, but every spacing tweak (`leading-snug` → `leading-none`) visibly did nothing. Two causes, found by inspecting **compiled CSS** + **rendered HTML** rather than re-guessing classes:
+
+1. **Tailwind v4 wasn't scanning `.mdx`.** `leading-snug`/`leading-none` appear ONLY in MDX (not in any `.tsx`), so they were never generated — grep of `.next/**/*.css` showed `none=0`/`snug=0` but `tight=1` (the latter is used in components). The classes that *did* seem to work (`text-center`, `italic`, `text-text-muted`) only did so because they're generated from component usage elsewhere. **Fix:** added `@source "../content";` to `globals.css` (after the typography `@plugin`). Rebuilt → `leading-none` now present in prod CSS. Commit `e303e2f`. **→ saved as a memory (`tailwind-mdx-source-scan`).**
+2. **`<p>`-in-`<p>` nesting.** MDX wraps a JSX element's inner text in its own `<p>`. A `<p>` can't legally contain a `<p>`, so the browser **auto-closed the styled outer `<p>` as empty** and the text rendered in a bare inner `<p>` with default prose styling (1.75 line-height, no centering). So even once the class existed, it was landing on an empty element. Intermediate attempt with a `<div>` wrapper but multi-line content split the two lines into **two separate `<p>`s** (each with prose's ~20px block margins → gap now margin-driven, `leading-*` useless). **Final fix:** single-line `<div>` — `<div className="…leading-normal…">“…”<br />― Confucius</div>` — so the text sits directly in the styled div and `<br />` is a true inline break the div's line-height controls. Commit `1de25ed`.
+
+### Line-height dialled in live (dev server)
+- Spun up `next dev` so Chukwuka could eyeball. Ladder at 16px font: prose default `1.75`=28px ("crazy"), `leading-none` `1`=16px ("too tight"), `leading-tight` `1.25`=20px ("nothing changed" — only 4px off none), settled on **`leading-normal` `1.5`=24px** ("this is fine"). Verified each step landed in the rendered HTML, not just the file.
+- Note: the no-op commits `da6fa90` (epigraph add) + `0b30ac5` (`leading-snug`→`leading-none`) predate the two fixes — they shipped but did nothing visible until `e303e2f`+`1de25ed`.
+
+### Shipped + closed ✅
+- All pushed to `main` (`da6fa90`, `0b30ac5`, `e303e2f`, `1de25ed`); prod build clean; dev server stopped; tree clean. Vercel auto-deploys.
