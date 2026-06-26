@@ -1,5 +1,10 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+/* Tailwind v4 auto source-detection doesn't pick up our MDX bodies, so any
+   utility class used ONLY in .mdx content (e.g. an epigraph's `leading-none`)
+   never gets generated. Register the content dir explicitly so those classes
+   compile. Without this, MDX-only utilities silently no-op. */
+@source "../content";
 
 :root {
   --background: #fae8db; /* faint warm cream-peach — page background (field) */
