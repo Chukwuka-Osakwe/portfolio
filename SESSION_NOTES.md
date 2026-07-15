@@ -1355,3 +1355,74 @@ Worked out a new content category from scratch. Landed on **"the lab"**:
 4. **OG + sitemap** for lab routes (lab OG script, à la `generate-essay-og.mjs`; deferred).
 5. Aronia live-site link chip once the site ships.
 6. Then commit + build-verify + push.
+
+---
+
+## Session 23 — 2026-07-15 — Kickoff lab item + editorial lab listing + route swap (shipped)
+
+Cleared the whole S22 "next up" list and shipped it as one commit (`ca8e6cb`, pushed).
+
+### Kickoff (the 2nd lab item)
+- Footage captured live (3020×1650, 120fps, 103s, 43MB). Ran the **Aronia pipeline**:
+  ffmpeg `scale=1600:-2,fps=30`, libx264 `-crf 22 -preset slow`, `-an -movflags +faststart`
+  → `public/lab/kickoff/walkthrough.mp4` (**1600×874, 3.4MB**) + sharp poster @10s
+  (`walkthrough-poster.webp`, 31KB). Master → gitignored `sources/lab/kickoff/`.
+  **Clip length 103s/3.4MB — Chukwuka OK'd leaving it full** (Aronia's was 64s/1.8MB).
+- `src/content/lab/kickoff.mdx` — copy drafted from the naming essay's real facts
+  (browser football manager, Alexander Karlsson's vibecoded original, ground-up
+  redesign, state-selectors-not-buttons, 2-person design→code via LLMs); links to the
+  naming essay in-body. **Chukwuka will rewrite the copy later** (it's my draft).
+  `blurb` = **"A football manager game in the browser"** (his edit; drives both the
+  lab card title and the detail header tagline). No outbound `links` yet.
+- Scaffolded non-draft (draft:true would 404 it — the `/lab/[slug]` existence check
+  uses `getAllMeta("lab")` which filters drafts, so a draft is unpreviewable even locally).
+
+### Lab listing — editorial / video-forward (ref: madhurima.me/work)
+- **Rejected the first attempt** (mirrored the case-study card: small 2-up grid, bordered
+  cover + padded title/blurb). Chukwuka dropped a madhurima screen-rec as the reference.
+- **`LabSection` (server) + `LabCardVideo` (client):** big **single-column** cards, one per
+  row, generous rhythm (`gap-20`). Each card = a large rounded **canvas that plays the hero
+  clip in place** (autoplay muted loop; reduced-motion → paused poster, **no controls** since
+  the whole card is a nav `<Link>`), with metadata **below** the canvas: an uppercase tracked
+  eyebrow **`NAME • CATEGORY • YEAR`** (`title • type • year`) + a big descriptive title = the
+  **`blurb`**. Canvas keeps the `.project-card` ring so the raw screen-cap has edge definition
+  on the peach field. Judgment calls Chukwuka accepted: clips **autoplay on the landing page**
+  (vs poster+hover-play), framed (vs flat), full content-width.
+- Year via `new Date(p.date).getUTCFullYear()` (unquoted `date:` → Date object, not string).
+
+### Route swap (front-door surgery)
+- **`/` is now the "my lab" landing** (`LabSection`); kept `<HashRedirect>` (still forwards
+  legacy `/#<work-slug>` → `/design/<slug>`).
+- **Case studies moved to a new `/design` index** (`ProjectsSection` with no `initialSlug`);
+  `/design/[slug]` detail unchanged. Case-study **back-link + Esc now return to `/design`**
+  (label "back to work" → "case studies").
+- **`ViewSwitcher` → 3 segments** (`my lab` / `case studies` / `product ideas`); thumb re-sized
+  to `w-[calc((100%-0.5rem)/3)]`, `grid-cols-3`. **`NavMenu` "design"** `activeFor` = `["/",
+  "/design", "/product-ideas", "/lab"]` (stays active across the whole triad).
+- **Sitemap:** added `/design` + one entry per `/lab/<slug>`.
+
+### Lab OG cards (poster-based — Chukwuka's pick)
+- **`scripts/generate-lab-og.mjs`** — the poster-based sibling of `generate-case-og.mjs`:
+  `fit:contain` each hero poster to **1200×630**, padded with the poster's own corner-sampled
+  edge colour. Output namespaced to **`public/og/lab/<slug>.png`**. Generated Aronia (padded
+  white) + Kickoff (padded dark). Lab route `generateMetadata` now existence-checks + links it
+  (site-default fallback, same pattern as case studies + essays). **Run
+  `node scripts/generate-lab-og.mjs [slug]` per new lab item.**
+
+### Also
+- **LabDetail TL;DR** sized down `text-lg` → `text-base` to match body prose (Chukwuka caught
+  it rendering larger than body — shared component, so Aronia's TL;DR fixed too).
+
+### Shipped ✅
+- `npm run build` clean — **29 static pages** (was 26; +`/design`, +`/lab/aronia`, +`/lab/kickoff`).
+  Benign `Nata Sans` font-override warning only. Committed `ca8e6cb` + **pushed to `main`**;
+  Vercel auto-deploys. Stray root `.mov`s (Kickoff master dup + the madhurima reference) moved
+  into gitignored `sources/lab/kickoff/`, not committed.
+
+### Next up (resume here)
+- **Kickoff copy rewrite** (Chukwuka's, replacing my draft) + a Kickoff outbound `links` chip
+  when there's a destination.
+- **Aronia live-site link chip** once that site ships.
+- Lab detail **`type` eyebrow** isn't rendered on `LabDetail` (only on cards) — fine, but note it.
+- Older parked: "overview → outcome" tab report (unreproduced), Footy walkthrough re-export,
+  `<Figure>` caption-link support, broader art-direction pass, UI-polish skill audit (S20).
