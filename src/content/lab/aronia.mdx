@@ -15,10 +15,11 @@ links:
 ## Overview
 
 Aronia is a component library I'm building for a world where the thing consuming
-your components is often an agent, not a person clicking through Storybook. Every
-component is installed with a single command — `npx aronia add button --style
-glassmorphism` — and ships with a machine-readable manifest so an agent can
-discover what exists, what it takes, and how to drop it in.
+your components is often an agent, not a person clicking through Storybook. You
+set it up with a single command — `npx aronia init` — then pull in components as
+you need them (`aronia add button`), each landing in your project with a
+machine-readable manifest so an agent can discover what exists, what it takes,
+and how to drop it in.
 
 The gallery on the left is the human-facing half: pick a component, watch it
 render live in the middle, and drive every prop from the panel on the right —
@@ -31,3 +32,7 @@ JavaScript.
 It's the piece of the lab that pushes furthest past design into
 engineering — CLI tooling, an agent-oriented API, and a design system that has
 to hold up under both human and machine use.
+
+To get started with Aronia today just run `npx aronia init` — or paste the
+GitHub link into the chat with your agent and tell it you want to use the Aronia
+library for your project. Have fun!

@@ -47,7 +47,7 @@ export function ViewSwitcher() {
             key={v.href}
             href={v.href}
             aria-current={isActive ? "page" : undefined}
-            className="relative z-10 rounded-md px-4 py-1.5 text-center text-base text-foreground transition-colors"
+            className="relative z-10 rounded-md px-4 py-1.5 text-center text-base font-semibold text-foreground transition-colors"
           >
             {v.label}
           </Link>
