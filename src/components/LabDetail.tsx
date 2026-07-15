@@ -35,7 +35,7 @@ export function LabDetail({ meta, body }: { meta: ContentMeta; body: string }) {
         >
           ←
         </span>
-        the lab
+        my lab
       </Link>
 
       {/* Header → accent rule → content, mirroring the case-study + essay
