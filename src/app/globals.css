@@ -347,6 +347,40 @@ html {
   .view-enter { animation: none; }
 }
 
+/* Lab hero — the big sell. On wide screens the autoplay clip breaks out of the
+   centered --content-w column to fill (almost) the full viewspace track, so it
+   dominates the fold on load. The track = 100vw − --nav-w − column-gap(2rem);
+   the content column is centered within it, so the surplus per side is
+   (track − --content-w)/2. We span the track minus a ~1.5rem inset per side;
+   that inset (the extra 3rem below) absorbs the classic 100vw-vs-scrollbar
+   mismatch (scrollbar-gutter is stable) so there's never horizontal overflow.
+   Only kicks in past 72rem, where that surplus is positive — below it the hero
+   stays at column width. A wide 3-pane clip can't be cropped to gain height, so
+   width is the only lever; at full track it lands ~65vh+. */
+@media (min-width: 72rem) {
+  .lab-hero {
+    /* Center in the VISIBLE viewspace — from the left viewport edge to the
+       identity panel (panel-left = 100vw − --nav-w) — with a ~1.5rem gutter
+       each side. width = that region minus both gutters; margin-left places
+       the left gutter (derived from tokens so it survives --nav-w /
+       --content-w edits). NB: centering against the *track* instead (which
+       excludes the 2rem column-gap before the panel) read left-shifted by
+       that gap on wide screens — hence −3rem (2× 1.5rem), not −5rem. */
+    width: calc(100vw - var(--nav-w) - 3rem);
+    margin-left: calc((var(--nav-w) + 5rem + var(--content-w)) / 2 - 50vw);
+  }
+}
+/* Load-in reveal — a gentle rise + fade so the moving clip announces itself.
+   Layered on top of the parent .view-enter fade; reduced-motion skips it. */
+@keyframes lab-hero-in {
+  from { opacity: 0; transform: translateY(0.75rem) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+.lab-hero { animation: lab-hero-in 520ms var(--ease-house) both; }
+@media (prefers-reduced-motion: reduce) {
+  .lab-hero { animation: none; }
+}
+
 /* Case-study body images are clickable (see CaseImageViewer). The `zoom-in`
    cursor telegraphs the affordance on hover; no visible chrome at rest. */
 .case-body img { cursor: zoom-in; }

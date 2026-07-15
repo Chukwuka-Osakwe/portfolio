@@ -1274,3 +1274,84 @@ Initial drop was `<p className="text-center italic leading-snug text-text-muted"
 
 ### Shipped + closed ✅
 - All pushed to `main` (`da6fa90`, `0b30ac5`, `e303e2f`, `1de25ed`); prod build clean; dev server stopped; tree clean. Vercel auto-deploys.
+
+---
+
+## Session 22 — 2026-07-15 — "the lab": new self-directed-work category (design convo) + Aronia detail page built
+
+### The decision (long conversation, no code first half) — see memory [[portfolio-the-lab-section]]
+Worked out a new content category from scratch. Landed on **"the lab"**:
+- **Definition = self-directed / uncommissioned work** — things Chukwuka builds *for
+  himself* (solo or with a friend). Sorting test: *"did anyone ask me to build this?"*
+  (no → lab). **NOT** defined by being unfinished; stage is just a tag. Founding items:
+  **Aronia** (agent-friendly component library, own site in progress + GitHub repo) and
+  **Kickoff** (2-person passion project — redesign + design→code handoff to a backend-dev
+  friend via LLMs + game logic). Both "me-for-me," so both are lab, not client work.
+- **Placement:** design becomes a **three-tab surface** (`ViewSwitcher`): **my lab ·
+  case studies · product ideas**, with **my lab the default/landing view**. Rejected:
+  top-level nav item, lab-as-separate-homepage. Rationale: the lab proves he goes *past*
+  design (code/agents/backend) while *still a designer at heart* → it leads the design
+  triad, not a silo. **"projects" → "case studies"** rename (strict upgrade).
+- **Presentation = video-forward / editorial** (ref: madhurima.me/work/checkmate). Lab
+  items are **trailers, not case studies** — looping hero clip + minimal prose, then
+  **link OUT** to the real home (repo/site). Don't clone Aronia's own site.
+
+### Built this session — the Aronia lab detail page (proof-of-concept)
+- **Route map planned** (lab-as-default shifts URLs; mirrors the case-study pattern):
+  | tab | index | detail |
+  |-----|-------|--------|
+  | my lab (default) | `/` | `/lab/[slug]` (NEW, built) |
+  | case studies | `/design` (new index, NOT built yet) | `/design/[slug]` (exists) |
+  | product ideas | `/product-ideas` | — |
+- **Video pipeline (Aronia):** fresh 64s screen-recording (3020×1650, 120fps, silent)
+  → `public/lab/aronia/walkthrough.mp4` (ffmpeg: `scale=1600:-2,fps=30`, libx264
+  `-crf 22 -preset slow`, `-an -movflags +faststart`; 28.7MB → **1.8MB**, 1600×874) +
+  `walkthrough-poster.webp` (frame @10s via sharp, 45KB). Masters parked in gitignored
+  `sources/lab/aronia/` (both the fresh clip + an earlier "baby" clip). **ffmpeg lacks
+  libwebp here → extract PNG then convert with `sharp` for webp.**
+- **Content model:** added **`"lab"` to the `Section` union** in `lib/content.ts`;
+  extended `Frontmatter` with lab-only **`video`**, **`stage`**, **`links: {label,href}[]`**.
+  Reuses the whole `getAllMeta`/`getEntry`/`generateStaticParams` machinery. Authored
+  `src/content/lab/aronia.mdx` (body leads with `## Overview`). **Gotcha:** unquoted
+  `date:` YAML parses to a **Date object**, not a string — read year via
+  `new Date(meta.date).getUTCFullYear()`, never `.slice`.
+- **Cinematic template** — new `LabDetail.tsx` (server) + `LabHeroVideo.tsx` (client).
+  Deliberately NOT the `.case-body`/TOC/CaseImageViewer shell. Final structure (after
+  live iteration with Chukwuka): back-link → **header (title + `blurb` tagline) closed
+  by `border-b-4 border-accent` rule** (mirrors case-study/essay headers; header
+  **left-aligned**, rest centered) → **hero clip** → **TL;DR** (Substack-style
+  blockquote, accent left stroke, holds `summary`) → **Overview** (MDX body) → **link
+  chips** (outbound, `bg-nav-fill`) → **`STATUS: <stage>` pill** (uppercase, `bg-accent-100`,
+  the closer). `LabHeroVideo` autoplays muted+loops; reduced-motion pauses to poster +
+  shows controls.
+- **Hero "dominate on load"** (Chukwuka picked "tall hero, header first"): new
+  **`.lab-hero`** class in `globals.css`. At `min-width:72rem` the clip **breaks out of
+  the centered `--content-w` (49rem) column to fill the visible viewspace** (left screen
+  edge → identity panel) → ~65vh+, no crop (a wide 3-pane clip can only gain height by
+  gaining width). Token-derived calc: `width: calc(100vw - var(--nav-w) - 3rem)`,
+  `margin-left: calc((var(--nav-w) + 5rem + var(--content-w))/2 - 50vw)`, ~1.5rem gutter
+  each side (absorbs the 100vw-vs-scrollbar mismatch). **Fix hit live:** first centered in
+  the grid *track* (excludes the 2rem column-gap before the panel) → read left-shifted on
+  wide screens; corrected to center against the **panel edge** (`−3rem` not `−5rem`).
+  Plus a `lab-hero-in` load reveal (rise + fade + micro-scale; reduced-motion skips).
+
+### State at session end — NOT committed
+- `/lab/aronia` renders (200, SSR-complete: video, poster, TL;DR, Overview, GitHub chip,
+  status pill). `tsc --noEmit` clean. **Nothing committed / no build run yet** (mid-feature).
+- **Dev server:** stopped at session end.
+- Files touched: `src/lib/content.ts`, `src/content/lab/aronia.mdx`,
+  `src/components/LabDetail.tsx`, `src/components/LabHeroVideo.tsx`,
+  `src/app/(site)/lab/[slug]/page.tsx`, `src/app/globals.css`,
+  `public/lab/aronia/*`, `sources/lab/aronia/*` (gitignored).
+
+### Next up (resume here)
+1. **Kickoff** — the second lab item (capture footage first; game-logic / design→code
+   story). Drops into the proven `/lab/[slug]` mold.
+2. **Lab listing** component (the `/` grid of lab cards — card treatment TBD; blurb =
+   "An Agentic component library for vibecoders", cover = poster).
+3. **Route swap** (the front-door surgery, do last): `/` → lab default; case-studies index
+   → new `/design`; `ViewSwitcher` → 3 tabs + `projects`→`case studies` rename;
+   `NavMenu` "design" `activeFor` gains `/design`,`/lab`; keep `HashRedirect` on `/`.
+4. **OG + sitemap** for lab routes (lab OG script, à la `generate-essay-og.mjs`; deferred).
+5. Aronia live-site link chip once the site ships.
+6. Then commit + build-verify + push.

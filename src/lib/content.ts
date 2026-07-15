@@ -3,7 +3,7 @@ import path from "node:path";
 import matter from "gray-matter";
 import { WORK_COVER_LQIPS } from "@/content/work-covers";
 
-export type Section = "work" | "writing";
+export type Section = "work" | "writing" | "lab";
 
 // NOTE: "product ideas" are intentionally NOT a Section. An idea is just an image
 // + a one-line caption (no MDX body), so it lives as typed data in
@@ -24,8 +24,21 @@ export interface Frontmatter {
    *  "PRODUCT DESIGN", "VISUAL DESIGN"). Renders as an eyebrow label on
    *  the card + below the detail-header H1. */
   type?: string;
-  /** Card cover image — a path under /public, e.g. "/work/footy/cover.png". */
+  /** Card cover image — a path under /public, e.g. "/work/footy/cover.png".
+   *  For lab items this doubles as the hero video's poster + OG source. */
   image?: string;
+  /** Lab-only: hero clip — an autoplay/loop video path under /public, e.g.
+   *  "/lab/aronia/walkthrough.mp4". Rendered muted+looping by <LabHeroVideo>
+   *  (poster = `image`). Absent for work/writing. */
+  video?: string;
+  /** Lab-only: current build stage — a small tag, e.g. "in progress",
+   *  "pre-beta". The lab is defined by being self-directed, not by being
+   *  finished, so this is metadata, not the headline. */
+  stage?: string;
+  /** Lab-only: outbound destinations (the item's real home lives elsewhere) —
+   *  e.g. a live site, a GitHub repo, a demo. Rendered as link chips on the
+   *  detail page. YAML array of { label, href } in frontmatter. */
+  links?: { label: string; href: string }[];
   /** Mark true to hide from listings while drafting. */
   draft?: boolean;
   /** Pin to the top of the listing (sorted ahead of unpinned entries, then

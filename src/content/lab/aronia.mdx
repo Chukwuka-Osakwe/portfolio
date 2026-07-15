@@ -1,0 +1,33 @@
+---
+title: Aronia
+type: Component Library
+summary: An agent-friendly component library you install from the command line — every component renders live, restyles on the fly, and is built to be read and used by AI agents.
+blurb: An Agentic component library for vibecoders
+date: 2026-07-15
+stage: in progress
+image: /lab/aronia/walkthrough-poster.webp
+video: /lab/aronia/walkthrough.mp4
+links:
+  - label: GitHub
+    href: https://github.com/Chukwuka-Osakwe/aronia
+---
+
+## Overview
+
+Aronia is a component library I'm building for a world where the thing consuming
+your components is often an agent, not a person clicking through Storybook. Every
+component is installed with a single command — `npx aronia add button --style
+glassmorphism` — and ships with a machine-readable manifest so an agent can
+discover what exists, what it takes, and how to drop it in.
+
+The gallery on the left is the human-facing half: pick a component, watch it
+render live in the middle, and drive every prop from the panel on the right —
+`variant`, `size`, `state`, `shape` — with the preview updating as you go. Under
+the hood the components lean on native platform primitives (`<details>` for
+disclosure, the `popover` attribute and CSS Anchor Positioning for menus) so
+accessibility and behaviour come for free instead of being re-implemented in
+JavaScript.
+
+It's the piece of the lab that pushes furthest past design into
+engineering — CLI tooling, an agent-oriented API, and a design system that has
+to hold up under both human and machine use.
