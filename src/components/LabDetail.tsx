@@ -63,7 +63,7 @@ export function LabDetail({ meta, body }: { meta: ContentMeta; body: string }) {
           <p className="text-xs font-semibold uppercase tracking-wider text-accent">
             TL;DR
           </p>
-          <p className="mt-1 text-lg leading-relaxed text-foreground">
+          <p className="mt-1 text-base leading-relaxed text-foreground">
             {meta.summary}
           </p>
         </div>

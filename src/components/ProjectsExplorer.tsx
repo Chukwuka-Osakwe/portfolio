@@ -18,7 +18,8 @@ interface Props {
   projects: ContentMeta[];
   panes: Pane[];
   /** When set, render the detail view for this slug; otherwise show the grid.
-   *  Provided by the `/design/[slug]` route's page; `/` doesn't pass it. */
+   *  Provided by the `/design/[slug]` route's page; the `/design` index
+   *  doesn't pass it (grid). */
   initialSlug?: string;
 }
 
@@ -57,7 +58,7 @@ export function ProjectsExplorer({ projects, panes, initialSlug }: Props) {
   useEffect(() => {
     if (!initialSlug) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") router.push("/");
+      if (e.key === "Escape") router.push("/design");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -71,13 +72,13 @@ export function ProjectsExplorer({ projects, panes, initialSlug }: Props) {
       return (
         <div className="view-enter">
           <Link
-            href="/"
+            href="/design"
             className="group inline-flex items-center gap-2 text-sm font-semibold text-text-muted transition-colors hover:text-accent focus-visible:text-accent focus-visible:outline-none"
           >
             <span aria-hidden className="transition-transform group-hover:-translate-x-0.5">
               ←
             </span>
-            back to work
+            case studies
           </Link>
           <article className="mx-auto mt-8 max-w-[var(--reading-measure)]">
             <header className="mb-8 border-b-4 border-accent pb-4">

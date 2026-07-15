@@ -3,7 +3,9 @@ import { getAllMeta } from "@/lib/content";
 import { SITE_URL } from "@/lib/site";
 
 /**
- * Static sitemap — home, the two list routes, and one entry per case study.
+ * Static sitemap — the lab home (`/`) + one entry per lab item, the case-
+ * studies index + one entry per case study, the essays + product-ideas +
+ * contact routes.
  *
  * Case studies live at `/design/<slug>` (real routes, generated statically
  * from `src/content/work/`) so each one gets its own URL, per-route OG
@@ -13,10 +15,20 @@ import { SITE_URL } from "@/lib/site";
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
+  const lab = getAllMeta("lab");
   const projects = getAllMeta("work");
   const essays = getAllMeta("writing");
   return [
+    // `/` is the "my lab" landing view (the design triad leads with the lab).
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "monthly", priority: 1 },
+    ...lab.map((p) => ({
+      url: `${SITE_URL}/lab/${p.slug}`,
+      lastModified: new Date(p.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
+    // Case studies moved off `/` to their own `/design` index tab.
+    { url: `${SITE_URL}/design`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     ...projects.map((p) => ({
       url: `${SITE_URL}/design/${p.slug}`,
       // lastModified ideally tracks the MDX's mtime; using the frontmatter

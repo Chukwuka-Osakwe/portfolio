@@ -5,15 +5,16 @@ import { usePathname } from "next/navigation";
 import { useView } from "@/components/ViewContext";
 
 const VIEWS: { href: string; label: string }[] = [
-  { href: "/", label: "projects" },
+  { href: "/", label: "my lab" },
+  { href: "/design", label: "case studies" },
   { href: "/product-ideas", label: "product ideas" },
 ];
 
 /**
- * Segmented toggle for switching the visible set (projects ↔ product ideas).
- * The two segments are real route links; the active one is derived from the
- * pathname. The highlight is an absolutely-positioned "thumb" sized to one
- * segment that translates between the two equal-width (`grid-cols-2`) segments
+ * Segmented toggle for the design triad (my lab ↔ case studies ↔ product
+ * ideas). Each segment is a real route link; the active one is derived from
+ * the pathname. The highlight is an absolutely-positioned "thumb" sized to one
+ * segment that translates across the three equal-width (`grid-cols-3`) segments
  * as the route changes (the layout persists across client navigation, so the
  * slide animates). `motion-safe` so reduced-motion users get an instant swap.
  */
@@ -30,12 +31,12 @@ export function ViewSwitcher() {
     <div
       role="group"
       aria-label="Choose a view"
-      className="frosted pointer-events-auto relative inline-grid grid-cols-2 rounded-lg p-1"
+      className="frosted pointer-events-auto relative inline-grid grid-cols-3 rounded-lg p-1"
     >
-      {/* Sliding thumb */}
+      {/* Sliding thumb — one segment wide: (track − p-1 both sides) / 3. */}
       <span
         aria-hidden
-        className="absolute inset-y-1 left-1 w-[calc(50%_-_4px)] rounded-md bg-accent-200 motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out"
+        className="absolute inset-y-1 left-1 w-[calc((100%_-_0.5rem)/3)] rounded-md bg-accent-200 motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out"
         style={{ transform: `translateX(${activeIndex * 100}%)` }}
       />
 

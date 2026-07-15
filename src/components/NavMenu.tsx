@@ -6,8 +6,9 @@ import { usePathname } from "next/navigation";
 // `href` → destination. `external` items open in a new tab; internal items are
 // real routes. `activeFor` lists the pathnames the item should highlight on
 // (defaults to [href]). Matching is exact for "/" and sub-route-prefix for the
-// rest (see isActiveFor) — so "design" stays active across projects (/),
-// product-ideas, AND the per-case-study routes (/design/<slug>).
+// rest (see isActiveFor) — so "design" stays active across the whole triad:
+// my lab (/) + its details (/lab/<slug>), case studies (/design + /design/<slug>),
+// and product ideas (/product-ideas).
 type Item = {
   label: string;
   href: string;
@@ -16,7 +17,7 @@ type Item = {
 };
 
 const ITEMS: Item[] = [
-  { label: "design", href: "/", activeFor: ["/", "/product-ideas", "/design"] },
+  { label: "design", href: "/", activeFor: ["/", "/design", "/product-ideas", "/lab"] },
   { label: "essays", href: "/essays", activeFor: ["/essays"] },
   { label: "newsletter", href: "https://chukwukaosakwe.substack.com/", external: true },
   { label: "contact", href: "/contact" },
