@@ -24,18 +24,9 @@ import { LabCardVideo } from "@/components/LabCardVideo";
 export function LabSection() {
   const items = getAllMeta("lab");
   return (
-    <>
-      {/* Intro line framing the view — mirrors the ProductIdeas accent/Nico Moji
-          header ("these ideas don't exist yet…"). Sets up the lab as the
-          self-directed / spare-time work before the trailers. */}
-      <p
-        className="mb-12 text-center text-balance text-[clamp(1rem,3.5vw,1.25rem)] text-accent"
-        style={{ fontFamily: "var(--font-nico-moji)" }}
-      >
-        what i&apos;m building in my spare time
-      </p>
-
-      <ul className="flex flex-col gap-16 sm:gap-20">
+    // Top margin complements the layout's shared pt-8 (32px) so the space
+    // above the first card equals the inter-card gap (64px / 80px at sm+).
+    <ul className="mt-8 flex flex-col gap-16 sm:mt-12 sm:gap-20">
       {items.map((p) => {
         // Unquoted `date:` YAML can parse to a Date object, not a string —
         // new Date() handles both; getUTCFullYear avoids a TZ off-by-one.
@@ -85,7 +76,6 @@ export function LabSection() {
           </li>
         );
       })}
-      </ul>
-    </>
+    </ul>
   );
 }
