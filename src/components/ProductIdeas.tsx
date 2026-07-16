@@ -76,13 +76,6 @@ export function ProductIdeas() {
         <link key={it.slug} rel="preload" as="image" href={it.image} />
       ))}
 
-      <p
-        className="text-center text-balance text-[clamp(1rem,3.5vw,1.25rem)] text-accent"
-        style={{ fontFamily: "var(--font-nico-moji)" }}
-      >
-        these ideas don&apos;t exist yet but maybe they should
-      </p>
-
       {/* MOBILE — single cover, full container width. */}
       <div
         className="project-card relative w-full overflow-hidden rounded-lg lg:hidden"

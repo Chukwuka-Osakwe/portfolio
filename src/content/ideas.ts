@@ -33,14 +33,24 @@ export interface Idea {
 
 export const ideas: Idea[] = [
   {
-    // First real idea. Slug intentionally kept as the filename for now — rename
-    // to the idea concept (not the file) before any promotion to MDX/routes.
+    slug: "arsenal-agent",
+    image: "/ideas/arsenal-agent-v4.webp",
+    width: 2000,
+    height: 1293,
+    caption:
+      "A club having a dedicated football agent could be an interesting direction. What if the Arsenal agent could help you purchase tickets to the Arsenal game conditionally?",
+    blurDataURL:
+      "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAAAwAgCdASoQAAoAA4BaJYwC7AEQUKPOgtBcAAD++RcrCvdT9AznuZDwqB+FhrL+3A5ih91Jh2TMDiuS3q8Ev9h1vOI15Qz5mpTydnkjY0LsrVAA",
+  },
+  {
+    // Slug intentionally kept as the filename for now — rename to the idea
+    // concept (not the file) before any promotion to MDX/routes.
     slug: "store-3",
     image: "/ideas/store-3-v3.webp",
     width: 2000,
     height: 1293,
     caption:
-      "A Farcaster e-commerce mini-app. Everyday products with the full gamut of crypto payment options available to the user",
+      "A Farcaster mini-app for everyday shopping — the full gamut of crypto payment options at checkout.",
     blurDataURL:
       "data:image/webp;base64,UklGRswAAABXRUJQVlA4WAoAAAAQAAAADwAACQAAQUxQSEEAAAABd6CgbRuGP+PumkZEhFtonzcPNZHtRL8jJUrujjoVdkBPNCABEyAjMjgcRPQ/tPIW7qqE6WBPBuNCmJ8lL8lNAQBWUDggZAAAALABAJ0BKhAACgADgFoliAAC1oLnewAA/vX8Qn2Rc1I0QO0BaYEFJNG1pBplJj8WEqgYpdYL0rPyAQqBwV71lwf83vT1VAkFOsgKOr4uRJz6PS45MjS6YrPUWfA9s/+SMDz8AAA=",
   },
@@ -60,19 +70,9 @@ export const ideas: Idea[] = [
     width: 2000,
     height: 1293,
     caption:
-      "A Farcaster mini-app tracking all the onchain subscriptions associated with a wallet. Obviously this one can grow beyond mini-app to become a one-stop shop for onchain subscriptions.",
+      "Track every onchain subscription tied to a wallet — starting as a Farcaster mini-app, with room to grow into a one-stop shop for onchain subscriptions.",
     blurDataURL:
       "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAAAwAgCdASoQAAoAA4BaJYwCdDBAAX/5CBD/gAD+Flm6TRx8mYz8aKtf2Wz+xPmAJP/T+tPq01I+KGGg1VVSgPM0YAN9JRwQgAA=",
-  },
-  {
-    slug: "arsenal-agent",
-    image: "/ideas/arsenal-agent-v4.webp",
-    width: 2000,
-    height: 1293,
-    caption:
-      "A club having a dedicated football agent could be an interesting direction. What if the Arsenal agent could help you purchase tickets to the Arsenal game conditionally?",
-    blurDataURL:
-      "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAAAwAgCdASoQAAoAA4BaJYwC7AEQUKPOgtBcAAD++RcrCvdT9AznuZDwqB+FhrL+3A5ih91Jh2TMDiuS3q8Ev9h1vOI15Qz5mpTydnkjY0LsrVAA",
   },
   {
     slug: "retro-chat-app",
