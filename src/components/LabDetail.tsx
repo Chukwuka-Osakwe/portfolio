@@ -11,7 +11,7 @@ import { LabHeroVideo } from "@/components/LabHeroVideo";
  * Structure, top → bottom:
  *   • two-line header   — L1 the title, L2 the one-line explanation
  *                         (frontmatter `blurb`), closed by an accent rule
- *                         (border-b-4 border-accent) as case studies + essays do
+ *                         (border-b-2 border-accent) as case studies + essays do
  *   • hero clip         — full viewspace width
  *   • TL;DR callout     — Substack-style blockquote (accent left stroke),
  *                         holds the longer `summary`
@@ -39,8 +39,8 @@ export function LabDetail({ meta, body }: { meta: ContentMeta; body: string }) {
       </Link>
 
       {/* Header → accent rule → content, mirroring the case-study + essay
-          detail headers (border-b-4 border-accent). */}
-      <header className="mx-auto mt-8 max-w-[var(--reading-measure)] border-b-4 border-accent pb-4">
+          detail headers (border-b-2 border-accent). */}
+      <header className="mx-auto mt-8 max-w-[var(--reading-measure)] border-b-2 border-accent pb-4">
         <h1 className="text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-balance">
           {meta.title}
         </h1>

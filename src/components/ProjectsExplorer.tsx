@@ -81,7 +81,7 @@ export function ProjectsExplorer({ projects, panes, initialSlug }: Props) {
             case studies
           </Link>
           <article className="mx-auto mt-8 max-w-[var(--reading-measure)]">
-            <header className="mb-8 border-b-4 border-accent pb-4">
+            <header className="mb-8 border-b-2 border-accent pb-4">
               <h1 className="text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-balance">
                 {p.title}
               </h1>

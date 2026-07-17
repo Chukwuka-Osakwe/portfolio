@@ -19,9 +19,9 @@ export function EssaysList() {
     // Reading-measure column, centered in the viewspace and vertically settled.
     <div className="mx-auto flex w-full max-w-[var(--reading-measure)] flex-col min-h-[calc(100dvh-11.5rem-env(safe-area-inset-top,0px))] lg:min-h-[calc(100dvh-8rem)]">
       {/* Header — mirrors the case-study detail header: title + subheading,
-          then a tight border-b-4 accent rule close beneath (same pb-4/mb-8
+          then a tight border-b-2 accent rule close beneath (same pb-4/mb-8
           spacing) so the listing reads as part of the same family. */}
-      <header className="mb-8 border-b-4 border-accent pb-4">
+      <header className="mb-8 border-b-2 border-accent pb-4">
         <h1 className="text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-accent">
           essays
         </h1>
