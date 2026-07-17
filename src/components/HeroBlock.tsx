@@ -29,7 +29,7 @@ export function HeroBlock() {
       <Link
         href="/"
         aria-label="chukwuka's matrix — home"
-        className="focus-ring mx-auto mt-4 flex w-fit items-center justify-center gap-4 rounded-md px-1 py-1 lg:mt-0"
+        className="focus-ring mx-auto mt-4 flex w-fit items-center justify-center gap-4 rounded-md px-1 py-1 lg:-mt-8"
       >
         <span
           aria-hidden
