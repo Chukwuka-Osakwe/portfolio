@@ -65,8 +65,8 @@ export function Contact() {
           i love gradients, typography, and watching clients&apos; faces
           light up when they see what i&apos;ve designed. i&apos;m
           particularly interested in product design, design systems,
-          building things for football fans, and internet-native
-          experiences (coyg!). if
+          building things for football fans (coyg!), and internet-native
+          experiences. if
           you&apos;re building a product and need help making it clearer,
           more cohesive, or easier to use, i&apos;d love to hear about it.
         </p>
