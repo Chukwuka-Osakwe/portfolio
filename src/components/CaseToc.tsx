@@ -154,7 +154,7 @@ export function CaseToc() {
               // the longest label and fits within ~62px segments on a 360px
               // viewport once the parent wrapper drops to px-4. Desktop bumps
               // back to text-sm px-3 py-1.5. Touch target ≥36px on mobile.
-              className="focus-ring relative z-10 rounded-md px-2 py-2 text-center text-xs text-foreground lg:px-3 lg:py-1.5 lg:text-sm"
+              className="focus-ring relative z-10 rounded-md px-2 py-2 text-center text-xs font-semibold text-foreground lg:px-3 lg:py-1.5 lg:text-sm"
             >
               {s.label}
             </button>
