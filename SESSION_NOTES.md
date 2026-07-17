@@ -1426,3 +1426,78 @@ Cleared the whole S22 "next up" list and shipped it as one commit (`ca8e6cb`, pu
 - Lab detail **`type` eyebrow** isn't rendered on `LabDetail` (only on cards) — fine, but note it.
 - Older parked: "overview → outcome" tab report (unreproduced), Footy walkthrough re-export,
   `<Figure>` caption-link support, broader art-direction pass, UI-polish skill audit (S20).
+
+---
+
+## Session 24 — 2026-07-16 — editorial/copy polish + lab lede (long探索) + site-wide accent-rule thinning
+
+A long eyeballing-in-the-browser session; two commit batches, both pushed to `main`.
+
+### Copy / editorial de-dup (batch 1 — `0cb73f8`, `adc2ac6`)
+- **Product ideas view:** removed the Nico Moji "these ideas don't exist yet…" header
+  entirely; reordered so **arsenal-agent leads** the carousel; tightened the store-3 +
+  subscriptions captions so "mini-app" appears once per line (subscriptions had it twice).
+- **Case-study card blurbs:** "Farcaster mini-app" was in **3 of 5** blurbs (bribe, footy,
+  yara) — monotonous on a scan. Kept it on **footy** (where "football mini-app" is central);
+  thinned bribe → "mini-app", dropped the trailing clause from yara. Summaries/detail still
+  carry the full fact. Now on **1** card.
+- **Contact:** moved `(coyg!)` to sit right after "building things for football fans" (was
+  trailing after "internet-native experiences"). `28fa261`.
+
+### Lab lede — the long one (batch 1 `ee97a42` removed it; batch 2 `1de6e13` landed it)
+- Started by **removing** the S23 intro header (the trailers carry the page). Then Chukwuka
+  wanted *some* descriptor back — "hey, this is what my lab is about."
+- **Rejected treatments, in order:** Nico Moji slogan → Nata Sans → accent-left-stroke
+  blockquote → a **hand-rolled SVG scribble/coil** behind the text (built an arc-based
+  "slinky"; tuned size/opacity/stroke) → **ehmorris.com's actual `<Highlight>` squiggle
+  asset**, extracted from his site and recoloured to our accent (filled organic brush path,
+  viewBox 515×246, behind a highlighted phrase). All abandoned.
+- **Key learning (worth not re-litigating):** the squiggle "didn't feel like me" because it
+  was **borrowed from someone else's site**. Personality comes from **your own voice in the
+  copy first**, the site's *native* vocabulary second (Nico Moji, `.accent-marker`, the
+  matrix motif) — not an imported graphic. `Squiggle.tsx` was created then **deleted**.
+- **Landed:** a **centered, muted lede in Chukwuka's own voice** — "**the lab** — is for all
+  the little projects i build in my spare time." (bold lead-in on "the lab"), `text-balance`,
+  sitting directly on the shared `pt-8` (no extra `mt`). Below it a **card-width 2px accent
+  rule** (`hr`, `h-0.5 w-full bg-accent`, square ends), 8px under the lede. **Gaps unified to
+  64px** (`gap-16` cards, `mb-16` rule; dropped the `sm:` bump). This one accent rule is the
+  **only** site divider at full card-width (vs the reading-measure header rules) — Chukwuka
+  OK'd that inconsistency deliberately.
+
+### Site-wide accent-rule thinning (`8d159f5`)
+- **`border-b-4 border-accent` → `border-b-2`** on every accent header rule (essays index,
+  case-study detail, lab detail, essay detail). "Restraint is always good." 2px is now the
+  **site-wide accent header-rule thickness** (documented in DESIGN.md). Lab landing rule
+  matches at `h-0.5`.
+
+### Identity lockup vertical nudge (`e6c815e`)
+- The desktop logo + "chukwuka's matrix" lockup read subtly off-centre. Diagnosed **two**
+  causes: (1) centering an icon+wide-label bounding box optically pushes the label right;
+  (2) CELL 1 mixes a centered lockup over a **left-aligned** hero paragraph (`lg:text-left`,
+  a deliberate DESIGN.md call). **Tried optical-centering** (logo `absolute right-full` so
+  only the wordmark centers) — **abandoned, looked worse** (logo detached/floated). Landed on
+  a simple vertical nudge: **`lg:-mt-8`** on the lockup. Mobile sheet unchanged.
+
+### CaseToc weight parity (`04e6dce`)
+- Case-study section-nav segments were `font-normal` while the ViewSwitcher segments are
+  `font-semibold` (from S23 `0258eed`). Added `font-semibold` to match. (Confirmed via git
+  history that the viewswitcher work never touched ProjectsExplorer/Section weights — the
+  panel's `font-semibold` predates it.)
+
+### Shipped ✅
+- `tsc --noEmit` clean throughout (dev server stayed live — no `npm run build`). Two batches,
+  **8 commits total**, all pushed to `main`; Vercel auto-deploys. DESIGN.md updated (2px
+  accent-rule convention).
+
+### Next up (resume here)
+- **Aronia before/after `<Compare>`:** Chukwuka has the two **Recco** screens (same page,
+  two skins — editorial serif-on-cream vs bold gradient-sans) demonstrating Aronia's
+  "restyles on the fly". Deferred until he writes the real Aronia content. Note: `<Compare>`
+  implies before→after; these are two *equal* directions, so consider a neutral side-by-side
+  / caption over the arrow. Drop files into gitignored `sources/lab/aronia/`.
+- Still parked from S23: **Kickoff copy rewrite** + outbound `links` chip; **Aronia live-site
+  link chip**; `LabDetail` `type` eyebrow unrendered; the older-parked list (tab report,
+  Footy re-export, `<Figure>` caption-link, art-direction pass, UI-polish audit).
+- Chukwuka mused about **killing light mode** ("looks so beautiful in dark mode") — not
+  committed; would be a simplification win (one palette, no toggle cell) but weigh OG cards +
+  light-padded Aronia poster + light-preferring visitors.
