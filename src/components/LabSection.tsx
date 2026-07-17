@@ -24,9 +24,20 @@ import { LabCardVideo } from "@/components/LabCardVideo";
 export function LabSection() {
   const items = getAllMeta("lab");
   return (
-    // Top margin complements the layout's shared pt-8 (32px) so the space
-    // above the first card equals the inter-card gap (64px / 80px at sm+).
-    <ul className="mt-8 flex flex-col gap-16 sm:mt-12 sm:gap-20">
+    <>
+      {/* Centered editorial lede — orients the visitor on what the lab is.
+          Capped to the reading measure; top margin complements the layout's
+          shared pt-8. */}
+      <p className="mx-auto mb-2 max-w-[var(--reading-measure)] text-center text-lg text-balance text-text-muted">
+        <span className="font-medium text-foreground">the lab</span>{" "}
+        — is for all the little projects i build in my spare time.
+      </p>
+
+      {/* Accent rule spanning the full card width (the lede is capped
+          narrower + centered; this runs edge-to-edge with the cards below). */}
+      <hr className="mb-16 h-0.5 w-full border-0 bg-accent" />
+
+      <ul className="flex flex-col gap-16">
       {items.map((p) => {
         // Unquoted `date:` YAML can parse to a Date object, not a string —
         // new Date() handles both; getUTCFullYear avoids a TZ off-by-one.
@@ -76,6 +87,7 @@ export function LabSection() {
           </li>
         );
       })}
-    </ul>
+      </ul>
+    </>
   );
 }
