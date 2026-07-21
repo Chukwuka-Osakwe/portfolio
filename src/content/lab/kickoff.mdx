@@ -11,21 +11,35 @@ video: /lab/kickoff/walkthrough.mp4
 
 ## Overview
 
-Kickoff is a football manager for the browser — but deliberately on the opposite
-end of the effort spectrum from something like Football Manager. Where those
-games ask for hours, Kickoff is built to be minimal and low-effort: everything
-you need to run your club is one glance away, no dropdowns, no buried menus.
+This year I tried to get back into playing football manager games again.
 
-My friend [Alexander Karlsson](https://farcaster.xyz/acgk.eth) vibecoded the
-first version. I joined to redesign it — and ended up doing what I should have
-from the start: ignoring the original design entirely and rebuilding the whole
-experience from the ground up. The always-persistent navbar became the anchor of
-the new visual language, every nav item a state selector rather than a button
-(a rabbit hole I wrote about in [naming things
-properly](/essays/on-the-importance-of-naming-things-properly)).
+Football managers have become incredibly complex since I was a kid, and as a result I haven't kept track of the evolution of the space closely. However, these kinds of games tend to come in varying levels of complexity, and I explored them all one by one.
 
-It's a two-person passion project, and the part that pushes past pure design is
-the handoff: designs move to working code with a backend-dev collaborator, LLMs
-doing the heavy lifting on the design-to-code translation while we shape the game
-logic underneath. Me designing the thing, then getting it built — for no one but
-ourselves.
+I tried playing FM24 (don't ask me why 24), and it took me a while to get oriented. There are so many variables to factor in, so many decisions to make, so many moving parts, it really should be renamed "Football Sporting Director" because of how much you have control over. FM is what I imagine the football nerd version of the data-heavy interfaces the finance nerds swear by looks like. It was too much for me.
+
+A level of complexity beyond PC/Console applications like FM is the mobile apps like Top Eleven (you can play on your PC too these days apparently). In truth, I played Top Eleven a lot when I was in uni, but as the years went by and they kept adding more features, I eventually abandoned it due to feature bloat. My attempt to get back in was halted by the very same issue: too much is going on that I don't really understand. I just want to develop my team and win games man.
+
+And so I went a level below still. Football manager games in the browser! These are especially nice because you don't have to download and install anything, just log in and start playing, easy.
+
+There are still a couple of them around: [Kickoff Boss](https://kickoffboss.com/en/), [ManagerZone](https://www.managerzone.com/), and [OnlineFootballManager](https://en.onlinefootballmanager.com/) are a few I checked out. You can immediately tell the moment you land on one of these sites that they're not from this era, I mean, who still has a "log in with Facebook" in 2026? And I don't mean that as a dig, I genuinely loved the retro feel of these sites, and I'm glad to see UI artefacts from when I was but a wee lad still present in today's landscape. That being said, most of these games clearly stopped being updated a while ago, I ran into all kinds of issues trying to use some of them. I even started playing one only to get to a point where I needed to verify my account, and the auth flow was broken, so I couldn't keep playing past that level. 
+
+So, what do you do in 2026 if you want to play a minimal, low-effort football manager game in the browser? You build one!
+
+Kickoff — I swear we picked this name before we knew about "Kickoff Boss" — is a joint project between [Alexander Karlsson](https://farcaster.xyz/acgk.eth) and me, born out of our desire to see simple browser-based football manager games make a comeback. No 15,000 decisions about random things like the under-21 team physiotherapist, no need to install anything, no broken auth flows, no sign-in with Facebook buttons. Just log in and play.
+
+Kickoff: coming soon to a browser near you.
+
+As a guy who has spent most of the last two years in Figma pushing pixels and rounding corners, working on Kickoff has pushed me far beyond my comfort zone. And not just in the "oh my God I now use AI to translate my design into code" that seems to be the bulk of design influencer content these days. I mean, there's nothing wrong with that, I myself am an avid vibecoder, as the kids call it, the website you're reading this on was entirely vibecoded in like a week. 
+
+What has made Kickoff so challenging is that I've never had to design a game before, and I think that designing games presents a completely different type and complexity of challenge than, say, designing landing pages. For example, in the very first week of working on this, I created a colour palette as part of the initial brand direction exploration, only to immediately realise once I started trying to design the very first screen that I needed to situate an entire class of components (player status pills) off the neat 3-colour design palette I'd just created. An opening act that would set the tone for most of the challenges to come. 
+
+I also spent an entire Saturday reading years-old articles about different kinds of website navigation sections when I was trying to settle on the navbar design, a dilemma I write about in this essay about naming things properly. You'd be surprised at how big a decision a navbar can be for a project like this.
+
+Beyond the visual polish and UX concerns that are typically the designer's domain, I've also been responsible for a fair bit of game logic. As you may recall, only two people are working on this: Alexander, a backend dev, and I. As a result, there has been minimal hand-holding and a very "if you want to see something live, you have to design it yourself" approach to the project. And I do mean design in the full sense of the word. For example, for the local league management screen, I had to design logic to manage all kinds of things like fixture scheduling and the number of league tiers and how they relate to each other in a cup competition — fairly standard. 
+
+But then I've also had to think about what kind of model we want: do people join at the beginning and build from the ground up, or do they join already existing competitions and participate in the same experience with everybody else? And in the case of the latter, how do you make sure that joining later is not a disadvantage on account of players who joined earlier having had more time to develop their team?
+
+As you may well be aware, dear reader, these are not the kinds of things "product designers" tend to occupy themselves with on a day-to-day basis. The girlfriend asked me a few days ago what the difference has been in my experience working on kickoff vs my typical design work. The answer is that I've spent more time reading Claude text output as I try to refine the plan for a particular section of game logic and running "npx convex dev --once" than I have in all my other projects put together. 
+
+Kickoff is in beta soon, and I can't wait for football enthusiasts to try what we've been working on.
+
