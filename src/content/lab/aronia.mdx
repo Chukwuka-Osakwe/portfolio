@@ -1,7 +1,7 @@
 ---
 title: Aronia
 type: Component Library
-summary: An agent-friendly component library you install from the command line — every component renders live, restyles on the fly, and is built to be read and used by AI agents.
+summary: An agent-friendly component library designed to help vibecoders create visually distinct, coherent websites that stand out from other AI-generated websites.
 blurb: An Agentic component library for vibecoders
 date: 2026-07-15
 stage: in progress
@@ -14,25 +14,42 @@ links:
 
 ## Overview
 
-Aronia is a component library I'm building for a world where the thing consuming
-your components is often an agent, not a person clicking through Storybook. You
-set it up with a single command — `npx aronia init` — then pull in components as
-you need them (`aronia add button`), each landing in your project with a
-machine-readable manifest so an agent can discover what exists, what it takes,
-and how to drop it in.
+First things first, you can start using Aronia in your project today, so if you want to skip this essay and try it first, just type "npx aronia init" wherever you're vibecoding to get started.
 
-The gallery on the left is the human-facing half: pick a component, watch it
-render live in the middle, and drive every prop from the panel on the right —
-`variant`, `size`, `state`, `shape` — with the preview updating as you go. Under
-the hood the components lean on native platform primitives (`<details>` for
-disclosure, the `popover` attribute and CSS Anchor Positioning for menus) so
-accessibility and behaviour come for free instead of being re-implemented in
-JavaScript.
+Alternatively, if you'd like to understand what it is a bit more before deciding whether to use it, you can point your agent to the GitHub repo here: https://github.com/Chukwuka-Osakwe/aronia 
 
-It's the piece of the lab that pushes furthest past design into
-engineering — CLI tooling, an agent-oriented API, and a design system that has
-to hold up under both human and machine use.
+Alright, with that out of the way, I have a few things to say about AI-generated websites. 
 
-To get started with Aronia today just run `npx aronia init` — or paste the
-GitHub link into the chat with your agent and tell it you want to use the Aronia
-library for your project. Have fun!
+A common fact today is that LLM-generated websites tend to look the same. You know the kinds of websites I'm talking about. Blue and purple hues, gradients everywhere, misaligned typography and layout,  and copy that very often doesn't match the tone of the product. 
+
+This isn't surprising, in fact, it's expected behaviour. LLMs default to the most likely statistical solution in a problem space. Or, in plain English, when you ask an LLM to design a website, it draws on the data it has about millions of websites and creates a website that resembles the kinds of websites it has "seen" the most.
+
+This is why if you ask an LLM to make a website for anything — a bakery, a website for sharing cat pictures, or a ride-hailing service — you're likely to get a website that looks and sounds like a B2B SaaS website. Imagine Stripe but for cat pictures (if you can imagine that, of course, I struggle with the image). This is because the LLM gravitates towards the patterns it has learnt most consistently when building websites.
+
+This homogeneity bothers me especially because the web is an expressive medium. There are several right answers to what a good website should look like — bold neo-brutalist and restrained editorial are both correct answers depending on the context. We lose that range of expressiveness when working with AI unless you're someone who has good design chops and can tell the LLM exactly what you want it to do in service of a design style.
+
+So what is the vibecoder who doesn't have great design chops to do? Surrender to the LLMs averages?
+
+Nay, my lord. This is where Aronia comes in.
+
+Think of all the unique ways UI can be designed as languages. Neo-brutalism is one language, Swiss editorial is another, and Glassmorphism is yet another one. Each language has its own vocabulary, grammar, visual and interaction conventions, and quirks.
+
+Today, LLMs can speak these languages at a superficial level, they sort of grasp the general rules and obvious characteristics of the language and can construct technically correct sentences. However, they can't grasp the nuance and deeper patterns of the language in the way someone fluent in them can. 
+
+My favourite example of this at the moment is asking LLMs to design a Neo-brutalist website. They kind of get the gist of Neo-brutalism: bold type, blocky components, thick borders, solid black offset shadows and so on. However, it ends up creating every button with 8px shadows and giving every component 4px black borders, all the elements screaming for attention at once. It's recognisably Neo-brutalist, but it lacks the restraint and nuance that I imagine most junior designers would apply to the job.
+
+Going back to our language metaphor, Aronia aims to give LLMs the vocabulary and grammar to speak these design languages fluently, and give vibecoders the ability to create coherent, visually distinct websites that stand out from the sea of similar-looking AI-generated websites.
+
+The way I've approached this is by creating a small component library (20 components) for each language. Each library embodies the look and patterns of a particular design style and gives the LLM reusable primitives for building in that design style. 
+
+Each library also ships with a manifest.json that contains additional rules and nuances that couldn't be captured fully in the design of the components. This includes things like composition rules, interaction patterns, and how to handle rendering media in each design style, among other things.
+
+The result is that when you're working with Aronia, Claude (or Codex or whichever model you're using) no longer has to think about what a Glassmorphism button should look like or how it should behave on hover. Instead of trying to infer that behaviour from a prompt, the model builds with the information already provided to it by Aronia.
+
+Or, to summarise all this in the words of the great philosopher ChatGPT:
+
+"In effect, Aronia removes hundreds of small design decisions from the model’s search space. The model no longer has to decide how thick a border should be, how rounded a button should feel, or how much blur a modal needs. Those decisions are encoded in the system, allowing the model to focus on composing interfaces rather than inventing a visual language from scratch."
+
+
+In other words, Aronia doesn't really try to make AI more creative; it just tries to give it better creative constraints, and I think this is the right approach because it is precisely how the people with design chops are getting the best out of AI (by giving it the constraints of a design system most times). 
+
