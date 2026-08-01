@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 // real routes. `activeFor` lists the pathnames the item should highlight on
 // (defaults to [href]). Matching is exact for "/" and sub-route-prefix for the
 // rest (see isActiveFor) — so "design" stays active across the whole triad:
-// my lab (/) + its details (/lab/<slug>), case studies (/design + /design/<slug>),
+// case studies (/ + its details /design/<slug>), my lab (/lab + /lab/<slug>),
 // and product ideas (/product-ideas).
 type Item = {
   label: string;

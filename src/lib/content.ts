@@ -27,9 +27,11 @@ export interface Frontmatter {
   /** Card cover image — a path under /public, e.g. "/work/footy/cover.png".
    *  For lab items this doubles as the hero video's poster + OG source. */
   image?: string;
-  /** Lab-only: hero clip — an autoplay/loop video path under /public, e.g.
-   *  "/lab/aronia/walkthrough.mp4". Rendered muted+looping by <LabHeroVideo>
-   *  (poster = `image`). Absent for work/writing. */
+  /** Autoplay/loop clip — a video path under /public, e.g.
+   *  "/lab/aronia/walkthrough.mp4" (lab hero) or "/work/footy/motion.mp4"
+   *  (case-study card cover). Rendered muted+looping (poster = `image`) by
+   *  <LabHeroVideo> / <CardVideo>. Optional; absent entries fall back to the
+   *  static `image` cover. */
   video?: string;
   /** Lab-only: current build stage — a small tag, e.g. "in progress",
    *  "pre-beta". The lab is defined by being self-directed, not by being

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import type { ContentMeta } from "@/lib/content";
 import { useView } from "@/components/ViewContext";
 import CaseImageViewer from "@/components/CaseImageViewer";
+import { CardVideo } from "@/components/CardVideo";
 
 interface Pane {
   slug: string;
@@ -18,8 +19,8 @@ interface Props {
   projects: ContentMeta[];
   panes: Pane[];
   /** When set, render the detail view for this slug; otherwise show the grid.
-   *  Provided by the `/design/[slug]` route's page; the `/design` index
-   *  doesn't pass it (grid). */
+   *  Provided by the `/design/[slug]` route's page; the `/` home (case-studies
+   *  grid) doesn't pass it. */
   initialSlug?: string;
 }
 
@@ -58,7 +59,7 @@ export function ProjectsExplorer({ projects, panes, initialSlug }: Props) {
   useEffect(() => {
     if (!initialSlug) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") router.push("/design");
+      if (e.key === "Escape") router.push("/");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -72,7 +73,7 @@ export function ProjectsExplorer({ projects, panes, initialSlug }: Props) {
       return (
         <div className="view-enter">
           <Link
-            href="/design"
+            href="/"
             className="group inline-flex items-center gap-2 text-sm font-semibold text-text-muted transition-colors hover:text-accent focus-visible:text-accent focus-visible:outline-none"
           >
             <span aria-hidden className="transition-transform group-hover:-translate-x-0.5">
@@ -106,50 +107,62 @@ export function ProjectsExplorer({ projects, panes, initialSlug }: Props) {
   // --- Grid view: preview cards link to /design/<slug>. ---
   // Each card is a <Link> (not <div role="button">) — semantically a navigation
   // to a real URL, gets native Enter / middle-click / cmd-click for free, no
-  // manual keyboard handling needed. Anchors are valid containers for block
-  // children (h2 + p) per HTML5.
+  // manual keyboard handling needed.
+  //
+  // TREATMENT (S25): lab PROPORTIONS + contained card — single-column stack
+  // (card → card → card, `flex flex-col gap-16`) capped to 40.8rem (chosen by
+  // eye — a step narrower than the 49rem content column) and `mx-auto`-centered
+  // in the viewspace. Each a
+  // contained card: the `.project-card` ring encompasses cover + text and lights
+  // to an
+  // accent outline on hover (whole-card scale too), text area transparent on
+  // the field (no fill). Cover is a uniform 4:3 frame (`aspect-[4/3]`), which
+  // shows the case clips (native 4:3) uncropped: `video:` cards loop a motion
+  // clip in place (poster = the static `image:` cover, also the reduced-motion +
+  // no-clip fallback); the rest keep their static cover (object-cover into 4:3).
+  // Eyebrow + text-2xl title + 3-line excerpt beneath the cover.
   return (
-    <ul className="grid gap-8 sm:grid-cols-2 sm:gap-16">
+    <ul className="mx-auto flex max-w-[40.8rem] flex-col gap-16">
       {projects.map((p) => {
         const pane = panes.find((x) => x.slug === p.slug);
         return (
           <li key={p.slug}>
             <Link
               href={`/design/${p.slug}`}
-              className="project-card focus-ring group flex h-full w-full flex-col overflow-hidden rounded-lg bg-nav-fill text-left transition hover:outline-2 hover:outline-offset-2 hover:outline-accent motion-safe:hover:scale-[1.02]"
+              className="project-card focus-ring group flex w-full flex-col overflow-hidden rounded-lg text-left transition hover:outline-2 hover:outline-offset-2 hover:outline-accent motion-safe:hover:scale-[1.02]"
             >
-              {/* Card cover from `image:` frontmatter; field-tracking placeholder if unset.
-                  `blurDataURL` is the sidecar LQIP from work-covers.ts — when present,
-                  next/image renders a soft blurred preview before the full WebP loads. */}
-              {p.image ? (
-                <div className="relative aspect-[31/20] w-full overflow-hidden bg-image-placeholder">
+              {/* Cover — looping clip (poster = static cover) or the static
+                  cover itself. `blurDataURL` is the sidecar LQIP from
+                  work-covers.ts: a soft blurred preview before the WebP loads. */}
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-image-placeholder">
+                {p.video ? (
+                  <CardVideo
+                    src={p.video}
+                    poster={p.image}
+                    title={p.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : p.image ? (
                   <Image
                     src={p.image}
                     alt=""
                     fill
-                    sizes="(min-width: 640px) 24rem, 100vw"
+                    sizes="(min-width: 1024px) 49rem, 100vw"
                     className="object-cover"
                     {...(p.blurDataURL && {
                       placeholder: "blur" as const,
                       blurDataURL: p.blurDataURL,
                     })}
                   />
-                </div>
-              ) : (
-                <div className="aspect-[31/20] w-full bg-image-placeholder" aria-hidden />
-              )}
+                ) : null}
+              </div>
               <div className="flex flex-1 flex-col p-4">
-                {/* Type label is now an eyebrow ABOVE the title — editorial
-                    card pattern. No chip background (the card itself is the
-                    button-shaped element; a second one was double-buttoning).
-                    Color committed to accent so it actually reads as a category
-                    signal. */}
                 {p.type && (
-                  <span className="text-xs font-semibold tracking-wider text-text-muted">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
                     {p.type}
                   </span>
                 )}
-                <h2 className="mt-2 text-xl font-semibold tracking-tight text-balance transition-colors group-hover:text-accent group-focus-visible:text-accent">
+                <h2 className="mt-2 text-2xl font-semibold tracking-tight text-balance transition-colors group-hover:text-accent group-focus-visible:text-accent">
                   {p.title}
                 </h2>
                 {pane?.excerpt && (

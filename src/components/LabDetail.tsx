@@ -26,7 +26,7 @@ export function LabDetail({ meta, body }: { meta: ContentMeta; body: string }) {
   return (
     <div className="view-enter">
       <Link
-        href="/"
+        href="/lab"
         className="group inline-flex items-center gap-2 text-sm font-semibold text-text-muted transition-colors hover:text-accent focus-visible:text-accent focus-visible:outline-none"
       >
         <span

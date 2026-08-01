@@ -23,6 +23,14 @@ const nextConfig: NextConfig = {
     "172.20.*.*",  // current network's /16
     "10.*.*.*",    // some routers, VPNs, corporate / managed WiFi
   ],
+
+  // Route swap (S25): case studies moved from `/design` to the bare domain `/`.
+  // The old index URL permanently redirects to the new home. NB: `source:
+  // "/design"` matches ONLY the exact index — case-study details still live at
+  // `/design/:slug` and are untouched.
+  redirects: async () => [
+    { source: "/design", destination: "/", permanent: true },
+  ],
 };
 
 export default nextConfig;

@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { useView } from "@/components/ViewContext";
 
 const VIEWS: { href: string; label: string }[] = [
-  { href: "/", label: "my lab" },
-  { href: "/design", label: "case studies" },
+  { href: "/lab", label: "my lab" },
+  { href: "/", label: "case studies" },
   { href: "/product-ideas", label: "product ideas" },
 ];
 

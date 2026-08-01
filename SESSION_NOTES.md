@@ -1501,3 +1501,38 @@ A long eyeballing-in-the-browser session; two commit batches, both pushed to `ma
 - Chukwuka mused about **killing light mode** ("looks so beautiful in dark mode") — not
   committed; would be a simplification win (one palette, no toggle cell) but weigh OG cards +
   light-padded Aronia poster + light-preferring visitors.
+
+---
+
+## Session 25 — 2026-08-01 — lab-hero width fix + case-study cards go video-forward + front-door route swap (shipped)
+
+A long, iterative eyeballing session (started as "one thing only: motion"). Three threads, all verified via `tsc` on a live dev server, then a clean `npm run build` (29 static pages) at the end.
+
+### Lab-hero width (globals.css)
+- The `/lab/<slug>` hero clip was breaking out full-bleed past `72rem` to ~1.6–2× the `--reading-measure` (42rem) prose beneath it — read **disproportionate** (Chukwuka's catch; the component's own doc comment claimed it sat at `--content-w`, but the CSS overrode that). **Removed the `@media (min-width: 72rem)` width/margin override** so `.lab-hero` sits at its natural **`--content-w` (49rem)** column width. `lab-hero-in` load-in animation + reduced-motion gating retained. DESIGN.md updated.
+
+### Case-study cards → video-forward, lab proportions
+- Chukwuka dropped **3 motion clips** at root (`footy/bribe/energy-motion.mp4`, all 960×720 / 4:3 / h264). Processed each: **audio-stripped + `+faststart`** remux → `public/work/<slug>/motion.mp4`; raws moved to gitignored `/sources/work/<slug>/`.
+- **Shared `<CardVideo>`** (autoplay-muted-loop, reduced-motion→poster) extracted from `LabCardVideo`'s logic; `LabCardVideo` now delegates to it (native `h-auto` aspect); case cards use it with `h-full object-cover` in a fixed frame. Added `video:` to the 3 MDX frontmatters (`video?` was already on `Frontmatter`; `blurDataURL` still keys off `image`, so LQIP survives). **Existing static covers are the poster + reduced-motion + no-clip fallback** (Chukwuka's call — no new poster frames extracted). **Mixed grid:** heyfood/yara stay static.
+- **Layout journey (much iteration):** contained 2-col grid → bare lab-style cards → **single-column lab proportions** (`flex flex-col gap-16`). Landed on: single-column, **contained card back** (`.project-card` ring wraps cover+text, accent-outline on hover, whole-card scale), **transparent text area** (no `bg-nav-fill`), **excerpt restored**, `text-2xl` title. Card root is now `<Link>` (supersedes the old `div role="button"`).
+- **Aspect detour:** tried cropping clips to 16:9 (`crop=960:540`) for a wider lab-match — **abandoned**, the 4:3 sources fill their frame so any crop cut content (bribe had margin and cropped fine; footy/energy didn't). Also explored free AI-outpaint tools (VideoExpander.ai etc.) — concluded flat-bg clips gain nothing over a local pad; not worth it. **Kept 4:3, full clips.**
+- **Card display size:** built a **temporary width dial** (fixed slider → `maxWidth` on the grid `<ul>`) so Chukwuka could eyeball instead of guessing px. Landed on **`max-w-[40.8rem]`**, **`mx-auto`-centered** in the viewspace. Dial + its state fully removed.
+- **Note on resolution:** clips left at full **960×720**. A 40.8rem card renders ~653px, so 800×600 would've been ample & lighter (footy 623KB / bribe 238KB / energy 1.02MB vs current 1.6MB / 574KB / 3.3MB) — briefly re-encoded then reverted when Chukwuka clarified he meant *display* size, not file resolution. **Parked:** optional downscale to 800×600 for weight.
+
+### Ordering + copy (work MDX)
+- **energy ↔ heyfood swapped** in the grid via the `featured` flag (energy gained it, heyfood lost it) so energy's motion card leads the top of the stack and static heyfood drops to the tail. Safe — `featured` only drives `getAllMeta` order (`getFeatured` is dead code); documented the position-not-billing intent in a frontmatter comment.
+- **energy copy:** dropped "my first solo design project" from both `blurb` (card) and `summary` (SEO).
+
+### Front-door route swap (mirror of S23)
+- **`/` now renders case studies** (was the lab) — brand-level homepage metadata + `HashRedirect` kept. **New `/lab` index** renders the lab grid (own title/desc/canonical). **`/design` 301-redirects to `/`** via `next.config.ts` (`permanent: true`; matches the exact index only — details at `/design/<slug>` untouched). Old `/design/page.tsx` deleted.
+- **Back-links repointed:** case detail "← case studies" + Esc → `/`; lab detail "← my lab" → `/lab`. Logos (HeroBlock, MobileTopBar) stay `/` (home).
+- **ViewSwitcher:** case studies is now the **centered middle segment** at `/` (order unchanged: my lab · case studies · product ideas) — thumb rests mid-track on landing (Chukwuka's pick over leading-left). **NavMenu** `activeFor` already spanned the whole triad — no change. **Sitemap:** `/` = case studies (priority 1), `/lab` added, stale `/design` index dropped.
+
+### Shipped ✅
+- `npm run build` clean — **29 static pages** (`/`, `/lab`, `/design/[slug]`, `/lab/[slug]`, essays, product-ideas, contact). Benign `Nata Sans` font-override warning only. Dev server stopped before build. DESIGN.md updated (lab-hero width, triad landing, card redesign). **Committed — NOT pushed** (awaiting Chukwuka's go for the Vercel deploy).
+
+### Next up (resume here)
+- **Push to `main`** when ready (Vercel auto-deploys). No OG regen needed (covers unchanged).
+- Optional: **downscale motion clips to 800×600** (~half the bytes; display is only ~653px wide).
+- Consider **motion clips for heyfood + yara** to make the case grid uniformly video (currently mixed).
+- Still parked from S24/S23: Aronia before/after `<Compare>`; Kickoff copy rewrite + outbound chip; Aronia live-site chip; `LabDetail` `type` eyebrow unrendered; kill-light-mode musing; older list (tab report, Footy re-export, `<Figure>` caption-link, art-direction pass, UI-polish audit).
