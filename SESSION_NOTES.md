@@ -1536,3 +1536,24 @@ A long, iterative eyeballing session (started as "one thing only: motion"). Thre
 - Optional: **downscale motion clips to 800×600** (~half the bytes; display is only ~653px wide).
 - Consider **motion clips for heyfood + yara** to make the case grid uniformly video (currently mixed).
 - Still parked from S24/S23: Aronia before/after `<Compare>`; Kickoff copy rewrite + outbound chip; Aronia live-site chip; `LabDetail` `type` eyebrow unrendered; kill-light-mode musing; older list (tab report, Footy re-export, `<Figure>` caption-link, art-direction pass, UI-polish audit).
+
+---
+
+## Session 26 — 2026-08-03 — Energy case-study copy sweep (shipped)
+
+### Summary
+Editorial pass on `energy.mdx` — Chukwuka agreed the **Overview** needed changing (it had led with "my first solo design project after finishing [Figma course]", framing the whole case study as a beginner exercise before the reader learned anything about Energy). Rewrote the Overview to open on the work; the "first time" framing now lives only in The Reflection, where it reads as earned. Then swept the rest of the doc.
+
+### Changes (all content-only MDX)
+- **Overview** — reopened on the work: *"I set out to design a website for a small retail jewellery brand..."* (Chukwuka's wording). Side effect: the Udemy/Figma Fundamentals course link is now gone entirely (it only lived in that sentence) — deliberate, read like a course-completion note.
+- **The Problem** — fixed a real grammar error: *"Small jewellery retailers differentiates from the luxury jewellery brands based on price, they offer..."* → subject/verb agreement (**differentiate themselves**), dropped one "jewellery", em-dash for the comma splice.
+- **The Design System `:67`** — "modern and contemporary feel" → "modern feel" (redundant pair).
+- **The Design System — naming paragraphs** — merged the two "why Energy" paragraphs into one; killed the "for...for" doubling and the triple "sense of".
+- **The Outcome `:83`** — *"four main pages, all fully functional (all four pages...)"* → *"designed four main pages, each covering its full set of states (shown below)"* (killed the "pages" repetition; "fully functional" overclaimed for Figma screens).
+- **The Reflection** — second "necessity" (back-to-back sentences) → "importance".
+
+### Shipped ✅
+- Content-only; no build run (dev-server `.next` rule). Committed + pushed to `main` (Vercel auto-deploys).
+
+### Next up
+- Unchanged from S25: optional motion-clip downscale to 800×600; heyfood + yara motion clips; the S24/S23 parked list.
