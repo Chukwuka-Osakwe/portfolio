@@ -39,9 +39,10 @@
   /* All muted text (role/excerpt, "read more" resting → accent on hover/focus,
      etc.). Now tracks --foreground (faded toward the field) so it stays
      in-family if the text/field colour is retuned. The % is the dial: higher =
-     darker/stronger. Was hardcoded #878286 (≈52% lands closest — revert to that
-     hex if the computed version doesn't read better). */
-  --text-muted: color-mix(in srgb, var(--foreground) 52%, var(--background));
+     darker/stronger. Bumped 52% → 60% for WCAG AA: at 52% (#817772) muted body
+     text sat at 3.98:1 on cards / 3.66:1 on the page — below the 4.5:1 normal-
+     text bar; 60% lands 5.17:1 on cards, 4.75:1 on the page. */
+  --text-muted: color-mix(in srgb, var(--foreground) 60%, var(--background));
   --logo: var(--accent); /* logo now uses the accent color */
   --border: #e5dfe4;
   /* Nav panel width (desktop only). The single "shave the navbar" dial — only

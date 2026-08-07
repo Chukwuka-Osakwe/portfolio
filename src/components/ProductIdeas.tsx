@@ -30,8 +30,9 @@ const chevron = (d: string) => (
 );
 
 /**
- * Product-ideas carousel: one cover image at a time with a one-line caption,
- * prev/next handles flanking it (looping), and a position counter.
+ * Product-ideas carousel: one framed card at a time. The card wraps a cover
+ * image (top), a position pill (top-right, where a tag chip would sit), and a
+ * footer holding the caption (left) and prev/next handles (bottom-right). Loops.
  *
  * Architecture:
  *   • A single <img> element whose `src` changes when the user navigates.
@@ -41,7 +42,7 @@ const chevron = (d: string) => (
  *     <head>) eagerly fetch every cover on first paint. By the time the user
  *     clicks prev/next, the next cover is already in the HTTP cache — the
  *     swap reads as instant, no caption-ahead-of-image flash.
- *   • The wrapper holds the aspect ratio via `padding-bottom: H/W%`, the
+ *   • The cover frame holds the aspect ratio via `padding-bottom: H/W%`, the
  *     classic pre-`aspect-ratio` technique. CSS-driven, deterministic.
  *
  * Why a plain <img>, not next/image fill: stacked <Image fill> children sit
@@ -61,83 +62,63 @@ export function ProductIdeas() {
   const next = () => setIndex((i) => (i + 1) % total);
 
   const handle =
-    "frosted focus-ring flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-foreground transition hover:text-accent";
+    "frosted focus-ring flex h-8 w-11 shrink-0 items-center justify-center rounded-lg text-foreground transition hover:text-accent";
 
   return (
     // min-h fills the available viewport between topbar and viewswitcher so
-    // justify-center can vertically balance the carousel content. Mobile
-    // subtracts the full mobile chrome (3.5rem topbar + 2rem pt-8 + 6rem pb-24
-    // + safe-area-inset-top for iOS notches = 11.5rem + safe-top). Desktop
-    // subtracts only page-grid padding (no topbar at lg).
-    <div className="mx-auto flex w-full max-w-[var(--content-w)] flex-col items-center justify-center gap-6 min-h-[calc(100dvh-11.5rem-env(safe-area-inset-top,0px))] lg:min-h-[calc(100vh-8rem)]">
+    // justify-center can vertically balance the card. Mobile subtracts the full
+    // mobile chrome (3.5rem topbar + 2rem pt-8 + 6rem pb-24 + safe-area-inset-top
+    // for iOS notches = 11.5rem + safe-top). Desktop subtracts only page-grid
+    // padding (no topbar at lg).
+    <div className="mx-auto flex w-full max-w-[46rem] items-center justify-center min-h-[calc(100dvh-11.5rem-env(safe-area-inset-top,0px))] lg:min-h-[calc(100vh-8rem)]">
       {/* Preload every cover so prev/next swaps hit cache instantly. Next 15
           hoists `<link>` tags from any component to <head> automatically. */}
       {IDEAS.map((it) => (
         <link key={it.slug} rel="preload" as="image" href={it.image} />
       ))}
 
-      {/* MOBILE — single cover, full container width. */}
-      <div
-        className="project-card relative w-full overflow-hidden rounded-lg lg:hidden"
-        style={{ paddingBottom: COVER_PAD_BOTTOM }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={idea.image}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      </div>
+      {/* Framed card — raised surface wrapping the cover + footer. */}
+      <section className="project-card w-full rounded-2xl bg-nav-fill p-4 sm:p-6">
+        {/* Cover. */}
+        <div
+          className="relative w-full overflow-hidden rounded-lg border border-border"
+          style={{ paddingBottom: COVER_PAD_BOTTOM }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={idea.image}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </div>
 
-      {/* MOBILE — transport row: chevrons flanking the position counter. */}
-      <div className="flex items-center gap-3 lg:hidden">
-        <button type="button" onClick={prev} aria-label="Previous idea" className={handle}>
-          {chevron("M15 6l-6 6 6 6")}
-        </button>
-        <span className="frosted rounded-lg px-3 py-1 text-sm font-medium tabular-nums text-accent">
-          {index + 1} / {total}
-        </span>
-        <button type="button" onClick={next} aria-label="Next idea" className={handle}>
-          {chevron("M9 6l6 6-6 6")}
-        </button>
-      </div>
-
-      {/* DESKTOP — chevrons flank the cover (film-strip frame). */}
-      <div className="hidden w-full items-center gap-3 lg:flex">
-        <button type="button" onClick={prev} aria-label="Previous idea" className={handle}>
-          {chevron("M15 6l-6 6 6 6")}
-        </button>
-        <div className="flex min-w-0 flex-1 justify-center">
-          <div
-            className="project-card relative w-full overflow-hidden rounded-lg"
-            style={{ paddingBottom: COVER_PAD_BOTTOM }}
+        {/* Footer — caption (left) + a right control column (position pill
+            stacked over the prev/next handles). The caption holds a reserved
+            min-height sized to the longest caption (~3 lines) so switching
+            ideas never reflows the card: the controls stay put regardless of
+            how many lines the current caption wraps to. */}
+        <div className="mt-4 flex items-end justify-between gap-4 sm:mt-6">
+          <p
+            className="min-h-[4.5rem] min-w-0 leading-relaxed text-pretty font-normal text-foreground"
+            aria-live="polite"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={idea.image}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover"
-            />
+            {idea.caption}
+          </p>
+          <div className="flex shrink-0 flex-col items-end gap-3">
+            <span className="frosted w-full rounded-lg py-1 text-center text-sm font-medium tabular-nums text-accent">
+              {index + 1} / {total}
+            </span>
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={prev} aria-label="Previous idea" className={handle}>
+                {chevron("M15 6l-6 6 6 6")}
+              </button>
+              <button type="button" onClick={next} aria-label="Next idea" className={handle}>
+                {chevron("M9 6l6 6-6 6")}
+              </button>
+            </div>
           </div>
         </div>
-        <button type="button" onClick={next} aria-label="Next idea" className={handle}>
-          {chevron("M9 6l6 6-6 6")}
-        </button>
-      </div>
-
-      {/* DESKTOP — position indicator on its own line below the carousel row. */}
-      <span className="frosted hidden rounded-lg px-3 py-1 text-sm font-medium tabular-nums text-accent lg:inline-block">
-        {index + 1} / {total}
-      </span>
-
-      {/* Caption. Mobile = full container width; desktop anchors to the
-          chevron-flanked cover width (container - 6rem) with a 32px inset. */}
-      <p
-        className="w-full max-w-full text-center text-pretty font-medium text-text-muted lg:max-w-[calc(100%-6rem)] lg:px-8"
-        aria-live="polite"
-      >
-        {idea.caption}
-      </p>
+      </section>
     </div>
   );
 }

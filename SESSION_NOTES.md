@@ -1557,3 +1557,33 @@ Editorial pass on `energy.mdx` — Chukwuka agreed the **Overview** needed chang
 
 ### Next up
 - Unchanged from S25: optional motion-clip downscale to 800×600; heyfood + yara motion clips; the S24/S23 parked list.
+
+---
+
+## Session 27 — 2026-08-07 — Product-ideas card redesign + muted-text AA + contact tweaks (shipped)
+
+### Product ideas → framed card (`ProductIdeas.tsx`)
+- Reworked the carousel from **bare cover + flanking chevrons + overlaid counter** into a **single framed card** (ref image Chukwuka supplied: title/tag-chip/preview/caption card). We **kept the framed shell but dropped the header/title/tag** — the numbering **pill sits in the tag-chip slot** instead.
+- **Structure:** raised `bg-nav-fill` card (`.project-card` ring, `rounded-2xl`, `p-4 sm:p-6`) → **cover** (padding-bottom % aspect, `rounded-lg` + hairline border) → **footer**: caption **left**, a **right control column** with the position **pill stacked above** the two **prev/next handles**.
+- **Reflow stability (Chukwuka's ask):** caption holds a **reserved `min-h-[4.5rem]`** (≈ longest caption, arsenal-agent) so switching ideas never reflows the card — the pill + handles **hold position**.
+- **Handles restyled** circle → **`rounded-lg` rounded-rectangles** (`h-8 w-11`) to match the pill; **pill `w-full text-center`** so it tracks the handle-row width (auto-syncs if handle size changes).
+- **Card width** dialed by eye — built a **temporary fixed width slider** (per the live-dial habit), landed on **`max-w-[46rem]`**, removed the dial.
+- **Caption type** iterated live: text-muted→foreground, weight 500→**400**, size settled at **16px** (`leading-relaxed`, matching the hero bio's language sans the `text-sm`).
+- **Collapsed the old mobile/desktop split** into one layout (arrows no longer flank the cover).
+
+### Muted text → WCAG AA (`globals.css`)
+- Checked `--text-muted` (was `color-mix(--foreground 52%, --background)` = `#817772`): **3.98:1 on cards / 3.66:1 on the page — below the 4.5:1 normal-text bar.** Dark mode was already ≥5.5:1.
+- **Bumped 52% → 60%** (`#6f6562`): **5.17:1 / 4.75:1** in light, dark stays comfortably above. Global token, so it darkens all muted copy site-wide (deliberate). Contrast math + rationale in the DESIGN.md palette row.
+
+### Contact (`Contact.tsx`)
+- Added a **"or book a call if you want to talk about a project."** line below the CTA row — links to **`https://calendly.com/chukwuka0009`** (new tab), styled like the farcaster closing line.
+- **Left-aligned** the book-a-call + farcaster lines (dropped `text-center`) to share the bio's left edge.
+- **Normalized vertical rhythm** — button / book-a-call / farcaster / icons gaps all → **`mt-10`** (40px).
+- **Fixed desktop vertical centering:** `/contact` has no ViewSwitcher, so the grid's reserved `pb-24` was pushing content up (big bottom gap). Box now **escapes both paddings at all widths** (`-mt-8 -mb-24`, desktop `lg:min-h-dvh`) and `justify-center` sits it dead-center; dropped the `-mt-8` title nudge that biased it further up.
+
+### Shipped ✅
+- `npm run build` clean — 29 static routes. Dev server stopped before build. SESSION_NOTES + DESIGN.md updated. **Committed + pushed to `main`** (Vercel auto-deploys).
+
+### Next up
+- Unchanged: optional motion-clip downscale to 800×600; heyfood + yara motion clips; the S24/S23 parked list.
+- Product ideas still carry only `image` + `caption` (no title/tag) — the framed shell can grow a header later if a title/tag ever lands.

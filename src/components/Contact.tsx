@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 // Real contact channels.
 const EMAIL = "chukwuka0009@gmail.com";
+const CALENDLY = "https://calendly.com/chukwuka0009";
 const FARCASTER = "https://farcaster.xyz/chukwukaosakwe";
 const GITHUB = "https://github.com/Chukwuka-Osakwe";
 const LINKEDIN = "https://www.linkedin.com/in/chukwuka-osakwe-a059a5414";
@@ -44,17 +45,15 @@ export function Contact() {
   return (
     // Fills the available viewspace and vertically centers its content.
     // /contact has NO ViewSwitcher (returns null on this route), so the
-    // page-grid's pb-24 is empty padding — symmetric centering needs to
-    // escape both pt-8 AND pb-24 via negative margins. min-h then subtracts
-    // only the topbar (3.5rem + safe-area-top), so Contact spans from
-    // topbar-bottom to viewport-bottom. The mt-8/mb-24 page-grid math still
-    // resolves to a viewport-sized total (Contact's outer-box-with-margins
-    // = inner-box-without; the grid's pt-8 + pb-24 wrap it back).
-    // Desktop unchanged: lg:min-h-[calc(100dvh-8rem)] + no negative margins
-    // (Product Ideas / Footy / Heyfood share the desktop math because the
-    // panel-side handles its own breathing room).
-    <div className="mx-auto -mt-8 -mb-24 flex w-full max-w-lg flex-col justify-center min-h-[calc(100dvh-3.5rem-env(safe-area-inset-top,0px))] lg:mt-0 lg:mb-0 lg:min-h-[calc(100dvh-8rem)]">
-      <p className="-mt-8 self-center text-[clamp(1.5rem,5vw,2.5rem)] font-semibold tracking-tight text-balance text-accent underline">
+    // page-grid's pb-24 is empty padding — true centering needs to escape
+    // both pt-8 AND pb-24 via negative margins so the box spans the full
+    // viewport, not the padded region. This applies at ALL widths: mobile
+    // min-h subtracts the topbar (3.5rem + safe-area-top); desktop (no topbar)
+    // spans the full dvh. Unlike Product Ideas / Footy / Heyfood, which keep
+    // the reserved bottom padding because their ViewSwitcher lives there,
+    // /contact has nothing at the bottom, so escaping it centers cleanly.
+    <div className="mx-auto -mt-8 -mb-24 flex w-full max-w-lg flex-col justify-center min-h-[calc(100dvh-3.5rem-env(safe-area-inset-top,0px))] lg:min-h-dvh">
+      <p className="self-center text-[clamp(1.5rem,5vw,2.5rem)] font-semibold tracking-tight text-balance text-accent underline">
         better call chuka!
       </p>
 
@@ -76,7 +75,7 @@ export function Contact() {
           clipboard). The pair is centered within the column (self-center) and
           gapped on the 8px grid (gap-4). Both buttons share padding/radius/
           type so they read as a matched pair; only fill + border differ. */}
-      <div className="mt-12 flex items-center gap-4 self-center">
+      <div className="mt-10 flex items-center gap-4 self-center">
         {/* Primary — the one solid-accent button on the site. Hover effect:
             the arrow stretches horizontally (`group-hover:w-6`) and the button
             widens to fit — a "leaning forward" kinetic feedback specific to
@@ -147,9 +146,19 @@ export function Contact() {
         </button>
       </div>
 
+      {/* Book-a-call line — Calendly link just below the CTA row, for anyone
+          who'd rather talk than email. */}
+      <p className="mt-10 text-base text-text-muted">
+        or{" "}
+        <a href={CALENDLY} target="_blank" rel="noopener noreferrer" className={LINK}>
+          book a call
+        </a>{" "}
+        if you want to talk about a project.
+      </p>
+
       {/* Closing line — secondary channel (farcaster) inlined into a
           conversational lead-in rather than presented as a bare text link. */}
-      <p className="mt-6 text-center text-base text-text-muted">
+      <p className="mt-10 text-base text-text-muted">
         on the internet you can mostly find me hanging out on{" "}
         <a href={FARCASTER} target="_blank" rel="noopener noreferrer" className={LINK}>
           farcaster
@@ -163,7 +172,7 @@ export function Contact() {
           accent so touch devices (no hover to warm into) read them as live
           links from the start, but on hover-capable pointers we mute at rest
           and warm to accent on hover for the usual desktop affordance. */}
-      <div className="mt-8 flex items-center justify-center gap-8">
+      <div className="mt-10 flex items-center justify-center gap-8">
         <a
           href={GITHUB}
           target="_blank"
