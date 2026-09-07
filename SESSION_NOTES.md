@@ -1587,3 +1587,26 @@ Editorial pass on `energy.mdx` — Chukwuka agreed the **Overview** needed chang
 ### Next up
 - Unchanged: optional motion-clip downscale to 800×600; heyfood + yara motion clips; the S24/S23 parked list.
 - Product ideas still carry only `image` + `caption` (no title/tag) — the framed shell can grow a header later if a title/tag ever lands.
+
+---
+
+## Session 28 — 2026-09-07 — Published essay "Nothing Is Moving In A Screenshot" (shipped); `/for/[slug]` outbound pages scoped then shelved
+
+### `/for/[slug]` outbound "direction" pages — scoped, then scrapped
+- Reviewed a brief (from another agent) for reusable, data-driven **cold-outreach pages** at `/for/[slug]`: each renders a bespoke brand direction in the *prospect's* own theme (colors/fonts from a per-prospect token object), slim Chukwuka chrome, `noindex` + unguessable slug, out of the sitemap. Seed instance: BizSwap (dark, Vend Sans, orange accent).
+- **Recon findings (if this ever comes back):** the route must live at `src/app/for/[slug]/` — a **sibling of `(site)/`**, NOT inside it — so it escapes the whole site shell (`(site)/layout.tsx` = nav/hero/theme-toggle/mobile-sheet). Route mechanics ≈ a copy of `design/[slug]/page.tsx`. Data fits the existing typed-array convention (`src/content/…`, cf. `ideas.ts`). Theming = emit prospect tokens as inline CSS vars on a page wrapper, ignore `globals.css` `:root`. Real blockers were external: **Vend Sans font files, the "hero export" HTML/CSS, and 3 images.** Open decision flagged: per-prospect font loading vs. `next/font` optimization (recommended a small font-registry). Recommended **against** a `robots.txt` `Disallow: /for/` (advertises the pattern + blocks the `noindex` from being read) — per-page `noindex` meta + sitemap omission + unguessable slug is the guard.
+- **Chukwuka scrapped it** to switch tracks to publishing essays. No code written for it.
+
+### Essay published — "Nothing Is Moving In A Screenshot"
+- New essay at `src/content/writing/nothing-is-moving-in-a-screenshot.mdx` — design-sprint piece (1-hour sprints, made a fictional-fintech "Motion" landing page in Paper by hand) on why static screenshots can't capture the motion at the core of digital experience. Text verbatim from Chukwuka; `title`/`summary`/`date: "2026-09-07"` frontmatter; single `<Figure>` (string-form props) where "the picture below" sits.
+- **Image convention reinforced (new memory `essay-images-webp`):** every existing essay asset is optimized **WebP** (~13–109K), never raw PNG. First pass I wrongly matched the source's `.png`; corrected back to `.webp`. Source was a **6912×4468 / 5.7MB @4x PNG** dropped at repo root → converted with **sharp** (cap long edge 2000px, q82) → **2000×1293 WebP, 65K** at `public/writing/nothing-is-moving-in-a-screenshot/motion.webp`. (sharp is installed but not a `package.json` dep; ESM bare-import must resolve from project root, not the scratchpad.)
+- OG text card generated via `scripts/generate-essay-og.mjs` (regenerates all 13, idempotent). Route `generateMetadata` existence-checks it.
+- Chukwuka deleted the stray root PNG himself.
+
+### Shipped ✅
+- Verified live on the dev server (route `200`, `motion.webp` `200`/66KB) — no `npm run build` (dev-server `.next` rule; used the running dev server + tsc-clean route compile instead). **Committed + pushed to `main`** as `90d8bf7` (Vercel auto-deploys).
+
+### Next up
+- **Essay #2** — Chukwuka has a second essay queued; not yet pasted. Publish next session.
+- Unchanged parked list: optional motion-clip downscale to 800×600; heyfood + yara motion clips; the S24/S23 items.
+- `/for/[slug]` shelved — recon above if it's ever revived.
