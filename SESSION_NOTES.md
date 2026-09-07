@@ -1610,3 +1610,18 @@ Editorial pass on `energy.mdx` — Chukwuka agreed the **Overview** needed chang
 - **Essay #2** — Chukwuka has a second essay queued; not yet pasted. Publish next session.
 - Unchanged parked list: optional motion-clip downscale to 800×600; heyfood + yara motion clips; the S24/S23 items.
 - `/for/[slug]` shelved — recon above if it's ever revived.
+
+---
+
+## Session 29 — 2026-09-07 — Published essay "The Brands Are Talking To You"
+
+### Essay published
+- New essay at `src/content/writing/the-brands-are-talking-to-you.mdx` (route `/essays/the-brands-are-talking-to-you`) — a reflection on realising, despite a writer/content-marketing background, how little he'd thought about *words in product interfaces* (the "Enter email" vs "Type email" question); sparked by reading Adobe Spectrum / UiPath / Wise brand + content guidelines. Resolves to understand a brand's voice before touching color tokens. Text verbatim from Chukwuka; `title`/`summary`/`date: "2026-09-07"` frontmatter. **No image** (pure-text essay — no `<Figure>`).
+- OG text card generated via `scripts/generate-essay-og.mjs` (regenerated all 14, idempotent) → `public/og/essays/the-brands-are-talking-to-you.png`.
+
+### Verified
+- Route `200`, listed on `/essays` index, OG png `200`, `<title>`/`og:image`/`og:title` all resolve, `tsc` clean. No `npm run build` (dev-server `.next` rule; verified on a running dev server then stopped it).
+
+### Next up
+- Unchanged parked list: optional motion-clip downscale to 800×600; heyfood + yara motion clips; the S24/S23 items.
+- `/for/[slug]` still shelved (S28 recon).
