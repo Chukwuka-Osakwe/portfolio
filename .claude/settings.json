@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$CLAUDE_PROJECT_DIR/SESSION_NOTES.md\"; [ -f \"$f\" ] || exit 0; start=$(grep -nE \"^## Session\" \"$f\" | tail -1 | cut -d: -f1); [ -n \"$start\" ] || exit 0; body=$(tail -n +\"$start\" \"$f\"); jq -n --arg c \"$body\" '{hookSpecificOutput:{hookEventName:\"SessionStart\",additionalContext:(\"Most recent entry from SESSION_NOTES.md (read the full file if you need earlier sessions):\\n\\n\"+$c)}}'",
+            "statusMessage": "Loading latest session notes…"
+          }
+        ]
+      }
+    ]
+  }
+}
