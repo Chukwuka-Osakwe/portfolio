@@ -9,14 +9,17 @@ import { usePathname } from "next/navigation";
 // rest (see isActiveFor) — so "design" stays active across the whole triad:
 // case studies (/ + its details /design/<slug>), my lab (/lab + /lab/<slug>),
 // and product ideas (/product-ideas).
-type Item = {
+export type NavItem = {
   label: string;
   href: string;
   external?: boolean;
   activeFor?: string[];
 };
 
-const ITEMS: Item[] = [
+// Single source of truth for the nav destinations — consumed by both the
+// vertical NavMenu (desktop panel + mobile sheet) and the horizontal SiteTopBar,
+// so the two nav surfaces can't drift.
+export const NAV_ITEMS: NavItem[] = [
   { label: "design", href: "/", activeFor: ["/", "/design", "/product-ideas", "/lab"] },
   { label: "essays", href: "/essays", activeFor: ["/essays"] },
   { label: "newsletter", href: "https://chukwukaosakwe.substack.com/", external: true },
@@ -27,7 +30,7 @@ const ITEMS: Item[] = [
 // `activeFor` paths, OR sits underneath one as a sub-route (/design matches
 // /design/<slug>). "/" is matched exactly only — prefix-matching it would
 // highlight every route.
-function isActiveFor(paths: string[], pathname: string): boolean {
+export function isActiveFor(paths: string[], pathname: string): boolean {
   return paths.some(
     (p) => pathname === p || (p !== "/" && pathname.startsWith(p + "/")),
   );
@@ -75,7 +78,7 @@ export function NavMenu() {
         some things i do
       </p>
       <div className="mt-4 flex flex-col gap-2">
-        {ITEMS.map((item) => {
+        {NAV_ITEMS.map((item) => {
           if (item.external) {
             return (
               <a
