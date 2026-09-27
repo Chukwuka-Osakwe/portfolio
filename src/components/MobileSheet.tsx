@@ -30,6 +30,7 @@ export function MobileSheet({
   open,
   onClose,
   triggerRef,
+  breakpoint = "lg",
 }: {
   /** Matches `aria-controls` on the trigger button. */
   id: string;
@@ -37,7 +38,14 @@ export function MobileSheet({
   onClose: () => void;
   /** Ref to the menu-button that opened the sheet — focus returns here on close. */
   triggerRef: React.RefObject<HTMLButtonElement | null>;
+  /** Width at/above which the sheet is hidden (the desktop nav takes over).
+   *  Defaults to "lg" — the live site's panel breakpoint. The merged-grid
+   *  wireframe collapses its inline bar at "md", so it passes "md" to keep the
+   *  hamburger and sheet in sync. Both literals are spelled out below so
+   *  Tailwind keeps them in the build. */
+  breakpoint?: "md" | "lg";
 }) {
+  const hideAbove = breakpoint === "md" ? "md:hidden" : "lg:hidden";
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
   const wasOpenRef = useRef(false);
@@ -109,7 +117,7 @@ export function MobileSheet({
         tabIndex={-1}
         aria-label="Close menu"
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-foreground/30 backdrop-blur-sm transition-opacity duration-200 lg:hidden ${
+        className={`fixed inset-0 z-40 bg-foreground/30 backdrop-blur-sm transition-opacity duration-200 ${hideAbove} ${
           open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
@@ -130,7 +138,7 @@ export function MobileSheet({
         // inert removes descendants from focus/pointer/a11y entirely.
         inert={!open}
         id={id}
-        className={`fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] overflow-y-auto overscroll-contain rounded-t-2xl bg-nav-fill pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] shadow-2xl motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out lg:hidden ${
+        className={`fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] overflow-y-auto overscroll-contain rounded-t-2xl bg-nav-fill pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] shadow-2xl motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out ${hideAbove} ${
           open ? "pointer-events-auto translate-y-0" : "pointer-events-none translate-y-full"
         }`}
       >

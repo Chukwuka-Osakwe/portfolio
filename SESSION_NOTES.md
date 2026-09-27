@@ -1885,3 +1885,30 @@ Replaced: `palette` (now OPAQUE — old 50%-alpha olive-swatch bleed gone), `bra
 2. Decide uni/why/300 cards — new versions coming, or keep current?
 3. Optional: default the page to dark? (HMR made it look dark mid-session; fresh load is light.)
 4. Prune the now-stale old generic `Frame@2160p (N)` masters in `sources/.../brand-exports` (superseded by descriptive-named ones).
+
+---
+
+## Session 37 — 2026-09-28 — merged-grid promoted from "throwaway" to committed direction; built its responsive topbar (full-bleed bar + hamburger→sheet + ThemeCycle swap) and tracked the S31/S32 stragglers — [agent: Claude (Opus 4.8)]
+
+### Headline: the merged-grid wireframe is Chukwuka's real direction (NOT a throwaway) and is now TRACKED. Next session opens the migration convo (merged-grid → live `/` view).
+The S31 page-comment still says "WIREFRAME (throwaway)" — **that framing is dead.** Chukwuka: "merged grid was more than an experiment, it was a clear direction." This session made its mobile/responsive nav real and committed it. The migration (graduate into the live design view, retiring the `(site)` two-column shell) is the S38 topic — see below.
+
+### What was broken + built (the topbar responsive model)
+The merged-grid `TopBar` collapsed inline links at `sm` with **nothing behind them** — links just vanished <640px, no hamburger. Rebuilt around the live site's proven mobile model, **reusing the real components** (not forks):
+- **Collapse at `md` (768).** Below md: links → hamburger that opens the shared **`MobileSheet`** (bottom sheet, full a11y — focus trap, scroll-lock, `inert` bg, ESC/backdrop/route-change close). Wrapped the page content in `inert={sheetOpen}`; hamburger stays live as the ✕.
+- **Full-bleed bar at EVERY width.** Was a floating `w-3/4` centered bracket bar (`border-x-4 border-b-4`). At mobile it crammed the wordmark in a cramped floating box; at 768 the ¾ width (~528px usable) couldn't hold wordmark + 4 links + toggle (~780px content → big overflow). Dropped ¾ entirely → `w-full` + bottom rule only, coherent with the full-bleed lattice. (Reinstate ¾ at `xl` later if the floating-bracket look is wanted on very wide screens.)
+- **Theme control swaps by width:** compact **`ThemeCycle`** icon <lg (fits the horizontal bar; the 3-up segmented track was built for the vanished vertical side panel), segmented **`ThemeToggle`** only ≥lg where there's room. Hamburger only <md.
+- **Three clean ranges:** `<md` links→sheet + ThemeCycle + hamburger · `md–lg` inline links + ThemeCycle · `≥lg` inline links + segmented toggle.
+- **Nav-link gap:** bumped 20→32px (all three bar gaps went `gap-6/5`→`gap-8` first), then the **inter-link gap became a clamp** `clamp(1.25rem, 0.13rem + 2.3vw, 2rem)` (20px@768 → 32px@1280). The other two gaps (wordmark↔cluster, within-cluster) stay fixed 32px — structural, not rhythm. NOTE: once the crowding was fixed the clamp is **polish, not rescue** (768 has room now).
+
+### Only shared-component change (keeps live site byte-for-byte)
+`MobileSheet` gained a **`breakpoint?: "md" | "lg"` prop (default `"lg"`)** — the two `lg:hidden` became `${hideAbove}` with both literals spelled out so Tailwind keeps them. Live site passes nothing (unchanged); wireframe passes `"md"`. **Rationale ([[portfolio-the-lab-section]] context): merged-grid is about to REPLACE the live view, so reuse > parameterisation-machinery > fork — they must match by construction, and when merged-grid takes over `/` we flip the default and delete the old shell.**
+
+### Git state at close
+- Committed on `main` (not pushed): `src/app/wireframe/merged-grid/{page.tsx, MergedGridWireframe.tsx}` (the S31/S32 stragglers, now tracked), `public/wireframe/kickoff-new.mp4` + `-poster.jpg` (the transcoded Kickoff cover clip they depend on), `src/components/MobileSheet.tsx` (breakpoint prop), + these notes. `tsc --noEmit` clean (dev-cache rule: no `npm build`).
+
+### Next up (S38) — THE MIGRATION (Chukwuka wants to talk through it next)
+1. **Graduate merged-grid → the live `/` design view.** Open questions to resolve in the convo: does it replace the `(site)` two-column shell entirely (single full-bleed bar model for the whole site, not just this page)? What happens to the desktop right-identity-panel + `ViewSwitcher`/`CaseToc` chrome? Flip `MobileSheet` breakpoint default `lg→md` + delete old shell once cut over. Where do product-ideas / contact views live in the single-bar model?
+2. Retire the S31 "throwaway" framing in the page.tsx doc comment.
+3. Still open from S36: gallery (ChipMango) also needs graduating out of `/wireframe` + `type`/`layout` frontmatter switch — reconcile with THIS migration (two wireframes both heading for real routes).
+4. Decide: keep the temporary "airiness dials" `Controls` panel in the migrated view, or strip it?
