@@ -168,6 +168,27 @@ body {
   overflow-x: clip;
 }
 
+/* border-radius: 0 is the HOUSE DEFAULT (S38 — committed after an on-page A/B).
+   Rather than hand-square every component, zero the --radius-* scale that all the
+   rounded-* utilities read, so rounded-sm…3xl render as 0 everywhere (and
+   anything new inherits it). rounded-full is a literal (no var), so square those
+   circles with an explicit rule. Reintroduce rounding by changing these in one
+   place. A universal `* { border-radius:0 }` rule can't be used — Lightning CSS
+   strips it — but variable overrides survive (same mechanism as data-theme).
+   The lone documented exception, .accent-marker, uses its own literal uneven
+   radius and is unaffected. */
+:root {
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+}
+.rounded-full {
+  border-radius: 0 !important;
+}
+
 /* Tailwind v4 Preflight reverted buttons to the native cursor: default (arrow).
    Restore the v3 behaviour so all interactive buttons read as clickable. */
 button:not(:disabled),
