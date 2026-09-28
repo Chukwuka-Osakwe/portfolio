@@ -1912,3 +1912,36 @@ The merged-grid `TopBar` collapsed inline links at `sm` with **nothing behind th
 2. Retire the S31 "throwaway" framing in the page.tsx doc comment.
 3. Still open from S36: gallery (ChipMango) also needs graduating out of `/wireframe` + `type`/`layout` frontmatter switch — reconcile with THIS migration (two wireframes both heading for real routes).
 4. Decide: keep the temporary "airiness dials" `Controls` panel in the migrated view, or strip it?
+
+---
+
+## Session 38 — 2026-09-28 — THE MIGRATION shipped: single-bar shell replaces the two-column model, merged grid is live at `/`, ChipMango gallery graduated to a real route, border-radius:0 adopted — [agent: Claude (Opus 4.8)]
+
+### Headline: the whole S38 plan landed. `/` is now the merged design grid inside a single full-bleed top-bar shell; ChipMango is a live gallery entry; radius:0 is the house default. All on branch `proto/single-bar-shell` (4 commits), NOT yet merged to `main`, not pushed.
+
+### The strategic framing that unlocked it (Chukwuka's calls)
+- **Two separable migrations, not one:** (A) an IA merge (lab + case-studies → one "design" track) and (B) a shell swap (single bar replaces the two-column identity-panel model). Did both, but understanding they were separable de-risked sequencing.
+- **Single-bar EVERYWHERE** (not just the landing): the site abandons the persistent right-identity-panel signature. Detail pages keep their reading layout but inside the new shell.
+- **Triad → duo:** `ViewSwitcher` is now **work · product ideas**; `/lab` 308-redirects to `/` (lab folded into the grid). Merged view named **"work"**.
+- **The "container transform" was a phantom.** I flagged that swapping in the grid would "lose the container-transform modal" — WRONG, based on stale S3 notes. The S25 rewrite already replaced it with plain route-nav + a `view-enter` CSS fade. Verified in code (grep clean). So the smooth open feel = client-side `<Link>` nav (shared `(site)` layout persists) + `view-enter` — preserved for free by any in-shell route.
+
+### What shipped (commit-by-commit on the branch)
+1. **`1c6f1dc` — single-bar shell prototype.** New **`SiteTopBar`** (the merged-grid bar promoted: sticky full-bleed, `Link`-based with pathname active state, three sections distributed by `justify-between`, `px-12`). `NavMenu` exports `NAV_ITEMS`+`isActiveFor` (bar + sheet single-source). Rewrote `(site)/layout.tsx` to single centered column; `MobileSheet breakpoint="md"`.
+2. **`4d49428` — grid swap + IA merge.** New **`DesignGrid`** (server component, full-bleed CSS lattice — per-cell borders draw rules+divider, no JS column flash; `next/image`+`CardVideo` covers; per-entry `ratio` frontmatter override). `/` renders it from `getAllMeta("work")+("lab")`. `/lab`→`/` redirect; `ratio` added to `Frontmatter`. Layout became a **flex column** so `main` fills viewport minus bar (killed a phantom vertical scroll); `SiteTopBar` publishes measured **`--bar-h`**; Contact/EssaysList/ProductIdeas subtract `var(--bar-h)` (they'd hardcoded the old chrome). **ProductIdeas caps card width by available height** so its fixed-height card never scrolls. Kickoff cover → the splash clip promoted to frontmatter (grid + detail hero), relocated `public/lab/kickoff/splash.{mp4,webp}` (lossless webp), dead `walkthrough` derivatives removed. Cleanup: stripped the wireframe `Controls` dial (baked constants), retired the S31 "throwaway" comment, deleted the now-unused `MobileTopBar`.
+3. **`0e84235` — ChipMango gallery graduated.** `(site)/design/chipmango/{page.tsx, Gallery.tsx}` (URL `/design/chipmango`). Ported `GalleryWireframe` → server component: dropped dials, `winW`, and the **theme-hijack** (live page respects theme). Inside `(site)` → wears `SiteTopBar` + the shared `view-enter` (matched the exact outermost-wrapper pattern — the fix for "doesn't open like the others"). Full-bleed break-out for 65rem; sticky rail offset by `--bar-h`. Assets moved `public/wireframe/chipmango`→`public/design/chipmango` (25 webps; wireframe reads from there too). Grid card → `/design/chipmango`, cover = **wordmark-on-mosaic motif** at native ~1.25 ratio. **Curated grid order** (kickoff, aronia, chipmango, energy, footy, yara; rest date-desc). Grid cells `items-center` so a shorter card in a mismatched-ratio row sits vertically centered.
+4. **`2bfb908` — border-radius:0 house default.** A/B'd on-page via a temporary `RadiusToggle` (since removed); Chukwuka: "sharp wins." Baked by **zeroing `--radius-*` in `:root`** (all `rounded-*` utilities → 0 site-wide; new stuff inherits it) + `.rounded-full { border-radius:0 }` for circles. NB: a universal `* { border-radius:0 }` rule **gets stripped by Lightning CSS** — variable overrides survive (same as `data-theme`). `.accent-marker` (literal uneven radius) is the lone exception, unaffected. DESIGN.md Shape & Radius flipped EMERGING → ADOPTED.
+
+### Full-bleed mechanism (reused twice — grid + gallery)
+The `(site)` shell caps content at `--content-w` (49rem). Full-bleed children escape via `relative left-1/2 w-screen -translate-x-1/2` (100vw box centered on the symmetric layout). Enabled **`body { overflow-x: clip }`** (the documented sticky-safe fallback) to swallow the 100vw scrollbar gutter.
+
+### Verify
+`tsc --noEmit` clean throughout. Routes 200: `/ /contact /essays /product-ideas /design/<slug> /lab/<slug> /design/chipmango /wireframe/*`. `/lab` + `/design` 308→`/`. Dev server was restarted once (background) so `next.config` redirects took effect — the OLD foreground dev server was killed; a background one now owns :3000.
+
+### Git state at close
+- Branch **`proto/single-bar-shell`**, 4 commits ahead of `main` (main still at `3381715`). Working tree clean. **Not merged, not pushed.** DESIGN.md + these notes committed separately next.
+
+### Next up (S39)
+1. **Merge `proto/single-bar-shell` → `main`** (fast-forward) — the one remaining housekeeping step. Then push if wanted.
+2. Consider deleting the now-redundant `/wireframe/merged-grid` + `/wireframe/gallery` (both superseded by the live `DesignGrid` / `/design/chipmango`; kept this session as reference sandboxes).
+3. When a 2nd gallery entry appears: generalise ChipMango's dedicated route into a `layout: gallery` frontmatter switch on `/design/[slug]` + a real "brand" content section (ChipMango is hardcoded in `(site)/page.tsx` today).
+4. Optional polish: `next/image` for the gallery's `<img>` frames; redundant `[&_*]:!rounded-none` on SiteTopBar's ThemeToggle wrapper can be dropped now radius:0 is global.
