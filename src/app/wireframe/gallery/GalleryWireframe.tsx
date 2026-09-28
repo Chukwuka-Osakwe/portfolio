@@ -38,7 +38,9 @@ interface Block {
 // Real ChipMango assets (WebP-optimised into public/wireframe/chipmango).
 // Made surfaces only — the photography/device-mockup batch is intentionally
 // absent (billboard, business-card, desk-dell, ipad-*, macbook, mango).
-const A = (n: string) => `/wireframe/chipmango/${n}.webp`;
+// Assets graduated to public/design/chipmango (S38) alongside the live gallery
+// at /design/chipmango; this wireframe reads them from there (single source).
+const A = (n: string) => `/design/chipmango/${n}.webp`;
 const CM = {
   hero: A("hero"), // chip-sun landing render
   motif: A("motif-grid"), // sun-chip gradient grid

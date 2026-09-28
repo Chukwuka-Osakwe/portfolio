@@ -67,7 +67,11 @@ export function DesignGrid({ entries }: { entries: GridEntry[] }) {
         {entries.map((entry, i) => (
           <div
             key={entry.slug}
-            className="flex justify-center border-b border-border lg:[&:nth-child(odd)]:border-r"
+            // items-center vertically centers the card within its cell. Grid
+            // cells stretch to the row's height (= the taller card), so a shorter
+            // card (e.g. a wide 16:9 next to a squarer one) floats centered in
+            // the row instead of pinning to the top with a gap beneath it.
+            className="flex items-center justify-center border-b border-border lg:[&:nth-child(odd)]:border-r"
             style={{ padding: "clamp(1.5rem, 4vw, 4.5rem)" }}
           >
             <div className="w-full" style={{ maxWidth: "48rem" }}>
