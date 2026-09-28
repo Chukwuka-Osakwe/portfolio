@@ -37,6 +37,11 @@ export interface Frontmatter {
    *  "pre-beta". The lab is defined by being self-directed, not by being
    *  finished, so this is metadata, not the headline. */
   stage?: string;
+  /** Cover aspect-ratio (CSS value, e.g. "16 / 9") for the merged design grid.
+   *  Overrides the grid's uniform default frame so an entry can declare its own
+   *  cover shape (the cover is object-cover, so this frames/crops, it doesn't
+   *  resize the source). Unset → the entry inherits the grid's default. */
+  ratio?: string;
   /** Lab-only: outbound destinations (the item's real home lives elsewhere) —
    *  e.g. a live site, a GitHub repo, a demo. Rendered as link chips on the
    *  detail page. YAML array of { label, href } in frontmatter. */

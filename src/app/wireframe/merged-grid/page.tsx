@@ -10,15 +10,12 @@ export const metadata: Metadata = {
 };
 
 /**
- * WIREFRAME (throwaway, S31) — the merged "design" grid: case studies + lab
- * intermixed into ONE track, filling the full viewspace (nav assumed vacated),
- * two-up at desktop. Built in house style (real tokens / covers / motion clips)
- * so we can judge how airy to make it before committing to the real IA rebuild.
- *
- * Lives OUTSIDE the (site) route group on purpose: that group's layout wraps
- * every page in the two-column [viewspace · nav] shell. Sitting at the app root
- * inherits only the root layout (fonts + globals + theme), so the grid reads at
- * true full-bleed width — which is the whole point of the reclaim.
+ * REFERENCE SANDBOX (was S31 "throwaway") — the merged "design" grid: case
+ * studies + lab intermixed into ONE date-desc track. This SHIPPED: the design it
+ * proved is now the live landing at `/` (see @/components/DesignGrid, rendered by
+ * (site)/page.tsx). This standalone copy is kept as a self-contained playground
+ * — outside the (site) shell (root layout only → true full-bleed) so it can be
+ * poked at without the site chrome. Not the source of truth; DesignGrid is.
  *
  * Merge + sort: both sections, pure date-desc (NOT the per-section featured
  * pinning getAllMeta does — that's a within-section device; a merged view wants
@@ -36,17 +33,11 @@ const RATIO_OVERRIDES: Record<string, string> = {
   kickoff: "16 / 9", // wide
 };
 
-// Wireframe-only cover-clip swaps (a dropped-in recording transcoded to
-// web-safe MP4). Keyed by slug; overrides the entry's frontmatter `video`.
-const VIDEO_OVERRIDES: Record<string, string> = {
-  kickoff: "/wireframe/kickoff-new.mp4",
-};
-
-// Poster (pre-play frame) that goes with the swapped clip — kept in sync so the
-// old walkthrough poster doesn't flash before the new video paints.
-const POSTER_OVERRIDES: Record<string, string> = {
-  kickoff: "/wireframe/kickoff-new-poster.jpg",
-};
+// Wireframe-only cover-clip swaps. Empty now: the kickoff splash clip it used to
+// point at was promoted to kickoff's real frontmatter (public/lab/kickoff/
+// splash.*), so both this wireframe and the live grid read it from there.
+const VIDEO_OVERRIDES: Record<string, string> = {};
+const POSTER_OVERRIDES: Record<string, string> = {};
 
 export default function Page() {
   const entries: WireEntry[] = [...getAllMeta("work"), ...getAllMeta("lab")]

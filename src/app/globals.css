@@ -53,6 +53,10 @@
   /* Max width of the viewspace content (cards / carousel / detail), centered in
      track 1. The single "how wide do the cards sit" dial. */
   --content-w: 49rem;
+  /* Height of the sticky SiteTopBar. Fallback for SSR / before hydration;
+     SiteTopBar overwrites it with its measured pixel height on mount. Pages
+     that fill the remaining viewport subtract var(--bar-h). */
+  --bar-h: 4rem;
   /* Reading measure — text-column cap inside case-study panels (body + header).
      Single source of truth; was drifting between 42rem and 44rem. */
   --reading-measure: 42rem;
@@ -157,8 +161,11 @@ body {
      tunnel access was clean from the start. Left commented out as a
      known-good fallback if a real overflow ever resurfaces.
      `clip` over `hidden` would be the right choice (clip doesn't create
-     a scroll container, so sticky positioning still works). */
-  /* overflow-x: clip; */
+     a scroll container, so sticky positioning still works).
+     ENABLED (S38): the merged design grid breaks out to 100vw for its
+     full-bleed lattice; clip swallows the scrollbar-width gutter that 100vw
+     otherwise introduces, and (unlike `hidden`) keeps the sticky SiteTopBar. */
+  overflow-x: clip;
 }
 
 /* Tailwind v4 Preflight reverted buttons to the native cursor: default (arrow).

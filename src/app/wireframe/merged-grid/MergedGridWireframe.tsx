@@ -25,32 +25,25 @@ export interface WireEntry {
 
 type CardStyle = "contained" | "editorial";
 
-// Airiness starting points. The grid is full-bleed now (two equal halves split
-// at a centered vertical divider); a card is capped to `cardCap` and centered
-// within its half, and `cellPad` is the uniform breathing room (edge ↔ card,
-// divider ↔ card, and row rhythm).
+// Baked layout values. The grid is full-bleed (two equal halves split at a
+// centered vertical divider); a card is capped to `cardCap` and centered within
+// its half, and `cellPad` is the uniform breathing room (edge ↔ card, divider ↔
+// card, and row rhythm). Tuned by eye via the (now-removed) live dials.
 const DEFAULTS = {
   cardCap: 48,
-  noCap: false,
   cellPad: 72,
   cardStyle: "contained" as CardStyle,
-  forceOneCol: false,
 };
 
-const MONO = { fontFamily: "var(--font-geist-mono)" } as const;
-
 export function MergedGridWireframe({ entries }: { entries: WireEntry[] }) {
-  const [cardCap, setCardCap] = useState(DEFAULTS.cardCap);
-  const [noCap, setNoCap] = useState(DEFAULTS.noCap);
-  const [cellPad, setCellPad] = useState(DEFAULTS.cellPad);
-  const [cardStyle, setCardStyle] = useState<CardStyle>(DEFAULTS.cardStyle);
-  const [forceOneCol, setForceOneCol] = useState(DEFAULTS.forceOneCol);
+  // Layout values — these were live "airiness dials"; baked to the values tuned
+  // by eye once the design shipped to the real grid at `/` (see DesignGrid).
+  const cardCap = DEFAULTS.cardCap;
+  const cellPad = DEFAULTS.cellPad;
+  const cardStyle = DEFAULTS.cardStyle;
 
-  // Live readout: window width + the true rendered width of one card (measured,
-  // not computed — so it reflects whatever the dials actually produce).
+  // Column count is viewport-driven: two-up at ≥1024, single column below.
   const [winW, setWinW] = useState(0);
-  const [cardW, setCardW] = useState(0);
-  const firstCard = useRef<HTMLDivElement>(null);
 
   // The top bar is fixed (out of flow), so the page must pad itself down to
   // clear it. Measure its real height so the hero clears it with the SAME 48px
@@ -73,14 +66,6 @@ export function MergedGridWireframe({ entries }: { entries: WireEntry[] }) {
   }, []);
 
   useEffect(() => {
-    const el = firstCard.current;
-    if (!el) return;
-    const ro = new ResizeObserver(([e]) => setCardW(Math.round(e.contentRect.width)));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  useEffect(() => {
     const el = bar.current;
     if (!el) return;
     const measure = () => setBarH(el.getBoundingClientRect().height);
@@ -90,7 +75,7 @@ export function MergedGridWireframe({ entries }: { entries: WireEntry[] }) {
     return () => ro.disconnect();
   }, []);
 
-  const twoUp = !forceOneCol && winW >= 1024;
+  const twoUp = winW >= 1024;
   const cols = twoUp ? 2 : 1;
 
   // Chunk into rows of `cols` so each row can be wrapped by its own full-bleed
@@ -99,14 +84,6 @@ export function MergedGridWireframe({ entries }: { entries: WireEntry[] }) {
   for (let i = 0; i < entries.length; i += cols) {
     rows.push(entries.slice(i, i + cols));
   }
-
-  const reset = () => {
-    setCardCap(DEFAULTS.cardCap);
-    setNoCap(DEFAULTS.noCap);
-    setCellPad(DEFAULTS.cellPad);
-    setCardStyle(DEFAULTS.cardStyle);
-    setForceOneCol(DEFAULTS.forceOneCol);
-  };
 
   return (
     // paddingTop = measured bar height + 48px, so the hero clears the fixed bar
@@ -148,11 +125,7 @@ export function MergedGridWireframe({ entries }: { entries: WireEntry[] }) {
                   }`}
                   style={{ padding: cellPad }}
                 >
-                  <div
-                    ref={r === 0 && ci === 0 ? firstCard : undefined}
-                    className="w-full"
-                    style={{ maxWidth: noCap ? "none" : `${cardCap}rem` }}
-                  >
+                  <div className="w-full" style={{ maxWidth: `${cardCap}rem` }}>
                     {cardStyle === "contained" ? (
                       <ContainedCard entry={e} />
                     ) : (
@@ -169,23 +142,6 @@ export function MergedGridWireframe({ entries }: { entries: WireEntry[] }) {
         ))}
         <div className="h-px w-full bg-border" aria-hidden />
       </div>
-
-      <Controls
-        winW={winW}
-        cardW={cardW}
-        cols={cols}
-        cardCap={cardCap}
-        setCardCap={setCardCap}
-        noCap={noCap}
-        setNoCap={setNoCap}
-        cellPad={cellPad}
-        setCellPad={setCellPad}
-        cardStyle={cardStyle}
-        setCardStyle={setCardStyle}
-        forceOneCol={forceOneCol}
-        setForceOneCol={setForceOneCol}
-        onReset={reset}
-      />
       </div>
 
       <TopBar
@@ -341,11 +297,11 @@ function TopBar({
           </div>
 
           {/* Compact cluster (<lg) — ThemeCycle icon, plus the hamburger once
-              the inline links have collapsed (<md). Mirrors the live
-              MobileTopBar. The hamburger opens the shared MobileSheet;
-              ThemeCycle goes inert with the sheet, but the menu button stays
-              live so it doubles as the ✕ close. gap-1 (8px) since both are
-              chips (only both visible <md; at 768–1023 it's ThemeCycle alone). */}
+              the inline links have collapsed (<md). The hamburger opens the
+              shared MobileSheet; ThemeCycle goes inert with the sheet, but the
+              menu button stays live so it doubles as the ✕ close. gap-1 (8px)
+              since both are chips (only both visible <md; 768–1023 = cycle
+              alone). */}
           <div className="flex items-center gap-1 lg:hidden">
             <span className="contents" inert={sheetOpen}>
               <ThemeCycle />
@@ -456,177 +412,5 @@ function EditorialCard({ entry }: { entry: WireEntry }) {
         </h2>
       </div>
     </a>
-  );
-}
-
-/* ---- Dial panel ---------------------------------------------------------- */
-
-interface ControlsProps {
-  winW: number;
-  cardW: number;
-  cols: number;
-  cardCap: number;
-  setCardCap: (n: number) => void;
-  noCap: boolean;
-  setNoCap: (b: boolean) => void;
-  cellPad: number;
-  setCellPad: (n: number) => void;
-  cardStyle: CardStyle;
-  setCardStyle: (s: CardStyle) => void;
-  forceOneCol: boolean;
-  setForceOneCol: (b: boolean) => void;
-  onReset: () => void;
-}
-
-function Controls(p: ControlsProps) {
-  const [open, setOpen] = useState(true);
-  const cardRem = p.cardW ? (p.cardW / 16).toFixed(1) : "—";
-
-  return (
-    <div
-      className="fixed bottom-4 right-4 z-50 w-64 rounded-xl border border-border bg-nav-fill/85 p-4 shadow-lg backdrop-blur"
-      style={MONO}
-    >
-      <div className="flex items-center justify-between">
-        <span className="text-[0.7rem] font-semibold uppercase tracking-widest text-text-muted">
-          airiness dials
-        </span>
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="text-xs text-text-muted hover:text-accent"
-        >
-          {open ? "hide" : "show"}
-        </button>
-      </div>
-
-      {/* Live readout — always visible even when collapsed. */}
-      <div className="mt-3 rounded-lg bg-background/60 px-3 py-2 text-[0.7rem] leading-relaxed text-foreground">
-        <div>
-          window <span className="text-accent">{p.winW || "—"}px</span>
-        </div>
-        <div>
-          columns <span className="text-accent">{p.cols}</span>
-        </div>
-        <div>
-          card{" "}
-          <span className="text-accent">
-            {p.cardW || "—"}px / {cardRem}rem
-          </span>
-        </div>
-      </div>
-
-      {open && (
-        <div className="mt-4 space-y-4">
-          <Range
-            label="card cap"
-            value={p.cardCap}
-            min={28}
-            max={64}
-            step={1}
-            unit="rem"
-            disabled={p.noCap}
-            onChange={p.setCardCap}
-          />
-          <Toggle label="no cap (fill half)" checked={p.noCap} onChange={p.setNoCap} />
-          <Range label="cell padding" value={p.cellPad} min={0} max={96} step={4} unit="px" onChange={p.setCellPad} />
-
-          <div>
-            <span className="text-[0.7rem] text-text-muted">card style</span>
-            <div className="mt-1 flex overflow-hidden rounded-lg border border-border">
-              {(["contained", "editorial"] as CardStyle[]).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => p.setCardStyle(s)}
-                  className={`flex-1 py-1.5 text-[0.7rem] transition ${
-                    p.cardStyle === s
-                      ? "bg-accent-200 text-foreground"
-                      : "text-text-muted hover:text-foreground"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <Toggle
-            label="force single column"
-            checked={p.forceOneCol}
-            onChange={p.setForceOneCol}
-          />
-
-          <button
-            onClick={p.onReset}
-            className="w-full rounded-lg border border-border py-1.5 text-[0.7rem] text-text-muted transition hover:border-accent hover:text-accent"
-          >
-            reset to defaults
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function Range({
-  label,
-  value,
-  min,
-  max,
-  step,
-  unit,
-  disabled,
-  onChange,
-}: {
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  step: number;
-  unit: string;
-  disabled?: boolean;
-  onChange: (n: number) => void;
-}) {
-  return (
-    <label className={`block ${disabled ? "opacity-40" : ""}`}>
-      <div className="flex items-center justify-between text-[0.7rem]">
-        <span className="text-text-muted">{label}</span>
-        <span className="text-foreground">
-          {value}
-          {unit}
-        </span>
-      </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        disabled={disabled}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="mt-1 w-full accent-accent"
-      />
-    </label>
-  );
-}
-
-function Toggle({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: (b: boolean) => void;
-}) {
-  return (
-    <label className="flex cursor-pointer items-center gap-2 text-[0.7rem] text-text-muted">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="accent-accent"
-      />
-      {label}
-    </label>
   );
 }

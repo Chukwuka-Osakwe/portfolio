@@ -5,8 +5,7 @@ import { usePathname } from "next/navigation";
 import { useView } from "@/components/ViewContext";
 
 const VIEWS: { href: string; label: string }[] = [
-  { href: "/lab", label: "my lab" },
-  { href: "/", label: "case studies" },
+  { href: "/", label: "work" },
   { href: "/product-ideas", label: "product ideas" },
 ];
 
@@ -31,12 +30,12 @@ export function ViewSwitcher() {
     <div
       role="group"
       aria-label="Choose a view"
-      className="frosted pointer-events-auto relative inline-grid grid-cols-3 rounded-lg p-1"
+      className="frosted pointer-events-auto relative inline-grid grid-cols-2 rounded-lg p-1"
     >
-      {/* Sliding thumb — one segment wide: (track − p-1 both sides) / 3. */}
+      {/* Sliding thumb — one segment wide: (track − p-1 both sides) / 2. */}
       <span
         aria-hidden
-        className="absolute inset-y-1 left-1 w-[calc((100%_-_0.5rem)/3)] rounded-md bg-accent-200 motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out"
+        className="absolute inset-y-1 left-1 w-[calc((100%_-_0.5rem)/2)] rounded-md bg-accent-200 motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out"
         style={{ transform: `translateX(${activeIndex * 100}%)` }}
       />
 

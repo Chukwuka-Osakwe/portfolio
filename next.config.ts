@@ -30,6 +30,10 @@ const nextConfig: NextConfig = {
   // `/design/:slug` and are untouched.
   redirects: async () => [
     { source: "/design", destination: "/", permanent: true },
+    // Merged design grid (S37/38): lab folded into the home stream, so the old
+    // `/lab` index redirects home. Exact match only — lab details still live at
+    // `/lab/:slug` and are linked from the merged grid.
+    { source: "/lab", destination: "/", permanent: true },
   ],
 };
 

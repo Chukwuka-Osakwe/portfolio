@@ -17,7 +17,7 @@ export function EssaysList() {
 
   return (
     // Reading-measure column, centered in the viewspace and vertically settled.
-    <div className="mx-auto flex w-full max-w-[var(--reading-measure)] flex-col min-h-[calc(100dvh-11.5rem-env(safe-area-inset-top,0px))] lg:min-h-[calc(100dvh-8rem)]">
+    <div className="mx-auto flex w-full max-w-[var(--reading-measure)] flex-col min-h-[calc(100dvh-var(--bar-h)-8rem-env(safe-area-inset-top,0px))]">
       {/* Header — mirrors the case-study detail header: title + subheading,
           then a tight border-b-2 accent rule close beneath (same pb-4/mb-8
           spacing) so the listing reads as part of the same family. */}

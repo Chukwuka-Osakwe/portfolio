@@ -52,7 +52,7 @@ export function Contact() {
     // spans the full dvh. Unlike Product Ideas / Footy / Heyfood, which keep
     // the reserved bottom padding because their ViewSwitcher lives there,
     // /contact has nothing at the bottom, so escaping it centers cleanly.
-    <div className="mx-auto -mt-8 -mb-24 flex w-full max-w-lg flex-col justify-center min-h-[calc(100dvh-3.5rem-env(safe-area-inset-top,0px))] lg:min-h-dvh">
+    <div className="mx-auto -mt-8 -mb-24 flex w-full max-w-lg flex-col justify-center min-h-[calc(100dvh-var(--bar-h)-env(safe-area-inset-top,0px))]">
       <p className="self-center text-[clamp(1.5rem,5vw,2.5rem)] font-semibold tracking-tight text-balance text-accent underline">
         better call chuka!
       </p>

@@ -36,23 +36,29 @@ export default function SiteLayout({
 
   return (
     <ViewProvider>
-      {/* Full-bleed sticky bar — the site's sole nav at every width. Outside the
-          inert wrapper so the hamburger stays live to close the sheet. */}
-      <SiteTopBar
-        open={mobileSheetOpen}
-        onToggle={() => setMobileSheetOpen((v) => !v)}
-        sheetId={MOBILE_SHEET_ID}
-        buttonRef={menuButtonRef}
-      />
+      {/* Flex column pinned to min 100dvh so the bar + content together fill the
+          viewport EXACTLY — the sticky bar is in normal flow (takes its own
+          height), so main flexes into the *remaining* space. (Putting min-h-dvh
+          on main instead made the document bar-height taller than the viewport,
+          i.e. a phantom vertical scroll on short pages like contact.) */}
+      <div className="flex min-h-dvh flex-col">
+        {/* Full-bleed sticky bar — the site's sole nav at every width. Outside
+            the inert wrapper so the hamburger stays live to close the sheet. */}
+        <SiteTopBar
+          open={mobileSheetOpen}
+          onToggle={() => setMobileSheetOpen((v) => !v)}
+          sheetId={MOBILE_SHEET_ID}
+          buttonRef={menuButtonRef}
+        />
 
-      <div inert={mobileSheetOpen}>
-        {/* Single centered column. Content keeps its --content-w cap (unchanged
-            from the old viewspace); it now centers in the full viewport instead
-            of the left grid track. min-h-dvh so short pages (contact) still fill
-            the screen and keep the floating switcher clear of the content. */}
-        <main className="min-h-dvh px-6 pb-24 pt-8">
-          <div className="mx-auto w-full max-w-[var(--content-w)]">{children}</div>
-        </main>
+        <div inert={mobileSheetOpen} className="flex flex-1 flex-col">
+          {/* Single centered column. Content keeps its --content-w cap (unchanged
+              from the old viewspace); it now centers in the full viewport instead
+              of the left grid track. flex-1 fills the height left by the bar so
+              short pages still reach the bottom without overflowing it. */}
+          <main className="flex-1 px-6 pb-24 pt-8">
+            <div className="mx-auto w-full max-w-[var(--content-w)]">{children}</div>
+          </main>
 
         {/* Floating view switcher / case-toc — fixed near the bottom, now simply
             centered under the single content column (was mirroring the old
@@ -63,6 +69,7 @@ export default function SiteLayout({
             <ViewSwitcher />
             <CaseToc />
           </div>
+        </div>
         </div>
       </div>
 

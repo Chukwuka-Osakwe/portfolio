@@ -13,6 +13,15 @@ const IDEAS = getIdeas();
 const COVER_W = IDEAS[0]?.width ?? 2000;
 const COVER_H = IDEAS[0]?.height ?? 1293;
 const COVER_PAD_BOTTOM = `${(COVER_H / COVER_W) * 100}%`;
+// Cover width ÷ height (≈1.547). Used to cap the card's WIDTH by the available
+// HEIGHT so the whole card (a fixed, width-driven height) fits without scrolling:
+// the card height is cover_w·(1/AR) + chrome, so the widest it can be for a given
+// height budget is budget·AR. See the maxWidth on the centering wrapper.
+const COVER_AR = COVER_W / COVER_H;
+// The card's non-cover height (p-6 padding + footer: caption/controls + mt-6),
+// subtracted from the viewport so the derived width leaves room for it. Rounded
+// up a touch so the card never quite touches the edges.
+const CARD_CHROME = "10rem";
 
 const chevron = (d: string) => (
   <svg
@@ -65,12 +74,23 @@ export function ProductIdeas() {
     "frosted focus-ring flex h-8 w-11 shrink-0 items-center justify-center rounded-lg text-foreground transition hover:text-accent";
 
   return (
-    // min-h fills the available viewport between topbar and viewswitcher so
-    // justify-center can vertically balance the card. Mobile subtracts the full
-    // mobile chrome (3.5rem topbar + 2rem pt-8 + 6rem pb-24 + safe-area-inset-top
-    // for iOS notches = 11.5rem + safe-top). Desktop subtracts only page-grid
-    // padding (no topbar at lg).
-    <div className="mx-auto flex w-full max-w-[46rem] items-center justify-center min-h-[calc(100dvh-11.5rem-env(safe-area-inset-top,0px))] lg:min-h-[calc(100vh-8rem)]">
+    // min-h fills the available viewport between the topbar and the viewswitcher
+    // so justify-center can vertically balance the card. Subtracts the real bar
+    // height (var(--bar-h), published by SiteTopBar) at every width — the bar now
+    // exists at all sizes — plus the page padding (2rem pt-8 + 6rem pb-24 = 8rem)
+    // and the safe-area-top for iOS notches.
+    <div
+      className="mx-auto flex w-full items-center justify-center min-h-[calc(100dvh-var(--bar-h)-8rem-env(safe-area-inset-top,0px))]"
+      // Width capped by BOTH the design max (46rem) AND the available height:
+      // on short viewports the height term wins, shrinking the card so its
+      // width-driven height fits between the bar and the switcher (no scroll);
+      // on tall viewports 46rem wins and it sits at full size. The height budget
+      // = viewport − bar − page padding (8rem, incl. pb-24 switcher clearance) −
+      // card chrome, times the cover aspect ratio.
+      style={{
+        maxWidth: `min(46rem, calc((100dvh - var(--bar-h) - 8rem - ${CARD_CHROME}) * ${COVER_AR}))`,
+      }}
+    >
       {/* Preload every cover so prev/next swaps hit cache instantly. Next 15
           hoists `<link>` tags from any component to <head> automatically. */}
       {IDEAS.map((it) => (

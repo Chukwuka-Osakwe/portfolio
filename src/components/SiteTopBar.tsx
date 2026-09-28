@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -10,7 +11,7 @@ import { NAV_ITEMS, isActiveFor } from "@/components/NavMenu";
  * PROTOTYPE (proto/single-bar-shell) — the site's horizontal top bar, promoted
  * from the merged-grid wireframe. Full-bleed, sticky at the top edge; wordmark
  * left, inline nav + theme control right. Replaces the two-column shell's
- * desktop identity panel AND the mobile MobileTopBar with one bar at every
+ * desktop identity panel AND the old mobile top bar with one bar at every
  * width.
  *
  * Responsive ranges (mirrors the merged-grid wireframe it came from):
@@ -36,18 +37,36 @@ export function SiteTopBar({
   buttonRef?: React.RefObject<HTMLButtonElement | null>;
 }) {
   const pathname = usePathname();
+  const navRef = useRef<HTMLElement>(null);
+
+  // Publish the bar's real height as --bar-h so pages that fill the remaining
+  // viewport (contact/essays/product-ideas centre their content in it) can
+  // subtract it precisely, at every width, without hardcoding a guess.
+  useEffect(() => {
+    const el = navRef.current;
+    if (!el) return;
+    const set = () =>
+      document.documentElement.style.setProperty("--bar-h", `${el.offsetHeight}px`);
+    set();
+    const ro = new ResizeObserver(set);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   return (
-    <nav className="sticky top-0 z-40 w-full border-b-4 border-border bg-nav-fill/85 backdrop-blur">
+    <nav
+      ref={navRef}
+      className="sticky top-0 z-40 w-full border-b-4 border-border bg-nav-fill/85 backdrop-blur"
+    >
       {/* Three top-level sections — wordmark · links · theme control — as direct
           flex children so justify-between distributes the slack EVENLY between
           them (no lopsided void). At <md the links section is display:none, so
           it falls out of the distribution and the remaining two push to the
           edges. gap-6 is just a min floor for the narrow crossover widths. */}
       <div className="flex items-center justify-between gap-6 px-12 py-3">
-        {/* Wordmark — CSS-mask logo tracks --accent (same technique as HeroBlock
-            / MobileTopBar). Goes inert with the sheet so the open-sheet focus
-            trap is sealed; the hamburger stays live as the ✕. */}
+        {/* Wordmark — CSS-mask logo tracks --accent (same technique as
+            HeroBlock). Goes inert with the sheet so the open-sheet focus trap is
+            sealed; the hamburger stays live as the ✕. */}
         <Link
           href="/"
           inert={open}
