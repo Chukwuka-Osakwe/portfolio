@@ -324,9 +324,7 @@ html {
 }
 /* Captions now live exclusively in <figure>/<figcaption> via <Figure> /
    <Screens> / <Compare>'s `caption` prop. The older `*caption*` italic-p
-   path has been retired from all real case studies — the only remaining use
-   is the throwaway redesigning-checkout.mdx placeholder, which renders
-   acceptably with prose defaults until the placeholder cull. */
+   path has been retired from all case studies. */
 /* <Figure>, <Screens>, and <Compare> use a `caption` prop and render image +
    caption together inside a single <figure>, so the gap is owned internally
    (no sibling-selector hack needed for JSX components). Markdown-image

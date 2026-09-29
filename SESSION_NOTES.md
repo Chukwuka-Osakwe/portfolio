@@ -4,6 +4,8 @@ A running log of each work session: what got done, decisions made, and where we'
 
 **Agents: sign your work.** Append your name/identifier to each session header you author (e.g. `## Session NN — <date> — <summary> — [agent: <name>]`) and to your commits, so it's clear which work belongs to which agent.
 
+**Open threads live in [`OPEN_THREADS.md`](OPEN_THREADS.md)** — the cross-session backlog. Read it alongside this file at session start; keep it current as threads open and close (prefer it over per-session "Next up" lists for anything that outlives a single session).
+
 ---
 
 ## Session 1 — 2026-05-20
