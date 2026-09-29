@@ -1981,8 +1981,11 @@ The `(site)` shell caps content at `--content-w` (49rem). Full-bleed children es
 ### Verify
 `tsc --noEmit` clean throughout (only stale `.next` route-validator noise after the `/lab` page deletion — regenerates on build). Routes 200 on dev: `/design/{footy,heyfood}` (video + still hero), `/lab/{kickoff,aronia}` (still render through the shared component), `/lab` still 308→`/`. Pushed `dc1292a..16e372d`; Vercel Production deploy fired for `16e372d` (commit status `success`).
 
+### Post-wrap fix (`94fd39b`)
+- **ChipMango grid blurb trimmed to one line.** After wrapping, Chukwuka spotted ChipMango + Energy (a row pair) reading as mismatched: both covers are the same 8:5 height and top-aligned, but ChipMango's blurb wrapped to two lines while Energy's is one, so its card ran taller. Shortened the hardcoded blurb in `(site)/page.tsx` from "Brand identity system for ChipMango — logo, palette, typography, and motion." → **"A brand identity system for ChipMango."** Verified via screenshot — the row is symmetric now. **Noted root cause:** grid blurbs aren't length-constrained, so any future 2-line blurb re-triggers this; the durable fix (if it recurs) is clamping grid blurbs to one line or reserving a fixed blurb height (à la the idea carousel's `min-h`). Not done — flagged only.
+
 ### Git state at close
-- **`main` == `origin/main` == `16e372d`.** Working tree clean after this notes+DESIGN.md commit. `proto/single-bar-shell` branch still exists locally (fully merged) — deletion is an open housekeeping thread.
+- **`main` == `origin/main` == `94fd39b`.** Working tree clean. This session added, after the S39 feature commits: `3511292` (S39 notes + DESIGN.md) and `94fd39b` (the blurb trim above). `proto/single-bar-shell` branch still exists locally (fully merged) — deletion is an open housekeeping thread.
 
 ### Next up (S40) — see `OPEN_THREADS.md` for the live list
 1. Delete the redundant `/wireframe/merged-grid` + `/wireframe/gallery` sandboxes.
