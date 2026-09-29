@@ -47,7 +47,7 @@ export default function Home() {
         slug: "chipmango",
         href: "/design/chipmango",
         title: "ChipMango",
-        blurb: "Brand identity system for ChipMango — logo, palette, typography, and motion.",
+        blurb: "A brand identity system for ChipMango.",
         image: "/design/chipmango/wordmark.webp",
         video: null,
         ratio: "8 / 5", // house cover ratio — wordmark-on-mosaic motif cropped to 8:5 (covers live at 8:5 or 16:9 only)
