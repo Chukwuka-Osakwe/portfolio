@@ -1947,3 +1947,46 @@ The `(site)` shell caps content at `--content-w` (49rem). Full-bleed children es
 2. Consider deleting the now-redundant `/wireframe/merged-grid` + `/wireframe/gallery` (both superseded by the live `DesignGrid` / `/design/chipmango`; kept this session as reference sandboxes).
 3. When a 2nd gallery entry appears: generalise ChipMango's dedicated route into a `layout: gallery` frontmatter switch on `/design/[slug]` + a real "brand" content section (ChipMango is hardcoded in `(site)/page.tsx` today).
 4. Optional polish: `next/image` for the gallery's `<img>` frames; redundant `[&_*]:!rounded-none` on SiteTopBar's ThemeToggle wrapper can be dropped now radius:0 is global.
+
+---
+
+## Session 39 — 2026-09-29 — Open-threads backlog + ritual; detail-hero unified (case studies open like lab); covers standardised to two ratios — [agent: Claude (Opus 4.8)]
+
+### Headline: S38's branch had already merged + shipped before we started (main == origin/main == `dc1292a`). Spent S39 on (1) a durable open-threads system, (2) unifying case-study and lab detail pages so they open identically, (3) collapsing cover aspect ratios to exactly two. All pushed to `origin/main` (3 commits); **Vercel auto-deployed to Production** (confirmed via commit status + deployments API on `16e372d`).
+
+### Framing that shaped the session (Chukwuka's calls)
+- **Open threads deserve one durable home, not a per-session footer.** We audited beyond S38's "Next up" and found threads it missed (notably dead `/lab` code). Decision: a single living **`OPEN_THREADS.md`** is the source of truth; session notes narrate + point to it. Rationale: the per-session snapshot is only ever as good as the last session's author — that's exactly how S38's list went stale.
+- **Post-grid, the lab/case-study distinction "shouldn't even exist."** So we didn't just copy an animation — we unified the detail *arrival* and retired the split in code (renames), and reduced covers to two ratios.
+
+### What shipped (commit-by-commit, all on `main`, pushed)
+1. **`5111dd9` — OPEN_THREADS backlog + dead `/lab` code deleted.** New **`OPEN_THREADS.md`** (grouped by kind, with a "Recently closed" section so settled ground isn't re-investigated). Pointer added to `SESSION_NOTES.md` header. Closed two threads in the same pass: **deleted the dead `/lab` index page (`(site)/lab/page.tsx`) + its sole consumer `LabSection.tsx`** — unreachable since the S38 `/lab`→`/` 308 redirect (the `/lab/[slug]` detail route is untouched); and trimmed a stale "placeholder cull" clause from a `globals.css` caption comment. Also verified closed (notes were behind reality): `MobileTopBar` already deleted, `TEMP_IDEAS` gone, throwaway placeholder content already culled.
+2. **`0420347` — OPEN_THREADS wired into the SessionStart ritual.** Extended the existing `SessionStart` hook (which injected the latest SESSION_NOTES entry) to **also append `OPEN_THREADS.md`**, so the backlog auto-loads every session instead of relying on an agent to open it. No-ops if the file is absent; verified the hook emits the combined context.
+3. **`16e372d` — detail-hero unification + covers at two ratios.** The substance (below).
+
+### Detail-hero unification (the "open like lab" work)
+- **Shared `<DetailHero>` component** (`src/components/DetailHero.tsx`): renders `video` as the looping cinematic clip (via `DetailHeroVideo`) when present, else the cover `image` as a still in an **8:5** frame (`next/image` fill + LQIP blur). Full `--content-w` width, wrapped in the shared reveal.
+- **Case-study detail restructured to lab's shape** (`ProjectsExplorer` detail branch): back-link → **capped header** (pulled out of the article; `mb-8` dropped) → **full-width `<DetailHero>` (new)** → **capped `.case-body` body**. Previously it jumped header → prose with no hero. Bodies stay distinct (case = full prose + TOC; lab = trailer) — only the *arrival* unifies.
+- **Both now open with the same two-beat cadence:** 320ms `.view-enter` page fade + 520ms hero rise/scale (`detail-hero-in`). Before, only lab had the second beat.
+- **Renames retire the split in code:** `LabHeroVideo` → **`DetailHeroVideo`** (git-tracked rename), `.lab-hero`/`lab-hero-in` → **`.detail-hero`/`detail-hero-in`**. `content.ts` comment updated.
+- **Back-links unified** to **"← work" → `/`** on both detail types (lab's old "← my lab" → `/lab` did a needless 308 hop).
+
+### Covers standardised to two aspect ratios
+- Was three: `DesignGrid` default **`4/3`** (case studies), lab **`16/9`**, ChipMango **`2692/2160`** (≈1.25).
+- Now two: **`DesignGrid` default `4/3` → `8/5`** (≈1.6, close to the ~1.55 export format so case covers crop *less* than before), ChipMango **`2692/2160` → `8/5`**. Lab keeps **`16/9`**. **Covers live at 8:5 or 16:9, nothing else.** The `DetailHero` still-frame also moved `31/20` → `8/5` to match the card slot.
+- **Verified visually** (headless-Chrome screenshot of `/`): ChipMango's wordmark-on-mosaic clears the 8:5 crop cleanly; grid reads as two tidy ratio families (lab 16:9 up top, everything else 8:5).
+
+### New open thread logged
+- **Site-wide terminology pass** — post-grid the words still vary ("my lab" / "case studies" / "design" / "work"); detail back-links unified to "work" this session, but nav labels, `/design` vs `/lab` route names, and headings need one vocabulary. In `OPEN_THREADS.md` under 🧭 Terminology / IA.
+
+### Verify
+`tsc --noEmit` clean throughout (only stale `.next` route-validator noise after the `/lab` page deletion — regenerates on build). Routes 200 on dev: `/design/{footy,heyfood}` (video + still hero), `/lab/{kickoff,aronia}` (still render through the shared component), `/lab` still 308→`/`. Pushed `dc1292a..16e372d`; Vercel Production deploy fired for `16e372d` (commit status `success`).
+
+### Git state at close
+- **`main` == `origin/main` == `16e372d`.** Working tree clean after this notes+DESIGN.md commit. `proto/single-bar-shell` branch still exists locally (fully merged) — deletion is an open housekeeping thread.
+
+### Next up (S40) — see `OPEN_THREADS.md` for the live list
+1. Delete the redundant `/wireframe/merged-grid` + `/wireframe/gallery` sandboxes.
+2. Delete the merged `proto/single-bar-shell` branch.
+3. Confirm `yara.mdx` date (frontmatter TODO).
+4. Site-wide terminology pass (new this session).
+5. Deferred: generalise ChipMango → `layout: gallery` on `/design/[slug]` (when a 2nd gallery lands); gallery `next/image` polish.
