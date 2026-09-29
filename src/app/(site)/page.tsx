@@ -50,7 +50,7 @@ export default function Home() {
         blurb: "Brand identity system for ChipMango — logo, palette, typography, and motion.",
         image: "/design/chipmango/wordmark.webp",
         video: null,
-        ratio: "2692 / 2160", // the wordmark-on-mosaic motif's native ratio (≈1.246), uncropped
+        ratio: "8 / 5", // house cover ratio — wordmark-on-mosaic motif cropped to 8:5 (covers live at 8:5 or 16:9 only)
         blurDataURL: undefined,
       } satisfies GridEntry,
     },

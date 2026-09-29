@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ContentMeta } from "@/lib/content";
 import { Mdx } from "@/components/Mdx";
-import { LabHeroVideo } from "@/components/LabHeroVideo";
+import { DetailHero } from "@/components/DetailHero";
 
 /**
  * Lab item detail — the cinematic/editorial template (layout cue: madhurima.me
@@ -26,7 +26,7 @@ export function LabDetail({ meta, body }: { meta: ContentMeta; body: string }) {
   return (
     <div className="view-enter">
       <Link
-        href="/lab"
+        href="/"
         className="group inline-flex items-center gap-2 text-sm font-semibold text-text-muted transition-colors hover:text-accent focus-visible:text-accent focus-visible:outline-none"
       >
         <span
@@ -35,7 +35,7 @@ export function LabDetail({ meta, body }: { meta: ContentMeta; body: string }) {
         >
           ←
         </span>
-        my lab
+        work
       </Link>
 
       {/* Header → accent rule → content, mirroring the case-study + essay
@@ -51,11 +51,12 @@ export function LabDetail({ meta, body }: { meta: ContentMeta; body: string }) {
         )}
       </header>
 
-      {meta.video && (
-        <div className="lab-hero mt-8">
-          <LabHeroVideo src={meta.video} poster={meta.image} title={meta.title} />
-        </div>
-      )}
+      <DetailHero
+        video={meta.video}
+        image={meta.image}
+        title={meta.title}
+        blurDataURL={meta.blurDataURL}
+      />
 
       {/* TL;DR — Substack-style blockquote with an accent left stroke. */}
       {meta.summary && (

@@ -18,10 +18,11 @@ export interface GridEntry {
   blurDataURL?: string;
 }
 
-// Uniform cover frame when an entry doesn't declare its own `ratio`. Landscape
-// so the covers sit as tidy rows; ratio overrides (e.g. aronia/kickoff at 16/9)
-// break the rhythm on purpose.
-const DEFAULT_RATIO = "4 / 3";
+// Uniform cover frame when an entry doesn't declare its own `ratio`. 8:5 is the
+// house cover ratio (≈1.6, close to the ~1.55 export format so case covers crop
+// minimally); the only sanctioned override is lab's 16/9 video shape — covers
+// live at exactly two aspect ratios (8:5 or 16:9), nothing else.
+const DEFAULT_RATIO = "8 / 5";
 
 /**
  * The merged "design" grid — client work + lab intermixed into ONE date-desc

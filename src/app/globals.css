@@ -374,23 +374,23 @@ html {
   .view-enter { animation: none; }
 }
 
-/* Lab hero — the sell. Sits at the full --content-w column width (49rem): a
-   modest step wider than the --reading-measure (42rem) prose beneath, so it
-   still reads as the page's visual anchor without the disproportion of a
-   full-track bleed. (S25: the prior breakout to ~100vw−--nav-w blew the hero
-   out to ~1.6–2× the text column — the video is framed by the column now,
-   matching LabDetail's documented intent.) No width override needed: the clip
-   fills its column parent by default. */
+/* Detail hero — the sell. Shared by lab items and case studies (post-grid the
+   two are the same kind of detail page). Sits at the full --content-w column
+   width (49rem): a modest step wider than the --reading-measure (42rem) prose
+   beneath, so it still reads as the page's visual anchor without the
+   disproportion of a full-track bleed. (S25: the prior breakout to ~100vw−--nav-w
+   blew the hero out to ~1.6–2× the text column — the media is framed by the
+   column now.) No width override needed: it fills its column parent by default. */
 
-/* Load-in reveal — a gentle rise + fade so the moving clip announces itself.
+/* Load-in reveal — a gentle rise + scale + fade so the hero announces itself.
    Layered on top of the parent .view-enter fade; reduced-motion skips it. */
-@keyframes lab-hero-in {
+@keyframes detail-hero-in {
   from { opacity: 0; transform: translateY(0.75rem) scale(0.985); }
   to { opacity: 1; transform: none; }
 }
-.lab-hero { animation: lab-hero-in 520ms var(--ease-house) both; }
+.detail-hero { animation: detail-hero-in 520ms var(--ease-house) both; }
 @media (prefers-reduced-motion: reduce) {
-  .lab-hero { animation: none; }
+  .detail-hero { animation: none; }
 }
 
 /* Case-study body images are clickable (see CaseImageViewer). The `zoom-in`

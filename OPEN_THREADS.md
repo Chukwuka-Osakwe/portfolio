@@ -18,6 +18,10 @@ _Last reconciled against code: 2026-09-29 (start of S39)._
 
 - [ ] **Delete merged branch** `proto/single-bar-shell` — fully merged into `main` (both at `dc1292a`), safe to remove.
 
+## 🧭 Terminology / IA
+
+- [ ] **Site-wide terminology pass.** Post-grid, the lab/case-study split is dissolving but the words still vary across surfaces ("my lab", "case studies", "design", "work"). Detail back-links were unified to "← work" (S39), but nav labels, copy, route names (`/design/*` vs `/lab/*`), and section headings should get one coherent vocabulary. Decide the canonical terms, then sweep.
+
 ## 📝 Content
 
 - [ ] **Confirm `yara.mdx` date.** Frontmatter is `date: "2026-03-01"` with a `# TODO: confirm real date` (Farcaster mini-app; sits between Footy 2025-10 and Bribe 2026-05). Verify the real date and drop the TODO.

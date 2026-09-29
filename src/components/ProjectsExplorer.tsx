@@ -8,6 +8,7 @@ import type { ContentMeta } from "@/lib/content";
 import { useView } from "@/components/ViewContext";
 import CaseImageViewer from "@/components/CaseImageViewer";
 import { CardVideo } from "@/components/CardVideo";
+import { DetailHero } from "@/components/DetailHero";
 
 interface Pane {
   slug: string;
@@ -79,22 +80,30 @@ export function ProjectsExplorer({ projects, panes, initialSlug }: Props) {
             <span aria-hidden className="transition-transform group-hover:-translate-x-0.5">
               ←
             </span>
-            case studies
+            work
           </Link>
+          {/* Header (capped) → full-width hero → body (capped) — the same
+              arrival shape as a lab detail; post-grid they're one template. */}
+          <header className="mx-auto mt-8 max-w-[var(--reading-measure)] border-b-2 border-accent pb-4">
+            <h1 className="text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-balance">
+              {p.title}
+            </h1>
+            {/* Metadata row below H1 — type label here today, room for action
+                pills (e.g. "view live →") alongside it later. Plain text now
+                so future chip-shaped CTAs visually distinguish themselves. */}
+            {p.type && (
+              <span className="mt-2 inline-block text-xs font-semibold tracking-wider text-text-muted">
+                {p.type}
+              </span>
+            )}
+          </header>
+          <DetailHero
+            video={p.video}
+            image={p.image}
+            title={p.title}
+            blurDataURL={p.blurDataURL}
+          />
           <article className="mx-auto mt-8 max-w-[var(--reading-measure)]">
-            <header className="mb-8 border-b-2 border-accent pb-4">
-              <h1 className="text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-balance">
-                {p.title}
-              </h1>
-              {/* Metadata row below H1 — type label here today, room for action
-                  pills (e.g. "view live →") alongside it later. Plain text now
-                  so future chip-shaped CTAs visually distinguish themselves. */}
-              {p.type && (
-                <span className="mt-2 inline-block text-xs font-semibold tracking-wider text-text-muted">
-                  {p.type}
-                </span>
-              )}
-            </header>
             <CaseImageViewer>
               <div className="case-body prose max-w-none">{pane?.node}</div>
             </CaseImageViewer>

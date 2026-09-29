@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Cinematic hero clip for a lab item — the video-forward archetype (looping,
+ * Cinematic hero clip for a detail page (lab item or case study — the
+ * distinction dissolved post-grid) — the video-forward archetype (looping,
  * chrome-less, draws the eye on arrival). Distinct from <CaseVideo> (which is
  * click-to-play with native controls for in-prose walkthroughs): here motion
  * IS the pitch, so it autoplays muted and loops.
@@ -14,7 +15,7 @@ import { useEffect, useRef, useState } from "react";
  * the poster frame and expose native `controls` so they can opt in — nothing
  * moves until they ask.
  */
-export function LabHeroVideo({
+export function DetailHeroVideo({
   src,
   poster,
   title,
