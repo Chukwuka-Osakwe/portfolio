@@ -5,8 +5,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "f=\"$CLAUDE_PROJECT_DIR/SESSION_NOTES.md\"; [ -f \"$f\" ] || exit 0; start=$(grep -nE \"^## Session\" \"$f\" | tail -1 | cut -d: -f1); [ -n \"$start\" ] || exit 0; body=$(tail -n +\"$start\" \"$f\"); jq -n --arg c \"$body\" '{hookSpecificOutput:{hookEventName:\"SessionStart\",additionalContext:(\"Most recent entry from SESSION_NOTES.md (read the full file if you need earlier sessions):\\n\\n\"+$c)}}'",
-            "statusMessage": "Loading latest session notes…"
+            "command": "f=\"$CLAUDE_PROJECT_DIR/SESSION_NOTES.md\"; [ -f \"$f\" ] || exit 0; start=$(grep -nE \"^## Session\" \"$f\" | tail -1 | cut -d: -f1); [ -n \"$start\" ] || exit 0; body=$(tail -n +\"$start\" \"$f\"); ot=\"$CLAUDE_PROJECT_DIR/OPEN_THREADS.md\"; threads=$([ -f \"$ot\" ] && cat \"$ot\"); jq -n --arg c \"$body\" --arg t \"$threads\" '{hookSpecificOutput:{hookEventName:\"SessionStart\",additionalContext:(\"Most recent entry from SESSION_NOTES.md (read the full file if you need earlier sessions):\n\n\"+$c+(if $t==\"\" then \"\" else \"\n\n===== OPEN_THREADS.md — cross-session backlog (read at session start, keep it current) =====\n\n\"+$t end))}}'",
+            "statusMessage": "Loading session notes + open threads…"
           }
         ]
       }
