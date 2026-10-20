@@ -3,20 +3,25 @@ import path from "node:path";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllMeta, getEntry } from "@/lib/content";
+import { getBrandEntry, getBrandEntries } from "@/content/brand";
 import { ProjectsSection } from "@/components/ProjectsSection";
 import { LabDetail } from "@/components/LabDetail";
+import { Gallery } from "@/components/Gallery";
 
 interface PageProps {
   // Next 15+: route params arrive as a Promise that must be awaited.
   params: Promise<{ slug: string }>;
 }
 
-/** Prebuild a page per detail item — case studies AND lab items share this
- *  one route namespace (S40: folded /lab/<slug> in here for uniformity). */
+/** Prebuild a page per detail item — case studies, lab items, AND brand/
+ *  gallery entries share this one route namespace (S40 folded /lab/<slug> in
+ *  here; S41 added the brand registry for the same reason). */
 export function generateStaticParams() {
-  return [...getAllMeta("work"), ...getAllMeta("lab")].map((p) => ({
-    slug: p.slug,
-  }));
+  return [
+    ...getAllMeta("work"),
+    ...getAllMeta("lab"),
+    ...getBrandEntries(),
+  ].map((p) => ({ slug: p.slug }));
 }
 
 /**
@@ -40,34 +45,38 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const meta =
     getAllMeta("work").find((p) => p.slug === slug) ??
     getAllMeta("lab").find((p) => p.slug === slug);
-  if (!meta) return {};
+  const brand = getBrandEntry(slug)?.meta;
+  if (!meta && !brand) return {};
 
   const url = `/design/${slug}`;
-  const ogPath = `/og/${slug}.png`;
-  // Existence-check the generated OG image rather than trusting it's there —
-  // a freshly-added entry without a regen run shouldn't silently link a
-  // broken share card. Falls back to the site default in that case.
-  const ogExists = fs.existsSync(
-    path.join(process.cwd(), "public", "og", `${slug}.png`),
-  );
+  const title = meta?.title ?? brand!.title;
+  const description = meta?.summary ?? brand!.description;
+
+  // Brand entries carry their own bespoke OG path (no /og/<slug>.png
+  // generation step for them yet — TODO, flagged at the S41 migration) until
+  // existence-checking the generated image for work/lab entries.
+  const ogPath = brand?.ogImage ?? `/og/${slug}.png`;
+  const ogExists =
+    brand !== undefined ||
+    fs.existsSync(path.join(process.cwd(), "public", "og", `${slug}.png`));
   const images = ogExists
-    ? [{ url: ogPath, width: OG_W, height: OG_H, alt: meta.title }]
+    ? [{ url: ogPath, width: OG_W, height: OG_H, alt: title }]
     : undefined;
 
   return {
-    title: meta.title,
-    description: meta.summary,
+    title,
+    description,
     openGraph: {
       type: "article",
-      title: meta.title,
-      description: meta.summary,
+      title,
+      description,
       url,
       images,
     },
     twitter: {
       card: "summary_large_image",
-      title: meta.title,
-      description: meta.summary,
+      title,
+      description,
       images: ogExists ? [ogPath] : undefined,
     },
     alternates: { canonical: url },
@@ -75,15 +84,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 /**
- * Detail route, shared by case studies and lab items (S40). Case studies
- * render the same `ProjectsSection` as before, with `initialSlug` set so the
- * explorer opens directly to the detail view. Lab items render `LabDetail`
- * directly — deliberately a different, simpler shell (trailer, not prose +
- * TOC); only the route namespace unifies, not the template. The shared
- * `(site)/layout.tsx` keeps the nav panel mounted across navigation between
- * `/` ↔ `/design/<slug>`, so visually this reads as the grid being swapped
- * for the detail — same in-place feel as the old hash model, but with real
- * URLs underneath.
+ * Detail route, shared by case studies, lab items, and brand/gallery entries
+ * (S40 folded lab in; S41 folded brand in). Case studies render the same
+ * `ProjectsSection` as before, with `initialSlug` set so the explorer opens
+ * directly to the detail view. Lab items render `LabDetail` directly —
+ * deliberately a different, simpler shell (trailer, not prose + TOC). Brand
+ * entries render the generic `<Gallery>` (lookbook, no prose at all). Three
+ * templates, one route. The shared `(site)/layout.tsx` keeps the nav panel
+ * mounted across navigation between `/` ↔ `/design/<slug>`, so visually this
+ * reads as the grid being swapped for the detail — same in-place feel as the
+ * old hash model, but with real URLs underneath.
  */
 export default async function DetailPage({ params }: PageProps) {
   const { slug } = await params;
@@ -93,6 +103,10 @@ export default async function DetailPage({ params }: PageProps) {
   if (getAllMeta("lab").some((p) => p.slug === slug)) {
     const { meta, body } = getEntry("lab", slug);
     return <LabDetail meta={meta} body={body} />;
+  }
+  const brand = getBrandEntry(slug);
+  if (brand) {
+    return <Gallery meta={brand.meta} sections={brand.sections} />;
   }
   notFound();
 }

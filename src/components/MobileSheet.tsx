@@ -39,10 +39,10 @@ export function MobileSheet({
   /** Ref to the menu-button that opened the sheet — focus returns here on close. */
   triggerRef: React.RefObject<HTMLButtonElement | null>;
   /** Width at/above which the sheet is hidden (the desktop nav takes over).
-   *  Defaults to "lg" — the live site's panel breakpoint. The merged-grid
-   *  wireframe collapses its inline bar at "md", so it passes "md" to keep the
-   *  hamburger and sheet in sync. Both literals are spelled out below so
-   *  Tailwind keeps them in the build. */
+   *  The live shell passes "md" to match SiteTopBar's link-collapse point
+   *  (inline links collapse to the hamburger below md), keeping the hamburger
+   *  and sheet in sync. Defaults to "lg" as a fallback. Both literals are
+   *  spelled out below so Tailwind keeps them in the build. */
   breakpoint?: "md" | "lg";
 }) {
   const hideAbove = breakpoint === "md" ? "md:hidden" : "lg:hidden";

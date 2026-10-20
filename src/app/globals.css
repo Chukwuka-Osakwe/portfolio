@@ -424,3 +424,38 @@ dialog.image-viewer[open] { animation: view-in 200ms var(--ease-house) both; }
   padding: 0.2em 0.5em;
   border-radius: 0.7em 0.25em 0.6em 0.3em;
 }
+
+/* Gallery rail (<Gallery>'s <aside>) — TRUE position:fixed on lg+, not
+   sticky. Sticky releases once you scroll past the bottom of its own grid
+   row, which reads as "the rail scrolls away" on a short gallery (e.g.
+   Kickoff with only one block) — fixed stays pinned for the whole page,
+   which is what was actually wanted.
+   `fixed` removes the element from the grid entirely, so its horizontal
+   position has to be hand-computed to land where the grid's rail column
+   would otherwise put it. Derivation (keep in sync with Gallery.tsx's
+   MAX_W=62rem / RAIL_W=13rem / RAIL_GAP=96px=6rem, and the grid wrapper's
+   px-6=1.5rem padding):
+     outer grid width  CW = min(100vw, 62rem)
+     grid box left edge     = (100vw - CW) / 2
+     content left (inside px-6) = grid left + 1.5rem
+     main column width      = CW - 3rem(padding) - 6rem(gap) - 13rem(rail)
+                             = CW - 22rem
+     rail left edge = content-left + main-width + gap
+                     = (100vw - CW)/2 + 1.5rem + (CW - 22rem) + 6rem
+                     = 50vw + CW/2 - 14.5rem   (14.5 = 1.5 + 13)
+   Re-derive by hand if MAX_W/RAIL_W/RAIL_GAP/px-6 ever change.
+   Below lg: plain in-flow block (the rail is now a sibling of the
+   .view-enter content, not a grid item inside it — see Gallery.tsx), so the
+   48px gap before the content below it (previously the grid's `gap-y-12`)
+   has to be replicated by hand here too. */
+.gallery-rail { margin-bottom: 3rem; }
+@media (min-width: 1024px) {
+  .gallery-rail {
+    position: fixed;
+    top: var(--bar-h);
+    left: calc(50vw + min(100vw, 62rem) / 2 - 14.5rem);
+    width: 13rem;
+    height: calc(100dvh - var(--bar-h));
+    margin-bottom: 0;
+  }
+}

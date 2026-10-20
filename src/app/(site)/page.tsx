@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getAllMeta } from "@/lib/content";
+import { getBrandEntries } from "@/content/brand";
 import { DesignGrid, type GridEntry } from "@/components/DesignGrid";
 import { HashRedirect } from "@/components/HashRedirect";
 
@@ -36,26 +37,22 @@ export default function Home() {
   }));
 
   // Gallery / brand entries — NOT MDX case studies (no article body); a
-  // self-initiated brand exploration. ChipMango declares its own cover shape
-  // (1600×1000 ≈ 8:5, uncropped) and links to its gallery/lookbook view at
-  // /design/chipmango (a real (site) route → smooth in-shell transition).
-  // TODO: when a second gallery lands, formalise as a "brand" content section +
-  // a `layout: gallery` frontmatter switch on /design/[slug].
-  const gallery = [
-    {
-      date: "2026-09-25",
-      entry: {
-        slug: "chipmango",
-        href: "/design/chipmango",
-        title: "ChipMango",
-        blurb: "A brand identity system for ChipMango.",
-        image: "/design/chipmango/wordmark.webp",
-        video: null,
-        ratio: "8 / 5", // house cover ratio — wordmark-on-mosaic motif cropped to 8:5 (covers live at 8:5 or 16:9 only)
-        blurDataURL: undefined,
-      } satisfies GridEntry,
-    },
-  ];
+  // self-initiated brand exploration (S41: typed registry, see
+  // src/content/brand.ts — same reasoning as src/content/ideas.ts: no prose
+  // body means no MDX pipeline).
+  const gallery = getBrandEntries().map((m) => ({
+    date: m.date,
+    entry: {
+      slug: m.slug,
+      href: `/design/${m.slug}`,
+      title: m.title,
+      blurb: m.blurb,
+      image: m.image,
+      video: m.video,
+      ratio: m.ratio,
+      blurDataURL: m.blurDataURL,
+    } satisfies GridEntry,
+  }));
 
   // Curated grid order — a hand-picked lead (fills the first three rows: two per
   // row), then everything unlisted falls in behind, date-desc. Slugs not in ORDER

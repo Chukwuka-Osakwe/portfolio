@@ -1,0 +1,266 @@
+import Image from "next/image";
+import { CardVideo } from "@/components/CardVideo";
+
+/* Generic brand/gallery detail view — the "lookbook" template, graduated from
+ * the ChipMango-only implementation (S38) into shared code once a second
+ * gallery entry (Kickoff) landed (S41). A contained column of image/video
+ * frames (full rows + matched 2-up pairs) beside a sticky right rail carrying
+ * the project title / tags / description. Rows are separated by spacing only
+ * (no headings) — the section gap is the divider.
+ *
+ * Server component: pure presentation, no state of its own (video autoplay +
+ * reduced-motion handling lives in <CardVideo>, which is itself a client
+ * component). Frame aspects should match each asset's NATIVE ratio so
+ * object-cover never crops.
+ *
+ * Lives INSIDE the (site) shell, so it wears SiteTopBar and gets the
+ * persistent-shell transition. It breaks out to full-bleed (the shell caps
+ * content at --content-w = 49rem) and re-centers at its own MAX_W, and its
+ * sticky rail is offset by --bar-h so it parks below the top bar.
+ */
+
+export type Kind =
+  | "render"
+  | "image"
+  | "motif"
+  | "type-specimen"
+  | "palette"
+  | "wordmark"
+  | "stat"
+  | "product-ui"
+  | "collateral"
+  | "big-type"
+  | "video";
+
+export interface Block {
+  kind: Kind;
+  /** CSS aspect-ratio for the frame box, e.g. "16 / 9". Drives the rhythm. */
+  aspect: string;
+  src: string;
+  alt: string;
+  /** Video poster frame. Only read when `kind === "video"`. */
+  poster?: string;
+  /** Skip Next's image optimizer and serve the source file as-is. Set for
+   *  pixel-exact UI screenshots (product-ui): the optimizer re-encodes to
+   *  lossy WebP (~q75), which rings high-contrast UI text — so we ship a
+   *  lossless source and let the browser downsample it. Photographic brand
+   *  renders (ChipMango) leave this off; they want the optimizer. */
+  unoptimized?: boolean;
+}
+
+export type Row =
+  | { span: "full"; block: Block }
+  | { span: "half"; blocks: [Block, Block] };
+
+export interface GallerySection {
+  /** Tracked small-caps label above the section — wayfinding across a long
+   *  gallery (e.g. "Squad", "Match day"). Omit for a HEADLESS section: the
+   *  hero, or a wordless lookbook (ChipMango) where the gap IS the divider.
+   *  Named GallerySection (not Section) to avoid colliding with content.ts's
+   *  "work" | "lab" | "brand" Section discriminator. */
+  heading?: string;
+  rows: Row[];
+}
+
+export interface GalleryMeta {
+  title: string;
+  /** Accent-bordered pill, e.g. "Self-initiated". Omit to skip the pill. */
+  eyebrow?: string;
+  /** Grey chips, e.g. ["Visual Identity", "Art Direction"]. */
+  tags: string[];
+  description: string;
+}
+
+// Baked layout values, tuned by eye against ChipMango (the reference entry)
+// and re-tuned for the fixed-rail layout (S41).
+const MAX_W = 62; // rem — contained wrapper (asset column + rail)
+const RAIL_W = 13; // rem — rail width
+const RAIL_GAP = 96; // px — gap between asset column and rail (lg+)
+const SECT_GAP = 200; // px — gap above a HEADLESS section (the gap IS the divider — ChipMango, and the splash hero); also the lead-in gap for a headless entry
+const SECT_GAP_HEADED = 140; // px — gap above a HEADED section: the heading shares divider duty, so less raw air than SECT_GAP; also the lead-in gap for an entry that uses headings
+const HEAD_GAP = 16; // px — heading → its section's first row
+// Topbar → description gap: 48px mobile, 120px lg+. The shared
+// (site)/layout.tsx `<main>` already contributes `pt-8` (32px) above every
+// page, so this template only adds the remainder — `pt-4` (16px, an exact
+// Tailwind step) mobile, `pt-[88px]` (arbitrary — 88 isn't a default
+// Tailwind step) lg+ — on the wrapper below, rather than touching the shared
+// layout (which every other page template also sits inside).
+const ROW_GAP = 48; // px — rhythm between rows within a section
+const GUTTER = 48; // px — gap between the two halves of a 2-up
+const RING_W = 4; // px — frame ring width (box-shadow spread)
+const RING_PCT = 20; // % — frame ring strength (of --foreground; inverts per theme)
+
+export function Gallery({
+  meta,
+  sections,
+}: {
+  meta: GalleryMeta;
+  sections: GallerySection[];
+}) {
+  // Lead-in (description → first frame) rides the same rhythm as the section
+  // gaps: tighter for an entry that uses headings (the heading does divider
+  // duty), the full SECT_GAP for a headless lookbook. Keeps each entry
+  // internally uniform — Kickoff all at SECT_GAP_HEADED, ChipMango all at SECT_GAP.
+  const leadGap = sections.some((s) => s.heading) ? SECT_GAP_HEADED : SECT_GAP;
+  return (
+    // The rail is a SIBLING of .view-enter, not a descendant — deliberately.
+    // CSS animations that ever touch `transform` leave the element's computed
+    // transform as `matrix(1,0,0,1,0,0)` (the identity matrix) once finished,
+    // NOT the literal keyword `none`, even under `animation-fill-mode: both`.
+    // Browsers treat any matrix value as "has a transform" for containing-
+    // block purposes, so .view-enter (used site-wide for the fade+rise
+    // entrance on every detail page) was silently establishing a containing
+    // block for position:fixed/sticky descendants for its entire lifetime,
+    // regardless of the animation having long finished. Confirmed empirically
+    // with Playwright: the rail's real bounding box didn't match the
+    // viewport-relative calc() at all — it was being positioned relative to
+    // .view-enter's own box. Moving the rail outside .view-enter's subtree
+    // removes the only remaining transform-bearing ancestor (checked the full
+    // chain up to <html> — everything else is `transform: none`, confirmed
+    // via computed styles). Side effect: the rail no longer fades/rises in
+    // with the rest of the page content, which reads fine — it's persistent
+    // chrome (like SiteTopBar), not page content.
+    <>
+      <aside className="gallery-rail px-6 pt-4 lg:px-0 lg:pt-0">
+        <div className="flex h-full flex-col lg:justify-center">
+          <div>
+            <div className="text-base font-medium">{meta.title}</div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {meta.eyebrow && (
+                <span className="border border-accent/40 px-2 py-1 text-xs text-accent">
+                  {meta.eyebrow}
+                </span>
+              )}
+              {meta.tags.map((t) => (
+                <span
+                  key={t}
+                  className="bg-black/[0.05] px-2 py-1 text-xs text-foreground/60 dark:bg-white/[0.06]"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Outermost view-enter wrapper — identical to every other detail view
+          (ProjectsExplorer / LabDetail / essays), so the gallery fades + rises
+          in on open exactly like the rest. Inside it: the full-bleed
+          break-out of the shell's --content-w cap (100vw box re-centered on
+          the symmetric layout; relies on body { overflow-x: clip }), then the
+          gallery re-centered at MAX_W.
+          Deliberately margin-based (`mx-[calc(50%-50vw)]`), NOT the
+          left-1/2/-translate-x-1/2 transform trick used elsewhere (e.g.
+          DesignGrid) — same transform/containing-block reasoning as above. */}
+      <div className="view-enter">
+        <div className="w-screen mx-[calc(50%-50vw)] pt-4 lg:pt-[88px]">
+          <div
+            className="mx-auto grid w-full grid-cols-1 gap-y-12 px-6 lg:grid-cols-[1fr_var(--rail)] lg:gap-y-0"
+            style={{
+              maxWidth: `${MAX_W}rem`,
+              ["--rail" as string]: `${RAIL_W}rem`,
+              columnGap: RAIL_GAP,
+            }}
+          >
+          {/* Asset column — the SOLE grid child, so it lands in column 1 (the
+              `1fr` track). Column 2 (`var(--rail)` wide) is left empty on
+              purpose: it reserves the horizontal space the now-out-of-flow,
+              position:fixed rail visually occupies, so the asset column never
+              expands under it. On mobile the grid collapses to one column and
+              the rail stacks above (it's a sibling before this wrapper in the
+              DOM; see .gallery-rail switching to position:static below lg).
+              Description leads as a full-width text block (same column the
+              image/video blocks share), then sections separated by SECT_GAP;
+              rows within by ROW_GAP. */}
+          <main className="flex flex-col pb-8">
+            {/* Description → first frame: leadGap at every width, so the lead
+                text sits on the same section rhythm as the gaps below it (140
+                for a headed entry, 200 for a headless one). */}
+            <p
+              className="text-xl leading-relaxed text-foreground/70 sm:text-2xl"
+              style={{ marginBottom: leadGap }}
+            >
+              {meta.description}
+            </p>
+            {/* Each section carries its own top gap (vs a shared container
+                rowGap) so a HEADED section can sit on a tighter rhythm than a
+                headless one — the heading does divider duty, so it needs less
+                raw air above. Headless sections keep the full SECT_GAP, so
+                ChipMango and the splash hero render exactly as before. */}
+            <div className="flex flex-col">
+              {sections.map((section, si) => (
+                <section
+                  key={si}
+                  style={{
+                    marginTop:
+                      si === 0 ? 0 : section.heading ? SECT_GAP_HEADED : SECT_GAP,
+                  }}
+                >
+                  {section.heading && (
+                    <h2
+                      className="text-base font-semibold text-foreground"
+                      style={{ marginBottom: HEAD_GAP }}
+                    >
+                      {section.heading}
+                    </h2>
+                  )}
+                  <div className="flex flex-col" style={{ rowGap: ROW_GAP }}>
+                    {section.rows.map((row, i) =>
+                      row.span === "full" ? (
+                        <BlockBox key={i} block={row.block} eager={si === 0 && i === 0} />
+                      ) : (
+                        <div
+                          key={i}
+                          className="grid grid-cols-1 sm:grid-cols-2"
+                          style={{ columnGap: GUTTER, rowGap: GUTTER }}
+                        >
+                          <BlockBox block={row.blocks[0]} />
+                          <BlockBox block={row.blocks[1]} />
+                        </div>
+                      )
+                    )}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </main>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/** A square-cornered, overflow-clipped image/video frame on the page ground.
+ *  The ring is foreground-based so it reads on both light and dark grounds. */
+function BlockBox({ block, eager = false }: { block: Block; eager?: boolean }) {
+  return (
+    <div
+      className="relative overflow-hidden"
+      style={{
+        aspectRatio: block.aspect,
+        boxShadow: `0 0 0 ${RING_W}px color-mix(in srgb, var(--foreground) ${RING_PCT}%, transparent), 0 1px 2px color-mix(in srgb, var(--foreground) 8%, transparent)`,
+      }}
+    >
+      {block.kind === "video" ? (
+        <CardVideo
+          src={block.src}
+          poster={block.poster}
+          title={block.alt}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      ) : (
+        <Image
+          src={block.src}
+          alt={block.alt}
+          fill
+          priority={eager}
+          unoptimized={block.unoptimized}
+          sizes="(min-width: 1024px) 43rem, 100vw"
+          className="object-cover"
+        />
+      )}
+    </div>
+  );
+}

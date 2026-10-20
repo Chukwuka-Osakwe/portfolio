@@ -54,7 +54,7 @@ export function DesignGrid({ entries }: { entries: GridEntry[] }) {
           but the (site) shell caps content at --content-w (49rem). This wrapper
           escapes that cap — a 100vw box centred on the (symmetric) layout, so
           the lattice rules run edge to edge and the divider sits at true screen
-          centre, exactly like the wireframe (which lived outside the shell).
+          centre.
           Relies on body { overflow-x: clip } to swallow the 100vw scrollbar
           gutter without a horizontal scroll (clip keeps the sticky bar working).
           The hero above stays inside the cap — narrow + centred is right for it. */}

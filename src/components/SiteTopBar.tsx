@@ -8,13 +8,12 @@ import { ThemeCycle } from "@/components/ThemeCycle";
 import { NAV_ITEMS, isActiveFor } from "@/components/NavMenu";
 
 /**
- * PROTOTYPE (proto/single-bar-shell) — the site's horizontal top bar, promoted
- * from the merged-grid wireframe. Full-bleed, sticky at the top edge; wordmark
- * left, inline nav + theme control right. Replaces the two-column shell's
- * desktop identity panel AND the old mobile top bar with one bar at every
- * width.
+ * PROTOTYPE (proto/single-bar-shell) — the site's horizontal top bar.
+ * Full-bleed, sticky at the top edge; wordmark left, inline nav + theme
+ * control right. Replaces the two-column shell's desktop identity panel AND
+ * the old mobile top bar with one bar at every width.
  *
- * Responsive ranges (mirrors the merged-grid wireframe it came from):
+ * Responsive ranges:
  *   • <md   : inline links collapse → hamburger opens the shared MobileSheet;
  *             ThemeCycle icon for theme.
  *   • md–lg : inline links; ThemeCycle icon (segmented toggle would crowd).
