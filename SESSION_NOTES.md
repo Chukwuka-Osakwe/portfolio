@@ -1993,3 +1993,35 @@ The `(site)` shell caps content at `--content-w` (49rem). Full-bleed children es
 3. Confirm `yara.mdx` date (frontmatter TODO).
 4. Site-wide terminology pass (new this session).
 5. Deferred: generalise ChipMango → `layout: gallery` on `/design/[slug]` (when a 2nd gallery lands); gallery `next/image` polish.
+
+---
+
+## Session 40 — 2026-10-20 — Terminology pass + route fold, housekeeping — [agent: Claude (Sonnet 5)]
+
+### Headline: Cleared four of the five S39 "Next up" items. All pushed to `origin/main` (3 commits); Vercel auto-deploys fired for each.
+
+### Process correction (Chukwuka's call)
+Session-note updates belong **at session close**, not mid-session — I'd drafted an S40 entry partway through and had to revert it. Open threads (`OPEN_THREADS.md`) are the living exception: that file is meant to be kept current as threads open/close *during* a session, since it's the cross-session backlog, not the narrative log.
+
+### What shipped
+1. **Site-wide terminology pass.** Audited every surface naming the merged work grid and found `NavMenu.tsx`'s nav label said "design" while `ViewSwitcher.tsx` (same route) and both detail back-links already said "work". Asked Chukwuka to pick the canonical term — **"work"** won (matches the toggle, back-links, and the internal `Section` type key). Fixed the nav label; swept stale comments calling it "the design triad" / "case-studies home" / "my lab index" across `ViewSwitcher.tsx`, `sitemap.ts`, `(site)/layout.tsx`.
+2. **Reconsidered and folded `/lab/[slug]` into `/design/[slug]`.** Originally scoped as "leave routes split" (cosmetic-only, real redirect/OG-move cost), but on reflection the cost was small — only 2 lab items (`aronia`, `kickoff`), no slug collisions with the 5 work items — so Chukwuka asked for the fold anyway. `/design/[slug]/page.tsx` now dispatches to `ProjectsSection` (work) or `LabDetail` (lab) by slug; still two templates, one route. Added 308 redirects `/lab/aronia` → `/design/aronia`, `/lab/kickoff` → `/design/kickoff` so any already-shared links still resolve. Moved `public/og/lab/{aronia,kickoff}.png` → `public/og/{aronia,kickoff}.png`; repointed `generate-lab-og.mjs`'s output dir. Deleted the now-dead `src/app/(site)/lab/[slug]/page.tsx`.
+3. **Bug found + fixed along the way:** `sitemap.ts` listed `/lab` as its own indexable URL, but it 308-redirects to `/` — a redirect has no business in a sitemap. Removed the entry.
+4. **Gallery polish.** `Gallery.tsx`'s raw `<img>` frames (ChipMango lookbook) swapped for `next/image` (`fill` + `sizes`, `priority` on the first hero block only, rest lazy). Dropped the now-redundant `[&_*]:!rounded-none` on `SiteTopBar`'s ThemeToggle wrapper — `radius:0` has been the global default since S38, so `ThemeToggle`'s own `rounded-*` classes already render square.
+5. **Housekeeping.** Deleted the merged local branch `proto/single-bar-shell` (was `dc1292a`, fully merged into `main`).
+6. **Dropped, not resolved:** the `yara.mdx` date-confirmation thread — Chukwuka doesn't know the real date either, so it's gone from the backlog rather than lingering unresolved. If the real date ever surfaces, just fix the frontmatter directly; no need to re-open a thread for it.
+
+### Verify
+`tsc --noEmit` clean throughout. Dev-server curl checks: `/design/{aronia,kickoff}` 200 (lab content renders — TL;DR block present, confirming `LabDetail` not `ProjectsSection` served), `/lab/{aronia,kickoff}` 308 → the new routes, `/lab` 308 → `/`, `/lab/nonexistent-slug` 404s, sitemap lists all 7 details under `/design/<slug>` with no stray `/lab` entries. ChipMango gallery confirmed serving real `next/image` output (`data-nimg="fill"`, populated `srcSet`, working `/_next/image` optimizer response).
+
+### Git state at close
+Three commits on `main`, all pushed — `main` == `origin/main` == `0554009`:
+- `a65ef0b` — terminology pass + `/lab` → `/design` route fold.
+- `f9c9c65` — gallery polish (`next/image` + radius-override cleanup).
+- `0554009` — `OPEN_THREADS.md` bookkeeping (commit-hash note).
+
+Working tree clean.
+
+### Next up (S41) — see `OPEN_THREADS.md` for the live list
+1. **Generalise the ChipMango gallery route** into a `layout: gallery` frontmatter switch on `/design/[slug]` + a real "brand" content section (deferred until a 2nd gallery entry — Chukwuka flagged this as the next session's focus).
+2. Delete the redundant `/wireframe/merged-grid` + `/wireframe/gallery` sandboxes (now that the live gallery no longer needs them as reference).
