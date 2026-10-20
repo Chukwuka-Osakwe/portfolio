@@ -51,3 +51,7 @@ next-env.d.ts
 # installed agent skills (local tooling, not part of the shipped site)
 /.agents
 /skills-lock.json
+
+# session bookkeeping — working notes, decision log, cross-session backlog.
+# Not for the public repo; local-only.
+/docs
