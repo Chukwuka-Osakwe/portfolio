@@ -17,7 +17,7 @@ const MOBILE_SHEET_ID = "mobile-nav-sheet";
  * unchanged inside the same `max-w-[var(--content-w)]` centered column — it just
  * now centers in the full viewport (the right identity panel is gone) with the
  * SiteTopBar overhead instead of the sticky panel to the side. The IA (the
- * design triad / ViewSwitcher) and the detail-page reading layout are untouched;
+ * work/product-ideas IA / ViewSwitcher) and the detail-page reading layout are untouched;
  * this only replaces the surrounding chrome.
  *
  * Sheet open-state lives here (lifted so SiteTopBar can toggle it, MobileSheet

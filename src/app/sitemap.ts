@@ -3,37 +3,29 @@ import { getAllMeta } from "@/lib/content";
 import { SITE_URL } from "@/lib/site";
 
 /**
- * Static sitemap — the case-studies home (`/`) + one entry per case study, the
- * lab index + one entry per lab item, the essays + product-ideas + contact
- * routes.
+ * Static sitemap — the merged work grid (`/`, case studies + lab items) + one
+ * entry per detail page, the essays + product-ideas + contact routes.
  *
- * Case studies live at `/design/<slug>` (real routes, generated statically
- * from `src/content/work/`) so each one gets its own URL, per-route OG
- * metadata, and indexable presence; their grid is now the bare-domain home
- * (`/`). The old `/design` index redirects to `/`, so it's not listed here.
+ * Every detail page (case study or lab item) lives at `/design/<slug>` (S40:
+ * one shared route namespace), generated statically from `src/content/work/`
+ * and `src/content/lab/`, so each one gets its own URL, per-route OG
+ * metadata, and indexable presence. The old `/design` and `/lab` indexes, and
+ * the old per-lab-item `/lab/<slug>` routes, all 308-redirect into this
+ * namespace (see `next.config.ts`), so none of them are listed here.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  const lab = getAllMeta("lab");
-  const projects = getAllMeta("work");
+  const details = [...getAllMeta("work"), ...getAllMeta("lab")];
   const essays = getAllMeta("writing");
   return [
-    // `/` is the case-studies landing view (the design triad now leads with it).
+    // `/` is the merged work grid — case studies and lab items in one stream.
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "monthly", priority: 1 },
-    ...projects.map((p) => ({
+    ...details.map((p) => ({
       url: `${SITE_URL}/design/${p.slug}`,
       // lastModified ideally tracks the MDX's mtime; using the frontmatter
       // date is close enough and avoids a file-stat round-trip.
       lastModified: new Date(p.date),
       changeFrequency: "yearly" as const,
-      priority: 0.8,
-    })),
-    // The "my lab" index (moved off `/` to its own tab) + one entry per item.
-    { url: `${SITE_URL}/lab`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    ...lab.map((p) => ({
-      url: `${SITE_URL}/lab/${p.slug}`,
-      lastModified: new Date(p.date),
-      changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
     { url: `${SITE_URL}/essays`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },

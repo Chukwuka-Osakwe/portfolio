@@ -18,10 +18,6 @@ _Last reconciled against code: 2026-09-29 (start of S39)._
 
 - [ ] **Delete merged branch** `proto/single-bar-shell` — fully merged into `main` (both at `dc1292a`), safe to remove.
 
-## 🧭 Terminology / IA
-
-- [ ] **Site-wide terminology pass.** Post-grid, the lab/case-study split is dissolving but the words still vary across surfaces ("my lab", "case studies", "design", "work"). Detail back-links were unified to "← work" (S39), but nav labels, copy, route names (`/design/*` vs `/lab/*`), and section headings should get one coherent vocabulary. Decide the canonical terms, then sweep.
-
 ## 📝 Content
 
 - [ ] **Confirm `yara.mdx` date.** Frontmatter is `date: "2026-03-01"` with a `# TODO: confirm real date` (Farcaster mini-app; sits between Footy 2025-10 and Bribe 2026-05). Verify the real date and drop the TODO.
@@ -30,6 +26,10 @@ _Last reconciled against code: 2026-09-29 (start of S39)._
 
 ## ✅ Recently closed
 
+- **[closed S40, 2026-10-20]** Site-wide terminology pass — canonical word for the merged grid (case studies + lab items) is **"work"** across nav, toggle, and back-links. Fixed `NavMenu.tsx`'s nav label ("design" → "work", the one surface still out of sync with `ViewSwitcher` + both detail back-links). Updated stale comments calling it "the design triad" / "case-studies home" / "my lab index" in `ViewSwitcher.tsx`, `sitemap.ts`, and `(site)/layout.tsx`.
+  **Route namespaces also unified** (reconsidered mid-session — the uniformity case won out over the redirect/OG-move cost, which turned out small: only 2 lab items, no slug collisions with the 5 work items): `/lab/[slug]` deleted; `/design/[slug]/page.tsx` now dispatches to `ProjectsSection` (work) or `LabDetail` (lab) by slug, still two different templates, one route. Added 308 redirects `/lab/aronia` → `/design/aronia` and `/lab/kickoff` → `/design/kickoff` in `next.config.ts` so any already-shared/indexed old links still resolve. Moved `public/og/lab/{aronia,kickoff}.png` → `public/og/{aronia,kickoff}.png`, repointed `generate-lab-og.mjs`'s output dir. Verified: `tsc` clean, dev-server curl checks confirm `/design/{aronia,kickoff}` 200 (lab content renders — TL;DR block present), `/lab/{aronia,kickoff}` 308 → the new routes, `/lab/nonexistent-slug` 404s correctly, sitemap lists all 7 details under `/design/<slug>` with no stray `/lab` entries.
+  **Bug found + fixed in the same pass:** `sitemap.ts` listed `/lab` as its own indexable URL, but it 308-redirects to `/` — removed that entry (all per-item detail routes are now under `/design/<slug>` anyway).
+  **Not committed yet** — working tree has the changes; commit at session close per Chukwuka's correction (session notes/bookkeeping happens at close, not mid-session).
 - **[closed S39, 2026-09-29]** Deleted the dead `/lab` index page (`src/app/(site)/lab/page.tsx`) + its sole consumer `src/components/LabSection.tsx` — unreachable since the `/lab`→`/` redirect (S38 IA merge). `tsc` clean; `/lab/[slug]` details untouched.
 - **[closed S39, 2026-09-29]** Pruned the stale "placeholder cull" clause from the `globals.css` caption comment (`redesigning-checkout.mdx` is already gone).
 - **[verified closed S39, 2026-09-29]** Merge `proto/single-bar-shell` → `main` **and push** — `main` == `origin/main` == `dc1292a`. (Was S39 "Next up" #1.)

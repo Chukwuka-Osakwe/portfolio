@@ -6,7 +6,7 @@ import { CardVideo } from "@/components/CardVideo";
  *  the listing (detail lives at `href`). */
 export interface GridEntry {
   slug: string;
-  /** Real detail route — /design/<slug> (work) or /lab/<slug> (lab). */
+  /** Real detail route — /design/<slug> for both work and lab entries. */
   href: string;
   title: string;
   blurb: string | null;

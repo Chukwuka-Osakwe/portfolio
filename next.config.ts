@@ -31,9 +31,14 @@ const nextConfig: NextConfig = {
   redirects: async () => [
     { source: "/design", destination: "/", permanent: true },
     // Merged design grid (S37/38): lab folded into the home stream, so the old
-    // `/lab` index redirects home. Exact match only — lab details still live at
-    // `/lab/:slug` and are linked from the merged grid.
+    // `/lab` index redirects home.
     { source: "/lab", destination: "/", permanent: true },
+    // Terminology pass (S40): lab item details folded into the `/design/:slug`
+    // namespace alongside case studies (one route for every detail page). These
+    // two explicit redirects cover the only lab slugs that ever existed at
+    // `/lab/:slug`, so any already-shared/indexed links still resolve.
+    { source: "/lab/aronia", destination: "/design/aronia", permanent: true },
+    { source: "/lab/kickoff", destination: "/design/kickoff", permanent: true },
   ],
 };
 

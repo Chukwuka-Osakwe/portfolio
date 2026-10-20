@@ -3,7 +3,10 @@
 //
 // Run: `node scripts/generate-lab-og.mjs` (all lab items)
 //      `node scripts/generate-lab-og.mjs kickoff` (subset by slug)
-// Output: `public/og/lab/<slug>.png` for each lab item with an `image:` field.
+// Output: `public/og/<slug>.png` for each lab item with an `image:` field —
+// shares the flat `og/` dir with case-study OGs (S40: lab details moved into
+// the `/design/<slug>` route namespace), so lab slugs must stay distinct from
+// work slugs (checked at merge time; re-check if either set grows).
 //
 // WHY: lab items are video-forward, so the share card should show the actual
 // clip — its poster frame. Posters are ~1.83:1 (1600×874); OG cards want
@@ -11,8 +14,7 @@
 // `fit: contain` to 1200×630 and pad with the poster's OWN sampled edge colour
 // so the strip reads as an extension of the frame, not as added bars. Same
 // technique as scripts/generate-case-og.mjs (case-study covers), just pointed
-// at the lab content dir + a namespaced `og/lab/` output so lab slugs can't
-// collide with case-study OGs at `og/<slug>.png`.
+// at the lab content dir.
 //
 // Re-run when: a lab item's poster changes, a new lab item lands, or the OG
 // aspect target changes. (Lab OG is the poster-based sibling of the essay text
@@ -27,7 +29,7 @@ import path from "node:path";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const LAB_DIR = path.join(root, "src", "content", "lab");
 const PUBLIC_DIR = path.join(root, "public");
-const OUT_DIR = path.join(PUBLIC_DIR, "og", "lab");
+const OUT_DIR = path.join(PUBLIC_DIR, "og");
 
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
@@ -102,7 +104,7 @@ async function main() {
     const outPath = path.join(OUT_DIR, `${slug}.png`);
     const bg = await generateOg(imagePath, outPath);
     console.log(
-      `✓ lab/${slug}.png — padded with rgb(${bg.r}, ${bg.g}, ${bg.b}) from ${data.image}`,
+      `✓ ${slug}.png — padded with rgb(${bg.r}, ${bg.g}, ${bg.b}) from ${data.image}`,
     );
     made++;
   }

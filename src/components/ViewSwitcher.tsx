@@ -10,12 +10,13 @@ const VIEWS: { href: string; label: string }[] = [
 ];
 
 /**
- * Segmented toggle for the design triad (my lab ↔ case studies ↔ product
- * ideas). Each segment is a real route link; the active one is derived from
- * the pathname. The highlight is an absolutely-positioned "thumb" sized to one
- * segment that translates across the three equal-width (`grid-cols-3`) segments
- * as the route changes (the layout persists across client navigation, so the
- * slide animates). `motion-safe` so reduced-motion users get an instant swap.
+ * Segmented toggle between the merged work grid (case studies + lab items)
+ * and product ideas. Each segment is a real route link; the active one is
+ * derived from the pathname. The highlight is an absolutely-positioned "thumb"
+ * sized to one segment that translates across the two equal-width
+ * (`grid-cols-2`) segments as the route changes (the layout persists across
+ * client navigation, so the slide animates). `motion-safe` so reduced-motion
+ * users get an instant swap.
  */
 export function ViewSwitcher() {
   const pathname = usePathname();

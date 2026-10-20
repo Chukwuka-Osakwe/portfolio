@@ -6,9 +6,9 @@ import { usePathname } from "next/navigation";
 // `href` → destination. `external` items open in a new tab; internal items are
 // real routes. `activeFor` lists the pathnames the item should highlight on
 // (defaults to [href]). Matching is exact for "/" and sub-route-prefix for the
-// rest (see isActiveFor) — so "design" stays active across the whole triad:
-// case studies (/ + its details /design/<slug>), my lab (/lab + /lab/<slug>),
-// and product ideas (/product-ideas).
+// rest (see isActiveFor) — so "work" stays active across the merged grid:
+// case studies and lab items (/ + their shared detail route /design/<slug>),
+// plus product ideas (/product-ideas).
 export type NavItem = {
   label: string;
   href: string;
@@ -20,7 +20,7 @@ export type NavItem = {
 // vertical NavMenu (desktop panel + mobile sheet) and the horizontal SiteTopBar,
 // so the two nav surfaces can't drift.
 export const NAV_ITEMS: NavItem[] = [
-  { label: "design", href: "/", activeFor: ["/", "/design", "/product-ideas", "/lab"] },
+  { label: "work", href: "/", activeFor: ["/", "/design", "/product-ideas", "/lab"] },
   { label: "essays", href: "/essays", activeFor: ["/essays"] },
   { label: "newsletter", href: "https://chukwukaosakwe.substack.com/", external: true },
   { label: "contact", href: "/contact" },

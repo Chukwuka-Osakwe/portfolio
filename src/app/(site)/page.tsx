@@ -10,13 +10,14 @@ export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 /** Home — the merged design grid: client work + lab intermixed into one
  *  date-desc stream (the S31 thesis — the paid/self-directed split is authorship
- *  trivia the visitor doesn't need). Each card links to its real detail route
- *  (/design/<slug> for work, /lab/<slug> for lab), which server-renders the
- *  detail in this same shell.
+ *  trivia the visitor doesn't need). Every card links to its real detail route
+ *  at `/design/<slug>` (S40: work and lab share one route namespace), which
+ *  server-renders the detail in this same shell.
  *
  *  Old `/#slug` hash deep-links still get a one-shot client redirect to
- *  `/design/<slug>` via <HashRedirect> — a migration safety net. `/lab` and the
- *  old `/design` index 308-redirect here (see next.config). */
+ *  `/design/<slug>` via <HashRedirect> — a migration safety net. `/lab`, old
+ *  `/lab/<slug>` items, and the old `/design` index all redirect here/into
+ *  `/design/<slug>` (see next.config). */
 export default function Home() {
   // Content-backed entries (work + lab MDX), each paired with its date for the
   // merge sort below.
@@ -24,7 +25,7 @@ export default function Home() {
     date: m.date,
     entry: {
       slug: m.slug,
-      href: m.section === "lab" ? `/lab/${m.slug}` : `/design/${m.slug}`,
+      href: `/design/${m.slug}`,
       title: m.title,
       blurb: m.blurb ?? null,
       image: m.image ?? null,
