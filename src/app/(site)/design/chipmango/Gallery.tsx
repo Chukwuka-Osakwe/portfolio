@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 /* ChipMango gallery — the "lookbook" brand-entry view, graduated from
  * /wireframe/gallery into the live site (S38). A contained column of image
  * frames (full rows + matched 2-up pairs) beside a sticky right rail carrying
@@ -256,13 +258,13 @@ function BlockBox({ block, eager = false }: { block: Block; eager?: boolean }) {
         boxShadow: `0 0 0 ${RING_W}px color-mix(in srgb, var(--foreground) ${RING_PCT}%, transparent), 0 1px 2px color-mix(in srgb, var(--foreground) 8%, transparent)`,
       }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={block.src}
         alt={block.alt}
-        loading={eager ? "eager" : "lazy"}
-        decoding="async"
-        className="absolute inset-0 h-full w-full object-cover"
+        fill
+        priority={eager}
+        sizes="(min-width: 1024px) 43rem, 100vw"
+        className="object-cover"
       />
     </div>
   );

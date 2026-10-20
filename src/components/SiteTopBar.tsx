@@ -155,9 +155,10 @@ export function SiteTopBar({
         <div className="flex items-center">
           {/* Segmented theme toggle — WIDE DESKTOP only (≥lg), where the bar has
               room for the 3-up track. Below lg the compact ThemeCycle stands in.
-              [&_*]:!rounded-none squares it to match the bar's radius:0 language
-              (the emerging default) without editing the shared ThemeToggle. */}
-          <div className="hidden w-36 shrink-0 [&_*]:!rounded-none lg:block">
+              ThemeToggle's own rounded-* classes already render square — radius:0
+              is the house default (globals.css) since S38, so no override needed
+              here. */}
+          <div className="hidden w-36 shrink-0 lg:block">
             <ThemeToggle />
           </div>
 
