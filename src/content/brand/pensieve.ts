@@ -4,8 +4,8 @@ import type { BrandEntry } from "@/content/brand";
 /* Pensieve — fourth brand/gallery entry (S45–S46), the first MOBILE-FOCUSED one
  * (chipmango/kickoff/aronia are all desktop-heavy). A digital travel journal
  * built as an editorial piece that happens to document a product, not a UX
- * case study. It opens on a splash title card (same pattern as the sibling
- * galleries), then runs asset-first with no rail `description` — every text
+ * case study. It opens on the core-experience frame (the trips archive), with
+ * the splash title card second, then runs asset-first with no rail `description` — every text
  * moment is a designed image frame (exact Titillium art direction), not live
  * copy. All UI frames sit on one cream→peach gradient ground.
  *
@@ -46,14 +46,17 @@ const full = (block: Block) => ({ span: "full" as const, block });
 // palette bands, or the near-black wordmark) so two warm grounds never butt
 // together and sawtooth. The sole sanctioned adjacency is the two type boards
 // (Titillium Web → Remember your journey) — they're one idea, so they pair.
-// World photos stay dispersed (never adjacent). Opens on the splash, closes on
-// the wordmark — which bookends the splash's own platform→wordmark reveal.
+// World photos stay dispersed (never adjacent). Opens on the trips-archive core
+// frame, with the splash second (so splash → airport are the two dark openers
+// back-to-back), and closes on the wordmark — which still echoes the splash's
+// own platform→wordmark reveal.
 const sections: GallerySection[] = [
   {
     // 120px frame-to-frame (vs the default 48) — dialled by eye (S46). With no
     // section dividers, this gap IS the lookbook's rhythm, so it runs wider.
     rowGap: 120,
     rows: [
+      full(ui("trips-archive", "The core experience — a year’s trips, a trip broken into days, and a day’s memories: photos, a journal entry, a voice memo")),
       full({
         kind: "video",
         aspect: "1304 / 1034",
@@ -61,7 +64,6 @@ const sections: GallerySection[] = [
         poster: "/design/pensieve/splash-poster.webp",
         alt: "Pensieve splash — the orange “pensieve” wordmark drawing in over a near-empty night train platform",
       }),
-      full(ui("trips-archive", "The core experience — a year’s trips, a trip broken into days, and a day’s memories: photos, a journal entry, a voice memo")),
       full(photo("world-airport-boarding", "A departures board at night — “Final call, boarding, Gate B14, London Heathrow” in amber dot-matrix")),
       full(ui("idea", "What if a travel journal didn’t ask you to document your trip? Pensieve is a quiet place to keep memories — somewhere to return to afterwards, rather than another feed to perform for while you’re away.", "big-type")),
       full(ui("app-icon", "The app on a home screen — the orange “P” mark on black, labelled “pensieve”, beside the system apps")),

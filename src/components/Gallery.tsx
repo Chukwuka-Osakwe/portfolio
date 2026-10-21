@@ -96,6 +96,11 @@ export interface GalleryMeta {
    *  omit to open the gallery image-first, so the column never opens text-then-
    *  image — a cadence a purely visual lookbook may prefer. */
   description?: string;
+  /** Optionally wrap one substring of `description` in an inline link (e.g. a
+   *  collaborator's name → their site). `description` itself stays plain text so
+   *  it's reused verbatim as the OG/meta description (page.tsx); only the
+   *  rendered lead paragraph carries the link. First match only. */
+  descriptionLink?: { match: string; href: string };
   /** Outbound / related link chips in the rail — e.g. a GitHub repo, the
    *  backing essay. The lookbook template has no prose body to hang a CTA on,
    *  so for a tool-shaped entry (Aronia) whose "go use it" link IS the point,
@@ -123,6 +128,32 @@ const ROW_GAP = 48; // px — rhythm between rows within a section
 const GUTTER = 48; // px — gap between the two halves of a 2-up
 const RING_W = 4; // px — frame ring width (box-shadow spread)
 const RING_PCT = 20; // % — frame ring strength (of --foreground; inverts per theme)
+
+// Render the lead paragraph, optionally wrapping its first `link.match` substring
+// in an inline link (collaborator credit etc.). The surrounding text is plain so
+// `description` stays a verbatim string for OG/meta (see GalleryMeta).
+function renderLede(
+  text: string,
+  link?: GalleryMeta["descriptionLink"],
+) {
+  if (!link) return text;
+  const i = text.indexOf(link.match);
+  if (i === -1) return text;
+  const external = /^https?:/.test(link.href);
+  return (
+    <>
+      {text.slice(0, i)}
+      <a
+        href={link.href}
+        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        className="focus-ring font-medium text-accent decoration-accent underline underline-offset-2 transition lg:text-foreground lg:decoration-foreground/30 lg:hover:text-accent lg:hover:decoration-accent"
+      >
+        {link.match}
+      </a>
+      {text.slice(i + link.match.length)}
+    </>
+  );
+}
 
 export function Gallery({
   meta,
@@ -168,7 +199,7 @@ export function Gallery({
               {meta.tags.map((t) => (
                 <span
                   key={t}
-                  className="bg-black/[0.05] px-2 py-1 text-xs text-foreground/60 dark:bg-white/[0.06]"
+                  className="bg-foreground/10 px-2 py-1 text-xs text-foreground/60"
                 >
                   {t}
                 </span>
@@ -241,7 +272,7 @@ export function Gallery({
                 className="text-xl leading-relaxed text-foreground/70 sm:text-2xl"
                 style={{ marginBottom: leadGap }}
               >
-                {meta.description}
+                {renderLede(meta.description, meta.descriptionLink)}
               </p>
             )}
             {/* Each section carries its own top gap (vs a shared container

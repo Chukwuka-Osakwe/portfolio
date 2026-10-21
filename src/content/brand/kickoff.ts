@@ -117,7 +117,12 @@ export const kickoff: BrandEntry = {
     eyebrow: "In progress",
     tags: ["UI/UX", "Visual Identity", "Web Design", "Game Design"],
     description:
-      "A minimal, low-effort football manager for the browser, built with a backend-dev friend — visual language and game feel, down to the game logic itself. Live at Kickoff.games.",
+      "In collaboration with Alexander Karlsson I’ve been designing and building a football manager game in the browser. I’m not sure what happened to browser-based football manager games, but we’re determined to try and bring them back.",
+    descriptionLink: { match: "Alexander Karlsson", href: "https://www.acgk.dev/" },
+    links: [
+      { label: "Website", href: "https://kickoff.games" },
+      { label: "Read the essay", href: "/essays/bringing-back-the-browser-football-manager" },
+    ],
   },
   sections,
 };
