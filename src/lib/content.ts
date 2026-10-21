@@ -28,7 +28,7 @@ export interface Frontmatter {
    *  For lab items this doubles as the hero video's poster + OG source. */
   image?: string;
   /** Autoplay/loop clip — a video path under /public, e.g.
-   *  "/lab/aronia/walkthrough.mp4" or "/work/footy/motion.mp4". Rendered
+   *  "/design/aronia/splash.mp4" or "/work/footy/motion.mp4". Rendered
    *  muted+looping (poster = `image`) as the detail-page hero by
    *  <DetailHeroVideo>, and as the grid/card cover by <CardVideo>. Optional;
    *  absent entries fall back to the static `image` cover. */

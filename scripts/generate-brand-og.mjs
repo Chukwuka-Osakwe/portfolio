@@ -18,6 +18,7 @@
 // Source choice is intentional and need not be the card cover:
 //   - chipmango → hero (richer than the wordmark cover used in the grid)
 //   - kickoff   → splash-poster (its cover; near-OG ratio already)
+//   - aronia    → splash-poster (its cover; the wordmark-splash frame)
 //
 // Same corner-sampled contain-pad technique as generate-case-og.mjs /
 // generate-lab-og.mjs: `fit: contain` to 1200×630, padded with the source's
@@ -41,6 +42,7 @@ const OUT_DIR = path.join(PUBLIC_DIR, "og");
 const SOURCES = {
   chipmango: "/design/chipmango/hero.webp",
   kickoff: "/design/kickoff/splash-poster.webp",
+  aronia: "/design/aronia/splash-poster.webp",
 };
 
 const OG_WIDTH = 1200;

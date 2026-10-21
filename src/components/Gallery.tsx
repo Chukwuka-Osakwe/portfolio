@@ -59,6 +59,10 @@ export interface GallerySection {
    *  Named GallerySection (not Section) to avoid colliding with content.ts's
    *  "work" | "lab" | "brand" Section discriminator. */
   heading?: string;
+  /** Optional supporting line rendered under the heading — a short framing
+   *  sentence for the set (e.g. what it shows / how it was made). Only renders
+   *  alongside a heading. Keeps the heading itself a tight label. */
+  note?: string;
   rows: Row[];
 }
 
@@ -69,6 +73,13 @@ export interface GalleryMeta {
   /** Grey chips, e.g. ["Visual Identity", "Art Direction"]. */
   tags: string[];
   description: string;
+  /** Outbound / related link chips in the rail — e.g. a GitHub repo, the
+   *  backing essay. The lookbook template has no prose body to hang a CTA on,
+   *  so for a tool-shaped entry (Aronia) whose "go use it" link IS the point,
+   *  the rail carries it. External (http…) hrefs open in a new tab with a ↗;
+   *  internal hrefs (e.g. /essays/<slug>) stay in-tab with a →. Omit for a
+   *  pure visual entry (ChipMango, Kickoff). */
+  links?: { label: string; href: string }[];
 }
 
 // Baked layout values, tuned by eye against ChipMango (the reference entry)
@@ -140,6 +151,31 @@ export function Gallery({
                 </span>
               ))}
             </div>
+            {meta.links && meta.links.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {meta.links.map((l) => {
+                  const external = /^https?:/.test(l.href);
+                  return (
+                    <a
+                      key={l.href}
+                      href={l.href}
+                      {...(external
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
+                      className="focus-ring group inline-flex items-center gap-2 border border-border px-2 py-1 text-xs font-medium transition hover:border-accent hover:text-accent"
+                    >
+                      <span>{l.label}</span>
+                      <span
+                        aria-hidden
+                        className="text-text-muted transition-colors group-hover:text-accent"
+                      >
+                        {external ? "↗" : "→"}
+                      </span>
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </aside>
@@ -198,12 +234,16 @@ export function Gallery({
                   }}
                 >
                   {section.heading && (
-                    <h2
-                      className="text-base font-semibold text-foreground"
-                      style={{ marginBottom: HEAD_GAP }}
-                    >
-                      {section.heading}
-                    </h2>
+                    <div style={{ marginBottom: HEAD_GAP }}>
+                      <h2 className="text-base font-semibold text-foreground">
+                        {section.heading}
+                      </h2>
+                      {section.note && (
+                        <p className="mt-2 max-w-prose text-sm text-foreground/60">
+                          {section.note}
+                        </p>
+                      )}
+                    </div>
                   )}
                   <div className="flex flex-col" style={{ rowGap: ROW_GAP }}>
                     {section.rows.map((row, i) =>

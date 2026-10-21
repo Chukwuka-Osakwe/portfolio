@@ -1,6 +1,7 @@
 import type { GalleryMeta, GallerySection } from "@/components/Gallery";
 import { chipmango } from "@/content/brand/chipmango";
 import { kickoff } from "@/content/brand/kickoff";
+import { aronia } from "@/content/brand/aronia";
 
 /**
  * Brand/gallery entries — the sibling of `ideas.ts`: self-initiated brand
@@ -24,7 +25,7 @@ export interface BrandEntry {
   sections: GallerySection[];
 }
 
-const BRAND_ENTRIES: BrandEntry[] = [chipmango, kickoff];
+const BRAND_ENTRIES: BrandEntry[] = [chipmango, kickoff, aronia];
 
 export function getBrandEntries(): BrandEntry["meta"][] {
   return BRAND_ENTRIES.map((e) => e.meta);

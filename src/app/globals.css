@@ -457,5 +457,13 @@ dialog.image-viewer[open] { animation: view-in 200ms var(--ease-house) both; }
     width: 13rem;
     height: calc(100dvh - var(--bar-h));
     margin-bottom: 0;
+    /* Lift above the sibling .view-enter. That wrapper carries the finished
+       entrance animation's identity-matrix transform (animation-fill-mode:
+       both), which makes it a stacking context painting AFTER the rail in DOM
+       order — and its w-screen full-bleed child overlays the rail's column,
+       swallowing pointer events. Harmless until the rail gained interactive
+       link chips (S43); a z-index above .view-enter's auto restores clicks.
+       Stays below SiteTopBar (z-40), which the rail parks beneath anyway. */
+    z-index: 20;
   }
 }

@@ -1,27 +1,17 @@
 ---
-title: Aronia
-type: Component Library
-summary: An agent-friendly component library designed to help vibecoders create visually distinct, coherent websites that stand out from other AI-generated websites.
-blurb: An Agentic component library for vibecoders
-date: 2026-07-15
-stage: in progress
-image: /lab/aronia/walkthrough-poster.webp
-video: /lab/aronia/walkthrough.mp4
-ratio: "16 / 9"
-links:
-  - label: GitHub
-    href: https://github.com/Chukwuka-Osakwe/aronia
+title: "Teaching AI to Speak Design Languages"
+summary: "LLM-generated websites all look the same because models default to the statistical average. Aronia, a component library I'm building, takes a different tack — think of each design style as a language, and give AI the vocabulary and grammar to speak it fluently."
+blurb: "Why AI-generated websites all look the same, and the component library I'm building to fix it."
+date: "2026-07-15"
 ---
-
-## Overview
 
 First things first, you can start using Aronia in your project today. If you want to skip the essay and try it first, just type "npx aronia init" wherever you're vibecoding to get started.
 
-Alternatively, if you'd like to understand what it is a bit more before deciding whether to use it, you can point your agent to the GitHub repo here: https://github.com/Chukwuka-Osakwe/aronia 
+Alternatively, if you'd like to understand what it is a bit more before deciding whether to use it, you can visit the [website](https://aronia-pi.vercel.app/).
 
-Alright, with that out of the way, I have a few things to say about AI-generated websites. 
+Alright, with that out of the way, I have a few things to say about AI-generated websites.
 
-A common fact today is that LLM-generated websites tend to look the same. You know the kinds of websites I'm talking about. Blue and purple hues, gradients everywhere, misaligned typography and layout,  and copy that very often doesn't match the tone of the product. 
+A common fact today is that LLM-generated websites tend to look the same. You know the kinds of websites I'm talking about. Blue and purple hues, gradients everywhere, misaligned typography and layout,  and copy that very often doesn't match the tone of the product.
 
 This isn't surprising, in fact, it's expected behaviour. LLMs default to the most likely statistical solution in a problem space. Or, in plain English, when you ask an LLM to design a website, it draws on the data it has about millions of websites and creates a website that resembles the kinds of websites it has "seen" the most.
 
@@ -35,13 +25,13 @@ Nay, my lord. This is where Aronia comes in.
 
 Think of all the unique ways UI can be designed as languages. Neo-brutalism is one language, Swiss editorial is another, and Glassmorphism is yet another one. Each language has its own vocabulary, grammar, visual and interaction conventions, and quirks.
 
-Today, LLMs can speak these languages at a superficial level, they sort of grasp the general rules and obvious characteristics of the language and can construct technically correct sentences. However, they can't grasp the nuance and deeper patterns of the language in the way someone fluent in them can. 
+Today, LLMs can speak these languages at a superficial level, they sort of grasp the general rules and obvious characteristics of the language and can construct technically correct sentences. However, they can't grasp the nuance and deeper patterns of the language in the way someone fluent in them can.
 
 My favourite example of this at the moment is asking LLMs to design a Neo-brutalist website. They kind of get the gist of Neo-brutalism: bold type, blocky components, thick borders, solid black offset shadows and so on. However, it ends up creating every button with 8px shadows and giving every component 4px black borders, all the elements screaming for attention at once. It's recognisably Neo-brutalist, but it lacks the restraint and nuance that I imagine most junior designers would apply to the job.
 
 Going back to our language metaphor, Aronia aims to give LLMs the vocabulary and grammar to speak these design languages fluently, and give vibecoders the ability to create coherent, visually distinct websites that stand out from the sea of similar-looking AI-generated websites.
 
-The way I've approached this is by creating a small component library (20 components) for each language. Each library embodies the look and patterns of a particular design style and gives the LLM reusable primitives for building in that design style. 
+The way I've approached this is by creating a small component library (20 components) for each language. Each library embodies the look and patterns of a particular design style and gives the LLM reusable primitives for building in that design style.
 
 Each library also ships with a manifest.json that contains additional rules and nuances that couldn't be captured fully in the design of the components. This includes things like composition rules, interaction patterns, and how to handle rendering media in each design style, among other things.
 
@@ -51,6 +41,4 @@ Or, to summarise all this in the words of the great philosopher ChatGPT:
 
 > In effect, Aronia removes hundreds of small design decisions from the model’s search space. The model no longer has to decide how thick a border should be, how rounded a button should feel, or how much blur a modal needs. Those decisions are encoded in the system, allowing the model to focus on composing interfaces rather than inventing a visual language from scratch.
 
-
-In other words, Aronia doesn't really try to make AI more creative; it just tries to give it better creative constraints, and I think this is the right approach because it is precisely how the people with design chops are getting the best out of AI (by giving it the constraints of a design system most times). 
-
+In other words, Aronia doesn't really try to make AI more creative; it just tries to give it better creative constraints, and I think this is the right approach because it is precisely how the people with design chops are getting the best out of AI (by giving it the constraints of a design system most times).
