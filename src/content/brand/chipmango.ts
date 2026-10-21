@@ -149,7 +149,6 @@ export const chipmango: BrandEntry = {
     video: null,
     ratio: "8 / 5", // house cover ratio — wordmark-on-mosaic motif cropped to 8:5 (covers live at 8:5 or 16:9 only)
     blurDataURL: undefined,
-    ogImage: "/design/chipmango/hero.webp", // bespoke OG (pre-[slug] convention) — TODO: fold into /og/<slug>.png like the rest
     eyebrow: "Self-initiated",
     tags: ["Visual Identity", "Art Direction", "Web Design"],
     description:

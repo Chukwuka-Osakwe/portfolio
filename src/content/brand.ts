@@ -17,9 +17,6 @@ export interface BrandCardMeta {
   video: string | null;
   ratio: string | null;
   blurDataURL?: string;
-  /** Bespoke OG image path, used until brand entries get a real /og/<slug>.png
-   *  generation step (TODO, flagged at the ChipMango migration). */
-  ogImage?: string;
 }
 
 export interface BrandEntry {
