@@ -147,7 +147,7 @@ export const chipmango: BrandEntry = {
     blurb: "A brand identity system for ChipMango.",
     image: "/design/chipmango/wordmark.webp",
     video: null,
-    ratio: "8 / 5", // house cover ratio — wordmark-on-mosaic motif cropped to 8:5 (covers live at 8:5 or 16:9 only)
+    ratio: "5 / 4", // card cover — the wordmark-on-mosaic motif is natively ~1.25:1, so 5:4 frames it near-uncropped (covers live at 16:9 or 5:4 only)
     blurDataURL: undefined,
     eyebrow: "Self-initiated",
     tags: ["Visual Identity", "Art Direction", "Web Design"],

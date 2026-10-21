@@ -54,10 +54,13 @@ export default function Home() {
     } satisfies GridEntry,
   }));
 
-  // Curated grid order — a hand-picked lead (fills the first three rows: two per
-  // row), then everything unlisted falls in behind, date-desc. Slugs not in ORDER
-  // sort to the back by recency.
-  const ORDER = ["kickoff", "aronia", "chipmango", "energy", "footy", "yara"];
+  // Curated grid order — a hand-picked lead (two cards per row at lg), then
+  // everything unlisted falls in behind, date-desc. Slugs not in ORDER sort to
+  // the back by recency. Ordered so adjacent cards share a cover ratio (covers
+  // are 16:9 or 5:4 only — see CoverRatio): the pairs fall as
+  // (pensieve·chipmango)=5:4, (kickoff·aronia)=16:9, then the rest (all 5:4),
+  // so no row mixes shapes. Keep this grouping when editing the lead.
+  const ORDER = ["pensieve", "chipmango", "kickoff", "aronia", "energy", "footy", "yara"];
   const rank = (slug: string) => {
     const i = ORDER.indexOf(slug);
     return i === -1 ? Infinity : i;

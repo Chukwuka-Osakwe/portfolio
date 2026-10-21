@@ -5,6 +5,11 @@ import { WORK_COVER_LQIPS } from "@/content/work-covers";
 
 export type Section = "work" | "writing" | "lab";
 
+/** The ONLY two cover aspect-ratios a design-grid card may use. A hard
+ *  invariant: covers live at exactly 16:9 or 5:4, nothing else — so rows can be
+ *  curated to put matching ratios next to each other (see the grid's ORDER). */
+export type CoverRatio = "16 / 9" | "5 / 4";
+
 // NOTE: "product ideas" are intentionally NOT a Section. An idea is just an image
 // + a one-line caption (no MDX body), so it lives as typed data in
 // src/content/ideas.ts rather than as per-file MDX. If ideas ever grow real
@@ -37,11 +42,12 @@ export interface Frontmatter {
    *  "pre-beta". The lab is defined by being self-directed, not by being
    *  finished, so this is metadata, not the headline. */
   stage?: string;
-  /** Cover aspect-ratio (CSS value, e.g. "16 / 9") for the merged design grid.
-   *  Overrides the grid's uniform default frame so an entry can declare its own
-   *  cover shape (the cover is object-cover, so this frames/crops, it doesn't
-   *  resize the source). Unset → the entry inherits the grid's default. */
-  ratio?: string;
+  /** Cover aspect-ratio for the merged design grid — 16:9 or 5:4 only (see
+   *  CoverRatio). Overrides the grid's uniform default frame so an entry can
+   *  declare its own cover shape (the cover is object-cover, so this frames/
+   *  crops, it doesn't resize the source). Unset → the entry inherits the
+   *  grid's default (5:4). */
+  ratio?: CoverRatio;
   /** Lab-only: outbound destinations (the item's real home lives elsewhere) —
    *  e.g. a live site, a GitHub repo, a demo. Rendered as link chips on the
    *  detail page. YAML array of { label, href } in frontmatter. */

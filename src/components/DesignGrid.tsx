@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CardVideo } from "@/components/CardVideo";
+import type { CoverRatio } from "@/lib/content";
 
 /** One card in the merged design grid — a work or lab entry, flattened for
  *  the listing (detail lives at `href`). */
@@ -12,17 +13,18 @@ export interface GridEntry {
   blurb: string | null;
   image: string | null;
   video: string | null;
-  /** CSS aspect-ratio override (frontmatter `ratio`); null → uniform default. */
-  ratio: string | null;
+  /** Cover aspect-ratio override (16:9 or 5:4 only — see CoverRatio); null →
+   *  uniform default. */
+  ratio: CoverRatio | null;
   /** Sidecar LQIP for next/image blur placeholder, when registered. */
   blurDataURL?: string;
 }
 
-// Uniform cover frame when an entry doesn't declare its own `ratio`. 8:5 is the
-// house cover ratio (≈1.6, close to the ~1.55 export format so case covers crop
-// minimally); the only sanctioned override is lab's 16/9 video shape — covers
-// live at exactly two aspect ratios (8:5 or 16:9), nothing else.
-const DEFAULT_RATIO = "8 / 5";
+// Uniform cover frame when an entry doesn't declare its own `ratio`. 5:4 (=1.25)
+// is the house cover ratio — a taller card giving portrait-heavy covers room;
+// the only other sanctioned value is 16:9 (see CoverRatio — covers live at
+// exactly these two ratios, so rows can be ordered to pair matching shapes).
+const DEFAULT_RATIO: CoverRatio = "5 / 4";
 
 /**
  * The merged "design" grid — client work + lab intermixed into ONE date-desc

@@ -109,7 +109,7 @@ export const kickoff: BrandEntry = {
     slug: "kickoff",
     title: "Kickoff",
     date: "2026-07-15",
-    blurb: "A football manager game in the browser",
+    blurb: "A football manager game in the browser.",
     image: "/design/kickoff/splash-poster.webp",
     video: "/design/kickoff/splash.mp4",
     ratio: "16 / 9",

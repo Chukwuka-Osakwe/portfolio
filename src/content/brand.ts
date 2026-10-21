@@ -1,7 +1,9 @@
 import type { GalleryMeta, GallerySection } from "@/components/Gallery";
+import type { CoverRatio } from "@/lib/content";
 import { chipmango } from "@/content/brand/chipmango";
 import { kickoff } from "@/content/brand/kickoff";
 import { aronia } from "@/content/brand/aronia";
+import { pensieve } from "@/content/brand/pensieve";
 
 /**
  * Brand/gallery entries — the sibling of `ideas.ts`: self-initiated brand
@@ -16,7 +18,7 @@ export interface BrandCardMeta {
   blurb: string;
   image: string | null;
   video: string | null;
-  ratio: string | null;
+  ratio: CoverRatio | null;
   blurDataURL?: string;
 }
 
@@ -25,7 +27,7 @@ export interface BrandEntry {
   sections: GallerySection[];
 }
 
-const BRAND_ENTRIES: BrandEntry[] = [chipmango, kickoff, aronia];
+const BRAND_ENTRIES: BrandEntry[] = [chipmango, kickoff, aronia, pensieve];
 
 export function getBrandEntries(): BrandEntry["meta"][] {
   return BRAND_ENTRIES.map((e) => e.meta);

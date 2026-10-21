@@ -48,9 +48,25 @@ export interface Block {
   unoptimized?: boolean;
 }
 
+/** Inline editorial text in the content column — the one primitive the lookbook
+ *  lacked (added for pensieve, S45). A "statement" is large display type (the
+ *  editorial spine: a standalone line, optionally with a supporting sentence or
+ *  two beneath it); a "caption" is a small muted line that sits under a sequence
+ *  of frames. Lives as a Row so it can be dropped anywhere between frames —
+ *  unlike GallerySection.note, which only renders above a section's rows. */
+export interface TextBlock {
+  variant: "statement" | "caption";
+  /** The line itself. */
+  body: string;
+  /** Supporting sentence(s) under a statement — the 1–2 lines the brief pairs
+   *  with each big statement. Ignored for captions. */
+  sub?: string;
+}
+
 export type Row =
   | { span: "full"; block: Block }
-  | { span: "half"; blocks: [Block, Block] };
+  | { span: "half"; blocks: [Block, Block] }
+  | { span: "text"; text: TextBlock };
 
 export interface GallerySection {
   /** Tracked small-caps label above the section — wayfinding across a long
@@ -63,6 +79,10 @@ export interface GallerySection {
    *  sentence for the set (e.g. what it shows / how it was made). Only renders
    *  alongside a heading. Keeps the heading itself a tight label. */
   note?: string;
+  /** Row-to-row gap within this section, in px. Defaults to ROW_GAP (48). A
+   *  headless single-section lookbook (pensieve) overrides this — with no
+   *  section dividers, the frame-to-frame gap IS the rhythm, so it runs wider. */
+  rowGap?: number;
   rows: Row[];
 }
 
@@ -72,7 +92,10 @@ export interface GalleryMeta {
   eyebrow?: string;
   /** Grey chips, e.g. ["Visual Identity", "Art Direction"]. */
   tags: string[];
-  description: string;
+  /** The lead paragraph (the entry's headline) above the first frame. Optional:
+   *  omit to open the gallery image-first, so the column never opens text-then-
+   *  image — a cadence a purely visual lookbook may prefer. */
+  description?: string;
   /** Outbound / related link chips in the rail — e.g. a GitHub repo, the
    *  backing essay. The lookbook template has no prose body to hang a CTA on,
    *  so for a tool-shaped entry (Aronia) whose "go use it" link IS the point,
@@ -213,12 +236,14 @@ export function Gallery({
             {/* Description → first frame: leadGap at every width, so the lead
                 text sits on the same section rhythm as the gaps below it (140
                 for a headed entry, 200 for a headless one). */}
-            <p
-              className="text-xl leading-relaxed text-foreground/70 sm:text-2xl"
-              style={{ marginBottom: leadGap }}
-            >
-              {meta.description}
-            </p>
+            {meta.description && (
+              <p
+                className="text-xl leading-relaxed text-foreground/70 sm:text-2xl"
+                style={{ marginBottom: leadGap }}
+              >
+                {meta.description}
+              </p>
+            )}
             {/* Each section carries its own top gap (vs a shared container
                 rowGap) so a HEADED section can sit on a tighter rhythm than a
                 headless one — the heading does divider duty, so it needs less
@@ -245,21 +270,27 @@ export function Gallery({
                       )}
                     </div>
                   )}
-                  <div className="flex flex-col" style={{ rowGap: ROW_GAP }}>
-                    {section.rows.map((row, i) =>
-                      row.span === "full" ? (
-                        <BlockBox key={i} block={row.block} eager={si === 0 && i === 0} />
-                      ) : (
-                        <div
-                          key={i}
-                          className="grid grid-cols-1 sm:grid-cols-2"
-                          style={{ columnGap: GUTTER, rowGap: GUTTER }}
-                        >
-                          <BlockBox block={row.blocks[0]} />
-                          <BlockBox block={row.blocks[1]} />
-                        </div>
-                      )
-                    )}
+                  <div className="flex flex-col" style={{ rowGap: section.rowGap ?? ROW_GAP }}>
+                    {section.rows.map((row, i) => {
+                      if (row.span === "full") {
+                        return (
+                          <BlockBox key={i} block={row.block} eager={si === 0 && i === 0} />
+                        );
+                      }
+                      if (row.span === "half") {
+                        return (
+                          <div
+                            key={i}
+                            className="grid grid-cols-1 sm:grid-cols-2"
+                            style={{ columnGap: GUTTER, rowGap: GUTTER }}
+                          >
+                            <BlockBox block={row.blocks[0]} />
+                            <BlockBox block={row.blocks[1]} />
+                          </div>
+                        );
+                      }
+                      return <TextRow key={i} text={row.text} />;
+                    })}
                   </div>
                 </section>
               ))}
@@ -269,6 +300,36 @@ export function Gallery({
         </div>
       </div>
     </>
+  );
+}
+
+/** Inline editorial text (statement / caption). A statement is the biggest type
+ *  on the page: foreground, tracked tight, balanced, on a tight ~24ch measure
+ *  so it wraps into a deliberate 2–3 line block; its optional `sub` picks up the
+ *  same muted lead voice as the description, on a wider prose measure. A caption
+ *  is a small muted line for sitting under a sequence of frames. Both ride the
+ *  column's normal ROW_GAP for now — tighten by eye (live dial) if a caption
+ *  floats too far off the frame it belongs to; that's when Block.caption earns
+ *  its place. Type sizes are starting values, tunable against real copy. */
+function TextRow({ text }: { text: TextBlock }) {
+  if (text.variant === "caption") {
+    return (
+      <p className="max-w-prose text-sm leading-relaxed text-text-muted">
+        {text.body}
+      </p>
+    );
+  }
+  return (
+    <div>
+      <p className="max-w-[24ch] text-[clamp(1.75rem,4vw,2.75rem)] font-semibold leading-[1.1] tracking-tight text-balance">
+        {text.body}
+      </p>
+      {text.sub && (
+        <p className="mt-5 max-w-prose text-xl leading-relaxed text-foreground/70">
+          {text.sub}
+        </p>
+      )}
+    </div>
   );
 }
 

@@ -51,7 +51,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const url = `/design/${slug}`;
   const title = meta?.title ?? brand!.title;
-  const description = meta?.summary ?? brand!.description;
+  // Brand entries may omit `description` (pensieve opens image-first, carrying
+  // its lead line as an in-column statement instead) — fall back to the always-
+  // present card `blurb` so the OG/meta description is never empty. Work/lab
+  // (meta.summary) and the other brand entries keep their existing text.
+  const description = meta?.summary ?? brand!.description ?? brand!.blurb;
 
   // Work, lab, AND brand entries all resolve their share image the same way:
   // existence-check the pre-generated `/og/<slug>.png` (S43 folded brand into

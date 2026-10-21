@@ -124,7 +124,7 @@ export const aronia: BrandEntry = {
     slug: "aronia",
     title: "Aronia",
     date: "2026-07-15",
-    blurb: "An agentic component library for vibecoders",
+    blurb: "An agentic component library for vibecoders.",
     image: "/design/aronia/splash-poster.webp",
     video: "/design/aronia/splash.mp4",
     ratio: "16 / 9", // card cover — center-crops the ~5:4 splash to the wordmark band (matches Kickoff's card)
