@@ -27,10 +27,10 @@
      triggers below (system pref + explicit ThemeToggle). Live = COFFEE;
      ESPRESSO is the parked alternate. Foreground (#f4ead8) is the shared
      warm-cream that pairs with both. */
-  --background-dark: #181311; /* coffee field */
+  --background-dark: #090605; /* near-black espresso-ink field (S48 — superseded coffee #181311; cards/accent pop harder on it) */
   --foreground-dark: #f4ead8; /* warm cream text */
-  --nav-fill-dark: #241c19;   /* coffee lifted surface */
-  --border-dark: #362c28;     /* coffee low-contrast border */
+  --nav-fill-dark: #0d0c0c;   /* near-neutral lifted surface on the espresso-ink ground (S48) */
+  --border-dark: #1a1919;     /* near-neutral low-contrast border (S48) */
   /* ESPRESSO (parked alternate) — deeper, more dramatic elevation.
   --background-dark: #0e0a08;
   --nav-fill-dark: #1a1311;
