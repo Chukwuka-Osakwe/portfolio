@@ -24,12 +24,6 @@ const CM = {
   overviewDesk: A("overview-desk"),
   mangoRipe: A("mango-ripe"),
   mangoTree: A("mango-tree"),
-  // Wordmark-lockup set on the two brand grounds (ember/olive), two tonal
-  // weights each — dark/bright ember, olive→ember / olive→orange (S48).
-  wmEmber: A("wordmark-ember"),
-  wmEmberLight: A("wordmark-ember-light"),
-  wmOlive: A("wordmark-olive"),
-  wmOliveLight: A("wordmark-olive-light"),
   // Type specimen (Martian Mono / Onest) across the four solid brand grounds.
   typeLight: A("type-light"),
   typeDark: A("type-dark"),
@@ -39,18 +33,18 @@ const CM = {
   // darker and brighter tonal sets (S48).
   motifBoardDark: A("motif-board-dark"),
   motifBoardBright: A("motif-board-bright"),
-  // Wordmark lockup on the four solid brand grounds (the solid-fill counterpart
-  // to the gradient wordmark lockups).
-  wmSolidLight: A("wordmark-solid-light"),
-  wmSolidDark: A("wordmark-solid-dark"),
-  wmSolidRed: A("wordmark-solid-red"),
-  wmSolidGreen: A("wordmark-solid-green"),
+  // Wordmark lockup as a 2×2 board — one across the four gradient grounds, one
+  // across the four solid fills, each on the orange page ground (S49, replacing
+  // the eight per-ground wordmark frames).
+  wordmarkBoardGradient: A("wordmark-board-gradient"),
+  wordmarkBoardSolid: A("wordmark-board-solid"),
 };
 
 const AR = {
   hero: "16 / 10",
   typeSpecimen: "55 / 48",
   sq: "1 / 1",
+  board: "5 / 4", // the 2×2 wordmark-lockup boards (native 14672×11736 ≈ 5:4)
 } as const;
 
 // Sections mirror the paper-canvas grouping. Each carries a `heading` label for
@@ -92,16 +86,19 @@ const sections: GallerySection[] = [
       { span: "full", block: { kind: "palette", aspect: AR.sq, src: CM.paletteGrad, alt: "Gradient colour fields" } },
     ],
   },
-  // The marks — chip motif + wordmark laid out as a 2×2 board across the brand
-  // grounds (ember · olive), a darker set then a brighter set. Smooth gradient
-  // panels, so served `unoptimized` + lossless (the wordmark-lockup rule).
-  // Ordered dark → bright. Single-column.
+  // The marks — the chip motif and the wordmark laid out as 2×2 boards across
+  // the brand grounds. First the motif boards (darker set, then brighter), then
+  // the wordmark lockup on the gradient grounds and on the solid fills (S49 —
+  // these two boards replaced the eight per-ground wordmark frames). Smooth
+  // gradient / flat panels, so served `unoptimized` + lossless. Single-column.
   {
     heading: "The marks",
     note: "The chip motif and the wordmark, laid out across the brand grounds.",
     rows: [
       { span: "full", block: { kind: "motif", aspect: AR.sq, unoptimized: true, src: CM.motifBoardDark, alt: "Chip motif and ChipMango wordmark across the brand grounds — the darker set" } },
       { span: "full", block: { kind: "motif", aspect: AR.sq, unoptimized: true, src: CM.motifBoardBright, alt: "Chip motif and ChipMango wordmark across the brand grounds — the brighter set" } },
+      { span: "full", block: { kind: "wordmark", aspect: AR.board, unoptimized: true, src: CM.wordmarkBoardGradient, alt: "ChipMango wordmark lockup on the four gradient grounds — dark ember, olive-ember, bright ember, olive-orange" } },
+      { span: "full", block: { kind: "wordmark", aspect: AR.board, unoptimized: true, src: CM.wordmarkBoardSolid, alt: "ChipMango wordmark lockup on the four solid fills — red ember, olive green, light cream, near-black" } },
     ],
   },
   // Type — the specimen (Martian Mono headlines / Onest body) shown across the
@@ -116,21 +113,6 @@ const sections: GallerySection[] = [
       { span: "full", block: { kind: "type-specimen", aspect: AR.typeSpecimen, unoptimized: true, src: CM.typeDark, alt: "Type specimen — Martian Mono and Onest on the dark coffee ground" } },
       { span: "full", block: { kind: "type-specimen", aspect: AR.typeSpecimen, unoptimized: true, src: CM.typeRed, alt: "Type specimen — Martian Mono and Onest on the red ember ground" } },
       { span: "full", block: { kind: "type-specimen", aspect: AR.typeSpecimen, unoptimized: true, src: CM.typeGreen, alt: "Type specimen — Martian Mono and Onest on the green olive ground" } },
-    ],
-  },
-  // Wordmark lockups — the mark on the two brand grounds (ember · olive), two
-  // tonal weights each. Smooth full-frame gradients, so served `unoptimized` +
-  // lossless (q92 banded the dark ember ground; lossless is ~400KB but clean).
-  // Ordered by the gradient grounds: alternate ember/olive, running dark→bright
-  // (ember-dark → olive-ember → ember-bright → olive-orange). Single-column.
-  {
-    heading: "Wordmark on gradients",
-    note: "The wordmark lockup on the gradient grounds, ember through olive.",
-    rows: [
-      { span: "full", block: { kind: "wordmark", aspect: AR.sq, unoptimized: true, src: CM.wmEmber, alt: "ChipMango wordmark lockup — orange mark on a dark ember gradient" } },
-      { span: "full", block: { kind: "wordmark", aspect: AR.sq, unoptimized: true, src: CM.wmOlive, alt: "ChipMango wordmark lockup — orange mark on an olive-to-ember gradient" } },
-      { span: "full", block: { kind: "wordmark", aspect: AR.sq, unoptimized: true, src: CM.wmEmberLight, alt: "ChipMango wordmark lockup — maroon mark on a bright ember gradient" } },
-      { span: "full", block: { kind: "wordmark", aspect: AR.sq, unoptimized: true, src: CM.wmOliveLight, alt: "ChipMango wordmark lockup — maroon mark on an olive-to-orange gradient" } },
     ],
   },
   // Messaging — the social/message cards (cream type on brand gradient grounds).
@@ -161,21 +143,6 @@ const sections: GallerySection[] = [
       { span: "full", block: { kind: "collateral", aspect: AR.sq, unoptimized: true, src: CM.cardBiz, alt: "Card — “ChipMango For Businesses”, on the dark coffee ground" } },
       { span: "full", block: { kind: "collateral", aspect: AR.sq, unoptimized: true, src: CM.cardWhy, alt: "Card — “Why join the future?”, on the red ember ground" } },
       { span: "full", block: { kind: "collateral", aspect: AR.sq, unoptimized: true, src: CM.card300, alt: "Card — “Taking AI to the edge of humanity”, on the green olive ground" } },
-    ],
-  },
-
-  // Wordmark lockups (solid) — the mark on the four solid brand grounds, the
-  // solid-fill counterpart to the gradient lockups above. Ordered light → dark →
-  // red → green to match the other solid-ground sets. Flat fills → `unoptimized`
-  // + lossless (tiny). Single-column.
-  {
-    heading: "Wordmark on solids",
-    note: "The same lockup, this time on the four solid fills.",
-    rows: [
-      { span: "full", block: { kind: "wordmark", aspect: AR.sq, unoptimized: true, src: CM.wmSolidLight, alt: "ChipMango wordmark lockup — maroon mark on the light cream ground" } },
-      { span: "full", block: { kind: "wordmark", aspect: AR.sq, unoptimized: true, src: CM.wmSolidDark, alt: "ChipMango wordmark lockup — orange mark on the dark coffee ground" } },
-      { span: "full", block: { kind: "wordmark", aspect: AR.sq, unoptimized: true, src: CM.wmSolidRed, alt: "ChipMango wordmark lockup — orange mark on the red ember ground" } },
-      { span: "full", block: { kind: "wordmark", aspect: AR.sq, unoptimized: true, src: CM.wmSolidGreen, alt: "ChipMango wordmark lockup — orange mark on the green olive ground" } },
     ],
   },
 
