@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { CardVideo } from "@/components/CardVideo";
 
 /* Generic brand/gallery detail view — the "lookbook" template, graduated from
@@ -155,6 +156,29 @@ function renderLede(
   );
 }
 
+// Back-to-work affordance — same markup as the case-study (ProjectsExplorer),
+// lab (LabDetail) and essay detail headers. Accent by default on touch (no
+// hover to signal the affordance), muted + accent-hover at lg+. Rendered twice
+// by <Gallery>: once before the rail for touch widths (where the rail stacks on
+// top, so this must be the page's first element) and once at the top of the
+// content column for desktop. The caller supplies display/spacing/visibility.
+function BackToWork({ className }: { className: string }) {
+  return (
+    <Link
+      href="/"
+      className={`group items-center gap-2 text-sm font-semibold text-accent transition-colors hover:text-accent focus-visible:text-accent focus-visible:outline-none lg:text-text-muted ${className}`}
+    >
+      <span
+        aria-hidden
+        className="transition-transform group-hover:-translate-x-0.5"
+      >
+        ←
+      </span>
+      work
+    </Link>
+  );
+}
+
 export function Gallery({
   meta,
   sections,
@@ -186,6 +210,15 @@ export function Gallery({
     // with the rest of the page content, which reads fine — it's persistent
     // chrome (like SiteTopBar), not page content.
     <>
+      {/* Touch-only back link — on mobile/tablet the rail stacks on top of the
+          content, so this must be the page's first element to match the
+          case-study layout (which has no rail). Hidden at lg+, where the copy
+          inside the content column takes over. */}
+      {/* -mt-4 trims the shell's global main pt-8 (32px) down to a 16px gap
+          below the sticky topbar. Only renders on touch (lg:hidden). */}
+      <div className="-mt-4 px-6 lg:hidden">
+        <BackToWork className="inline-flex" />
+      </div>
       <aside className="gallery-rail px-6 pt-4 lg:px-0 lg:pt-0">
         <div className="flex h-full flex-col lg:justify-center">
           <div>
@@ -264,6 +297,10 @@ export function Gallery({
               image/video blocks share), then sections separated by SECT_GAP;
               rows within by ROW_GAP. */}
           <main className="flex flex-col pb-8">
+            {/* Desktop back link — top-left of the content column, above the
+                lead, mirroring the case studies spatially. Hidden on touch,
+                where the copy before the rail handles it. */}
+            <BackToWork className="mb-8 hidden lg:inline-flex" />
             {/* Description → first frame: leadGap at every width, so the lead
                 text sits on the same section rhythm as the gaps below it (140
                 for a headed entry, 200 for a headless one). */}

@@ -18,6 +18,11 @@ export interface GridEntry {
   ratio: CoverRatio | null;
   /** Sidecar LQIP for next/image blur placeholder, when registered. */
   blurDataURL?: string;
+  /** Bypass the Next image optimizer for this cover (serve the source as-is).
+   *  Set for flat/smooth-dark brand covers where the optimizer's lossy q75
+   *  re-encode bands the ground (pensieve); photographic covers leave it off so
+   *  they still get responsive, optimized derivatives. */
+  unoptimized?: boolean;
 }
 
 // Uniform cover frame when an entry doesn't declare its own `ratio`. 5:4 (=1.25)
@@ -38,8 +43,10 @@ const DEFAULT_RATIO: CoverRatio = "5 / 4";
  * view-enter fade, preserving the smooth in-place feel.
  */
 export function DesignGrid({ entries }: { entries: GridEntry[] }) {
-  // Trailing filler cell so an odd count doesn't leave the last row's right
-  // slot borderless at lg (keeps the bottom rule unbroken). Hidden < lg.
+  // At lg (2-up) an odd count leaves the last row's right slot empty; the CTA
+  // cell (below) fills it and keeps the bottom rule unbroken. When even, that
+  // slot doesn't exist, so the CTA hides at lg. (On touch the CTA is always the
+  // persistent last item — see its className.)
   const odd = entries.length % 2 === 1;
 
   return (
@@ -75,16 +82,40 @@ export function DesignGrid({ entries }: { entries: GridEntry[] }) {
             // card (e.g. a wide 16:9 next to a squarer one) floats centered in
             // the row instead of pinning to the top with a gap beneath it.
             className="flex items-center justify-center border-b border-border lg:[&:nth-child(odd)]:border-r"
-            style={{ padding: "clamp(1.5rem, 4vw, 4.5rem)" }}
+            style={{ padding: "clamp(1.5rem, 5.25vw, 4.5rem)" }}
           >
             <div className="w-full" style={{ maxWidth: "48rem" }}>
               <Card entry={entry} />
             </div>
           </div>
         ))}
-          {odd && (
-            <div aria-hidden className="hidden border-b border-border lg:block" />
-          )}
+          {/* Trailing "let's work" CTA cell → contact. Two roles:
+              • touch (single column): a persistent last item, always shown.
+              • lg (2-up): fills the dangling right slot ONLY when the count is
+                odd; hidden when even (the grid is already complete).
+              Styled as a peer to the card titles. */}
+          <div
+            className={`flex items-center justify-center border-b border-border ${odd ? "" : "lg:hidden"}`}
+            style={{ padding: "clamp(1.5rem, 5.25vw, 4.5rem)" }}
+          >
+            {/* Same w-full / 48rem wrapper the cards use, so the CTA spans the
+                column and reads as just another row rather than a small centred
+                link. */}
+            <div className="w-full" style={{ maxWidth: "48rem" }}>
+              <Link
+                href="/contact"
+                className="focus-ring group flex w-full items-center justify-center gap-2 text-2xl font-semibold tracking-tight text-accent transition-colors hover:text-accent focus-visible:text-accent lg:text-foreground"
+              >
+                let&apos;s work
+                <span
+                  aria-hidden
+                  className="transition-transform group-hover:translate-x-0.5"
+                >
+                  →
+                </span>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -139,6 +170,7 @@ function Media({ entry }: { entry: GridEntry }) {
         alt=""
         fill
         sizes="(min-width: 1024px) 48rem, 100vw"
+        unoptimized={entry.unoptimized}
         className="object-cover"
         {...(entry.blurDataURL && {
           placeholder: "blur" as const,

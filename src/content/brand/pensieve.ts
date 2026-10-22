@@ -88,9 +88,10 @@ export const pensieve: BrandEntry = {
     title: "Pensieve",
     date: "2026-10-21",
     blurb: "A memory portal disguised as a travel journal.",
-    image: "/design/pensieve/wordmark.webp",
+    image: "/design/pensieve/cover.webp",
     video: null,
-    ratio: "5 / 4", // card cover — the wordmark is natively ~1.24:1, so 5:4 frames it near-uncropped (and groups with chipmango's 5:4)
+    ratio: "5 / 4", // card cover — a padded wordmark lockup, natively ~1.24:1 so 5:4 frames it near-uncropped (and groups with chipmango's 5:4). Distinct from the tight full-bleed `wordmark` lookbook frame.
+    unoptimized: true, // flat near-black ground — the optimizer's lossy q75 re-encode bands it; serve the 17K lossless source direct
     blurDataURL: undefined,
     eyebrow: "Self-initiated",
     tags: ["Product Design", "Brand Identity", "Interaction"],

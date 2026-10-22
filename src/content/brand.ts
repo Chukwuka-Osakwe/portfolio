@@ -20,6 +20,9 @@ export interface BrandCardMeta {
   video: string | null;
   ratio: CoverRatio | null;
   blurDataURL?: string;
+  /** Serve the card cover unoptimized (bypass Next's lossy q75 re-encode) for
+   *  flat/smooth-dark grounds the optimizer would band. See GridEntry. */
+  unoptimized?: boolean;
 }
 
 export interface BrandEntry {

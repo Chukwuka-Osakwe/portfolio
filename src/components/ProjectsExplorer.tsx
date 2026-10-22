@@ -75,7 +75,7 @@ export function ProjectsExplorer({ projects, panes, initialSlug }: Props) {
         <div className="view-enter">
           <Link
             href="/"
-            className="group inline-flex items-center gap-2 text-sm font-semibold text-text-muted transition-colors hover:text-accent focus-visible:text-accent focus-visible:outline-none"
+            className="group inline-flex items-center gap-2 text-sm font-semibold text-accent transition-colors hover:text-accent focus-visible:text-accent focus-visible:outline-none lg:text-text-muted"
           >
             <span aria-hidden className="transition-transform group-hover:-translate-x-0.5">
               ←

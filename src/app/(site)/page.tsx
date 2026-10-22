@@ -51,6 +51,7 @@ export default function Home() {
       video: m.video,
       ratio: m.ratio,
       blurDataURL: m.blurDataURL,
+      unoptimized: m.unoptimized,
     } satisfies GridEntry,
   }));
 
